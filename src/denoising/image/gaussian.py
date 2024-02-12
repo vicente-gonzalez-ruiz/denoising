@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import scipy
 import math
-from . import kernels
+#from . import kernels
 #pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 from color_transforms import YCoCg as YUV
 #import image_denoising
@@ -92,7 +92,8 @@ class Monochrome_Image_Gaussian_Denoising:
         self.logger.setLevel(verbosity)
         print(f"logging level = {self.logger.level}")
         self.sigma = sigma
-        self.logger.info(f"sigma={self.sigma}")            
+        self.logger.info(f"sigma={self.sigma}")
+        self.gaussian_filtering = gray_gaussian_filtering
 
     def get_gaussian_kernel(self):
         number_of_coeffs = 3
@@ -106,15 +107,15 @@ class Monochrome_Image_Gaussian_Denoising:
         return coeffs[1:-1]
 
     def filter(self, noisy_image, GT=None, N_iters=1):
-        if self.logger.getEffectiveLevel() < logging.WARNING:
+        if self.logger.getEffectiveLevel() < logging.INFO:
             PSNR_vs_iteration = []
         kernel = self.get_gaussian_kernel()
         denoised_image = noisy_image.copy()
         for i in range(N_iters):
-            if self.logger.getEffectiveLevel() < logging.WARNING:
+            if self.logger.getEffectiveLevel() < logging.INFO:
                 prev = denoised_image
-            denoised_image = gray_gaussian_filtering(denoised_image, kernel)
-            if self.logger.getEffectiveLevel() < logging.WARNING:
+            denoised_image = self.gaussian_filtering(denoised_image, kernel)
+            if self.logger.getEffectiveLevel() < logging.INFO:
                 if isinstance(GT, np.ndarray):
                     _PSNR = information_theory.distortion.avg_PSNR(denoised_image, GT)
                 else:
@@ -127,8 +128,7 @@ class Monochrome_Image_Gaussian_Denoising:
                 axs[1].set_title(f"diff")
                 plt.show()
         print()
-
-        if self.logger.getEffectiveLevel() < logging.WARNING:
+        if self.logger.getEffectiveLevel() < logging.INFO:
             return denoised_image, PSNR_vs_iteration
         else:
             return denoised_image, None
@@ -137,17 +137,18 @@ class Color_Image_Gaussian_Denoising(Monochrome_Image_Gaussian_Denoising):
 
     def __init__(self, sigma=1.5, verbosity=logging.INFO):
         super().__init__(sigma=sigma, verbosity=verbosity)
+        self.gaussian_filtering = RGB_gaussian_filtering
 
     def filter(self, noisy_image, GT=None, N_iters=1):
-        if self.logger.getEffectiveLevel() < logging.WARNING:
+        if self.logger.getEffectiveLevel() < logging.INFO:
             PSNR_vs_iteration = []
         kernel = self.get_gaussian_kernel()
         denoised_image = noisy_image.copy()
         for i in range(N_iters):
-            if self.logger.getEffectiveLevel() < logging.WARNING:
+            if self.logger.getEffectiveLevel() < logging.INFO:
                 prev = denoised_image
-            denoised_image = RGB_gaussian_filtering(denoised_image, kernel)
-            if self.logger.getEffectiveLevel() < logging.WARNING:
+            denoised_image = self.gaussian_filtering(denoised_image, kernel)
+            if self.logger.getEffectiveLevel() < logging.INFO:
                 if isinstance(GT, np.ndarray):
                     _PSNR = information_theory.distortion.avg_PSNR(denoised_image, GT)
                 else:
@@ -160,8 +161,7 @@ class Color_Image_Gaussian_Denoising(Monochrome_Image_Gaussian_Denoising):
                 axs[1].set_title(f"diff")
                 plt.show()
         print()
-
-        if self.logger.getEffectiveLevel() < logging.WARNING:
+        if self.logger.getEffectiveLevel() < logging.INFO:
             return denoised_image, PSNR_vs_iteration
         else:
             return denoised_image, None
