@@ -168,35 +168,37 @@ def RGB_OF_gaussian_filtering(noisy_image, kernel, l=3, w=5, sigma=0.5):
 
 class Monochrome_Image_OF_Gaussian_Denoising(gaussian.Monochrome_Image_Gaussian_Denoising):
 
-    def __init__(self, sigma=1.5, l=3, w=9, sigma_OF=2.5, verbosity=logging.INFO):
-        super().__init__(sigma=sigma, verbosity=verbosity)
+    def __init__(self, sigma_gaussian=1.5, l=3, w=9, sigma_OF=2.5, verbosity=logging.INFO):
+        super().__init__(sigma=sigma_gaussian, verbosity=verbosity)
         self.l = l
         self.w = 9
         self.sigma_OF = sigma_OF
         self.logger.info(f"l={self.l}")
         self.logger.info(f"w={self.w}")
         self.logger.info(f"sigma_OF={self.sigma_OF}")
+        self.logger.info(f"sigma_gaussian={self.sigma_gaussian}")
         self.gaussian_filtering = gray_OF_gaussian_filtering
 
 class Color_Image_OF_Gaussian_Denoising(gaussian.Color_Image_Gaussian_Denoising):
 
-    def __init__(self, sigma=1.5, l=3, w=9, sigma_OF=2.5, verbosity=logging.INFO):
-        super().__init__(sigma=sigma, verbosity=verbosity)
+    def __init__(self, sigma_gaussian=1.5, l=3, w=9, sigma_OF=2.5, verbosity=logging.INFO):
+        super().__init__(sigma=sigma_gaussian, verbosity=verbosity)
         self.l = l
         self.w = w
         self.sigma_OF = sigma_OF
         self.logger.info(f"l={self.l}")
         self.logger.info(f"w={self.w}")
         self.logger.info(f"sigma_OF={self.sigma_OF}")
+        self.logger.info(f"sigma_gaussian={self.sigma_gaussian}")
         self.gaussian_filtering = RGB_OF_gaussian_filtering
     
-def filter_RGB_image(noisy_image, sigma_kernel=2.5, N_iters=1, l=3, w=9, sigma_OF=2.5, GT=None):
+def filter_RGB_image(noisy_image, sigma_gaussian=2.5, N_iters=1, l=3, w=9, sigma_OF=2.5, GT=None):
 
     logger.info(f"sigma_kernel={sigma_kernel} N_iters={N_iters} l={l} w={w} sigma_OF={sigma_OF}")
     if logger.getEffectiveLevel() < logging.WARNING:
         PSNR_vs_iteration = []
     
-    kernel = kernels.get_gaussian_kernel(sigma_kernel)
+    kernel = kernels.get_gaussian_kernel(sigma_gaussian)
     denoised_image = noisy_image.copy()
     for i in range(N_iters):
         if logger.getEffectiveLevel() < logging.WARNING:
