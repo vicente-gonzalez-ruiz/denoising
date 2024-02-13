@@ -90,8 +90,8 @@ class Monochrome_Image_Gaussian_Denoising:
     def __init__(self, sigma=1.5, verbosity=logging.INFO):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(verbosity)
-        self.sigma = sigma
-        self.logger.info(f"sigma={self.sigma}")
+        self.sigma_gaussian = sigma
+        self.logger.info(f"sigma={self.sigma_gaussian}")
         self.gaussian_filtering = gray_gaussian_filtering
 
     def get_gaussian_kernel(self):
@@ -100,7 +100,7 @@ class Monochrome_Image_Gaussian_Denoising:
         while number_of_zeros < 2 :
             delta = np.zeros(number_of_coeffs)
             delta[delta.size//2] = 1
-            coeffs = scipy.ndimage.gaussian_filter1d(delta, sigma=self.sigma)
+            coeffs = scipy.ndimage.gaussian_filter1d(delta, sigma=self.sigma_gaussian)
             number_of_zeros = coeffs.size - np.count_nonzero(coeffs)
             number_of_coeffs += 1
         return coeffs[1:-1]
