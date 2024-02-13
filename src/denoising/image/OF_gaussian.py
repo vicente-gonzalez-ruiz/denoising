@@ -1,13 +1,14 @@
-import time
+'''Gaussian image denoising using the optical flow.'''
+
+#import time
 import numpy as np
 import cv2
 import scipy
 import math
 #from . import kernels
 #from . import flow_estimation
-import motion_estimation
-#pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
-from color_transforms import YCoCg as YUV
+import motion_estimation  #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
 from . import gaussian
 
@@ -18,7 +19,6 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.ERROR)
 #logger.setLevel(logging.WARNING)
 #logger.setLevel(logging.INFO)
-
 
 def get_flow(reference, target, l=3, w=5, prev_flow=None, sigma=0.5):
     flow = cv2.calcOpticalFlowFarneback(prev=target, next=reference, flow=prev_flow,

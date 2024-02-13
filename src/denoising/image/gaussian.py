@@ -90,7 +90,6 @@ class Monochrome_Image_Gaussian_Denoising:
     def __init__(self, sigma=1.5, verbosity=logging.INFO):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(verbosity)
-        print(f"logging level = {self.logger.level}")
         self.sigma = sigma
         self.logger.info(f"sigma={self.sigma}")
         self.gaussian_filtering = gray_gaussian_filtering

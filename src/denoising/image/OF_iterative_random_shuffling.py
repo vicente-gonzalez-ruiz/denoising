@@ -2,7 +2,7 @@
 
 import numpy as np
 import cv2
-from . import flow_estimation
+#from . import flow_estimation
 from color_transforms import YCoCg as YUV #pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 from information_theory.distortion import PSNR #pip install "information_theory @ git+https://github.com/vicente-gonzalez-ruiz/information_theory"
 import information_theory
@@ -16,14 +16,122 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.WARNING)
 #logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
-    
-class Filter_Monochrome_Image(flow_estimation.Farneback_Flow_Estimator):
+import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+
+class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
+    def __init__(self, l=3, w=15, OF_iters=3, poly_n=5, poly_sigma=1.0, flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN, verbosity=logging.INFO):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(verbosity)
+        super().__init__(levels=l, win_side=w, iters=OF_iters, poly_n=poly_n, poly_sigma=poly_sigma, flags=flags)
+        self.logger.info(f"l={l}")
+        self.logger.info(f"w={w}")
+        self.logger.info(f"OF_iters={OF_iters}")
+        self.logger.info(f"poly_n={poly_n}")
+        self.logger.info(f"poly_sigma={poly_sigma}")
+        self.logger.info(f"flags={flags}")
+
+    def project_A_to_B(self, A, B):
+        #flow = self.get_flow_to_project_A_to_B(A, B)
+        flow = self.get_flow(target=B, reference=A, prev_flow=None)
+        self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
+        #return flow_estimation.project(A, flow)
+        projection = motion_estimation.project(image=A, flow=flow)
+        return projection
+
+    def normalize(self, img):
+        min_img = np.min(img)
+        max_img = np.max(img)
+        return 255*((img - min_img + 1)/(max_img - min_img + 1))
+
+    def randomize(self, image, mean=0, std_dev=1.0):
+        height, width = image.shape[:2]
+        self.logger.debug(f"image.shape={image.shape}")
+        x_coords, y_coords = np.meshgrid(range(width), range(height)) # Create a grid of coordinates
+        flattened_x_coords = x_coords.flatten()
+        flattened_y_coords = y_coords.flatten()
+        displacements_x = np.random.normal(mean, std_dev, flattened_x_coords.shape)
+        displacements_y = np.random.normal(mean, std_dev, flattened_y_coords.shape)
+        #displacements_x *= max_distance_x # Scale the displacements by the maximum distance
+        #displacements_y *= max_distance_y
+        displacements_x = displacements_x.astype(np.int32)
+        displacements_y = displacements_y.astype(np.int32)
+
+        self.logger.info(f"np.max(displacements_x)={np.max(displacements_x)} np.max(displacements_y)={np.max(displacements_y)}")
+        randomized_x_coords = flattened_x_coords + displacements_x
+        randomized_y_coords = flattened_y_coords + displacements_y
+        #randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
+        #randomized_y_coords = np.clip(randomized_y_coords, 0, height - 1)
+        randomized_x_coords = np.mod(randomized_x_coords, width) # Apply periodic extension to handle border pixels
+        randomized_y_coords = np.mod(randomized_y_coords, height)
+        randomized_image = np.zeros_like(image)
+        randomized_image[randomized_y_coords, randomized_x_coords] = image[flattened_y_coords, flattened_x_coords]
+        return randomized_image
+
+    def filter(self,
+               noisy_image,
+               GT=None,
+               N_iters=50,
+               RS_sigma=1.0, # Standard deviation of the maximum random (gaussian-distributed) displacements of the pixels
+               RS_mean=0.0, # Mean of the randomized distances
+               #RD_sigma=1.0,
+               #levels=3,
+               #window_side=2,
+               #poly_n=5,
+               #poly_sigma=0.3,
+               ):
+
+        #logger.info(f"RD_iters={RD_iters} RD_mean={RD_mean} RD_sigma={sigma} levels={levles} window_side={window_side} poly_n={poly_n} poly_sigma={poly_sigma}")
+        self.logger.info(f"N_iters={N_iters} RS_mean={RS_mean} RS_sigma={RS_sigma}")
+        if self.logger.level <= logging.INFO:
+            PSNR_vs_iteration = []
+
+        acc_image = np.zeros_like(noisy_image, dtype=np.float32)
+        acc_image[...] = noisy_image
+        if self.logger.level <= logging.DEBUG:
+            denoised_image = noisy_image
+        for i in range(N_iters):
+            self.logger.info(f"Iteration {i}/{N_iters}")
+            if self.logger.level <= logging.DEBUG:
+                fig, axs = plt.subplots(1, 2)
+                prev = denoised_image
+            denoised_image = acc_image/(i+1)
+            if self.logger.level <= logging.INFO:
+                try:
+                    _PSNR = information_theory.distortion.PSNR(denoised_image, GT)
+                except:
+                    _PSNR = 0.0
+                PSNR_vs_iteration.append(_PSNR)
+            if self.logger.level <= logging.DEBUG:
+                axs[0].imshow(denoised_image.astype(np.uint8))
+                axs[0].set_title(f"iter {i} " + f"({_PSNR:4.2f}dB)")
+                axs[1].imshow(self.normalize(prev - denoised_image + 128).astype(np.uint8), cmap="gray")
+                axs[1].set_title(f"diff")
+                plt.show()
+            randomized_noisy_image = self.randomize(
+                noisy_image,
+                RS_mean,
+                RS_sigma).astype(np.float32)
+            #randomized_noisy_image = randomize(noisy_image)
+            randomized_and_compensated_noisy_image = self.project_A_to_B(
+                A=denoised_image,
+                B=randomized_noisy_image)
+            acc_image += randomized_and_compensated_noisy_image
+        denoised_image = acc_image/(N_iters + 1)
+        #print(flush=True)
+
+        if self.logger.level <= logging.INFO:
+            return denoised_image, PSNR_vs_iteration
+        else:
+            return denoised_image, None
+
+'''
+class Filter_Monochrome_Image_OLD(flow_estimation.Farneback_Flow_Estimator):
 
     def __init__(
             self,
-            levels=3,       # Pyramid slope. Multiply by 2^levels the searching area if the OFE
-            window_side=15, # Applicability window side
-            iters=3,        # Number of iterations at each pyramid level
+            l=3,       # Pyramid slope. Multiply by 2^levels the searching area if the OFE
+            w=15, # Applicability window side
+            OF_iters=3,     # Number of iterations at each pyramid level
             poly_n=5,       # Size of the pixel neighborhood used to the find polynomial expansion in each pixel
             poly_sigma=1.0, # Standard deviation of the Gaussian basis used in the polynomial expansion
             flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN,
@@ -31,12 +139,12 @@ class Filter_Monochrome_Image(flow_estimation.Farneback_Flow_Estimator):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(verbosity)
         print(f"logging level = {self.logger.level}")
-        self.logger.debug(f"levels={levels}, window_side={window_side}, iters={iters}, poly_n={poly_n}, poly_sigma={poly_sigma}")
-        super().__init__(levels, window_side, iters, poly_n, poly_sigma, flags)
-        self.logger.debug(f"levels={levels}, window_side={window_side}, iters={iters}, poly_n={poly_n}, poly_sigma={poly_sigma}")
+        super().__init__(l, w, OF_iters, poly_n, poly_sigma, flags)
+        self.logger.debug(f"l={l}, w={w}, OF_iters={OF_iters}, poly_n={poly_n}, poly_sigma={poly_sigma}")
 
     def project_A_to_B(self, A, B):
-        flow = self.get_flow_to_project_A_to_B(A, B)
+        #flow = self.get_flow_to_project_A_to_B(A, B)
+        flow = self.get_flow(target=B, reference=A, prev_flow=None)
         self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
         return flow_estimation.project(A, flow)
 
@@ -71,18 +179,19 @@ class Filter_Monochrome_Image(flow_estimation.Farneback_Flow_Estimator):
 
     def filter(self,
                noisy_image,
-               RD_iters=50,
-               RD_sigma=1.0, # Standard deviation of the maximum random (gaussian-distributed) displacements of the pixels
-               RD_mean=0.0, # Mean of the randomized distances
+               GT=None,
+               N_iters=50,
+               RS_sigma=1.0, # Standard deviation of the maximum random (gaussian-distributed) displacements of the pixels
+               RS_mean=0.0, # Mean of the randomized distances
                #RD_sigma=1.0,
                #levels=3,
                #window_side=2,
                #poly_n=5,
                #poly_sigma=0.3,
-               GT=None):
+               ):
 
         #logger.info(f"RD_iters={RD_iters} RD_mean={RD_mean} RD_sigma={sigma} levels={levles} window_side={window_side} poly_n={poly_n} poly_sigma={poly_sigma}")
-        self.logger.info(f"RD_iters={RD_iters} RD_mean={RD_mean} RD_sigma={RD_sigma}")
+        self.logger.info(f"N_iters={N_iters} RS_mean={RS_mean} RS_sigma={RS_sigma}")
         if self.logger.level <= logging.INFO:
             PSNR_vs_iteration = []
 
@@ -90,8 +199,8 @@ class Filter_Monochrome_Image(flow_estimation.Farneback_Flow_Estimator):
         acc_image[...] = noisy_image
         if self.logger.level <= logging.DEBUG:
             denoised_image = noisy_image
-        for i in range(RD_iters):
-            self.logger.info(f"Iteration {i}/{RD_iters}")
+        for i in range(N_iters):
+            self.logger.info(f"Iteration {i}/{N_iters}")
             if self.logger.level <= logging.DEBUG:
                 fig, axs = plt.subplots(1, 2)
                 prev = denoised_image
@@ -110,33 +219,33 @@ class Filter_Monochrome_Image(flow_estimation.Farneback_Flow_Estimator):
                 plt.show()
             randomized_noisy_image = self.randomize(
                 noisy_image,
-                RD_mean,
-                RD_sigma).astype(np.float32)
+                RS_mean,
+                RS_sigma).astype(np.float32)
             #randomized_noisy_image = randomize(noisy_image)
             randomized_and_compensated_noisy_image = self.project_A_to_B(
                 A=denoised_image,
                 B=randomized_noisy_image)
             acc_image += randomized_and_compensated_noisy_image
-        denoised_image = acc_image/(RD_iters + 1)
+        denoised_image = acc_image/(N_iters + 1)
         #print(flush=True)
 
         if self.logger.level <= logging.INFO:
             return denoised_image, PSNR_vs_iteration
         else:
             return denoised_image, None
-
+'''
 class Filter_Color_Image(Filter_Monochrome_Image):
 
     def __init__(
             self,
-            levels=3, # Pyramid slope. Multiply by 2^levels the searching area if the OFE
-            window_side=15, # Applicability window side
-            iters=3, # Number of iterations at each pyramid level
+            l=3, # Pyramid slope. Multiply by 2^levels the searching area if the OFE
+            w=15, # Applicability window side
+            OF_iters=3, # Number of iterations at each pyramid level
             poly_n=5, # Size of the pixel neighborhood used to find polynomial expansion in each pixel
             poly_sigma=1.0, # Standard deviation of the Gaussian basis used in the polynomial expansion
             flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN,
             verbosity=logging.INFO):
-        super().__init__(levels, window_side, iters, poly_n, poly_sigma, flags, verbosity)
+        super().__init__(l, w, OF_iters, poly_n, poly_sigma, flags, verbosity)
 
     def project_A_to_B(self, A, B):
         self.logger.debug(f"A.shape={A.shape} B.shape={B.shape}")
@@ -144,11 +253,14 @@ class Filter_Color_Image(Filter_Monochrome_Image):
         B_luma = YUV.from_RGB(B.astype(np.int16))[..., 0]
         #A_luma = np.log(YUV.from_RGB(A.astype(np.int16))[..., 0] + 1)
         #B_luma = np.log(YUV.from_RGB(B.astype(np.int16))[..., 0] + 1)
-        flow = self.get_flow_to_project_A_to_B(A_luma, B_luma)
+        #flow = self.get_flow_to_project_A_to_B(A_luma, B_luma)
+        flow = self.get_flow(target=B_luma, reference=A_luma, prev_flow=None)
         self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
-        return flow_estimation.project(A, flow)
+        #return flow_estimation.project(A, flow)
         #return super().warp_B_to_A(A_luma,
         #                           B_luma)
+        projection = motion_estimation.project(image=A, flow=flow)
+        return projection
 
 '''
 def _randomize(image, max_distance_x=10, max_distance_y=10):
