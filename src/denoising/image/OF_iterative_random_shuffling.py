@@ -124,6 +124,35 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         else:
             return denoised_image, None
 
+class Filter_Color_Image(Filter_Monochrome_Image):
+
+    def __init__(
+            self,
+            l=3, # Pyramid slope. Multiply by 2^levels the searching area if the OFE
+            w=15, # Applicability window side
+            OF_iters=3, # Number of iterations at each pyramid level
+            poly_n=5, # Size of the pixel neighborhood used to find polynomial expansion in each pixel
+            poly_sigma=1.0, # Standard deviation of the Gaussian basis used in the polynomial expansion
+            flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN,
+            verbosity=logging.INFO):
+        super().__init__(l, w, OF_iters, poly_n, poly_sigma, flags, verbosity)
+
+    def project_A_to_B(self, A, B):
+        self.logger.debug(f"A.shape={A.shape} B.shape={B.shape}")
+        A_luma = YUV.from_RGB(A.astype(np.int16))[..., 0]
+        B_luma = YUV.from_RGB(B.astype(np.int16))[..., 0]
+        #A_luma = np.log(YUV.from_RGB(A.astype(np.int16))[..., 0] + 1)
+        #B_luma = np.log(YUV.from_RGB(B.astype(np.int16))[..., 0] + 1)
+        #flow = self.get_flow_to_project_A_to_B(A_luma, B_luma)
+        flow = self.get_flow(target=B_luma, reference=A_luma, prev_flow=None)
+        self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
+        #return flow_estimation.project(A, flow)
+        #return super().warp_B_to_A(A_luma,
+        #                           B_luma)
+        projection = motion_estimation.project(image=A, flow=flow)
+        return projection
+
+
 '''
 class Filter_Monochrome_Image_OLD(flow_estimation.Farneback_Flow_Estimator):
 
@@ -234,33 +263,7 @@ class Filter_Monochrome_Image_OLD(flow_estimation.Farneback_Flow_Estimator):
         else:
             return denoised_image, None
 '''
-class Filter_Color_Image(Filter_Monochrome_Image):
 
-    def __init__(
-            self,
-            l=3, # Pyramid slope. Multiply by 2^levels the searching area if the OFE
-            w=15, # Applicability window side
-            OF_iters=3, # Number of iterations at each pyramid level
-            poly_n=5, # Size of the pixel neighborhood used to find polynomial expansion in each pixel
-            poly_sigma=1.0, # Standard deviation of the Gaussian basis used in the polynomial expansion
-            flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN,
-            verbosity=logging.INFO):
-        super().__init__(l, w, OF_iters, poly_n, poly_sigma, flags, verbosity)
-
-    def project_A_to_B(self, A, B):
-        self.logger.debug(f"A.shape={A.shape} B.shape={B.shape}")
-        A_luma = YUV.from_RGB(A.astype(np.int16))[..., 0]
-        B_luma = YUV.from_RGB(B.astype(np.int16))[..., 0]
-        #A_luma = np.log(YUV.from_RGB(A.astype(np.int16))[..., 0] + 1)
-        #B_luma = np.log(YUV.from_RGB(B.astype(np.int16))[..., 0] + 1)
-        #flow = self.get_flow_to_project_A_to_B(A_luma, B_luma)
-        flow = self.get_flow(target=B_luma, reference=A_luma, prev_flow=None)
-        self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
-        #return flow_estimation.project(A, flow)
-        #return super().warp_B_to_A(A_luma,
-        #                           B_luma)
-        projection = motion_estimation.project(image=A, flow=flow)
-        return projection
 
 '''
 def _randomize(image, max_distance_x=10, max_distance_y=10):
