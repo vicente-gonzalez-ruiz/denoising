@@ -59,13 +59,36 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         self.logger.info(f"np.max(displacements_x)={np.max(displacements_x)} np.max(displacements_y)={np.max(displacements_y)}")
         randomized_x_coords = flattened_x_coords + displacements_x
         randomized_y_coords = flattened_y_coords + displacements_y
-        #randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
-        #randomized_y_coords = np.clip(randomized_y_coords, 0, height - 1)
-        randomized_x_coords = np.mod(randomized_x_coords, width) # Apply periodic extension to handle border pixels
-        randomized_y_coords = np.mod(randomized_y_coords, height)
+        randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
+        randomized_y_coords = np.clip(randomized_y_coords, 0, height - 1)
+        #randomized_x_coords = np.mod(randomized_x_coords, width) # Apply periodic extension to handle border pixels
+        #randomized_y_coords = np.mod(randomized_y_coords, height)
+        #randomized_image = np.ones_like(image) * np.average(image)
         randomized_image = np.zeros_like(image)
+        #randomized_image[...] = image
         randomized_image[randomized_y_coords, randomized_x_coords] = image[flattened_y_coords, flattened_x_coords]
         return randomized_image
+
+    def _randomize(self, image, max_distance=10):
+        height, width = image.shape[:2]
+        #flow_x = np.random.normal(loc=0, scale=std_dev, size=(height, width))
+        flow_x = np.random.normal(size=(height, width)) * max_distance
+        flow_y = np.random.normal(size=(height, width)) * max_distance
+        #flow_x = np.random.uniform(low=-1, high=1, size=(height, width)) * max_distance
+        #flow_y = np.random.uniform(low=-1, high=1, size=(height, width)) * max_distance
+        #flow_x[...] = 0
+        #flow_y[...] = 0
+        #print(np.max(flow_x), np.min(flow_x), max_distance)
+        flow = np.empty([height, width, 2], dtype=np.float32)
+        flow[..., 0] = flow_y
+        flow[..., 1] = flow_x
+        print(np.max(flow), np.min(flow))
+        randomized_image = motion_estimation.project(image, flow)
+        return randomized_image.astype(np.uint8)
+
+    def _randomize(self, image, max_distance=150):
+        noise = np.random.normal(0, max_distance, image.shape).reshape(image.shape)
+        return np.clip(a=image.astype(np.float32) + noise, a_min=0, a_max=255).astype(np.uint8)
 
     def filter(self,
                noisy_image,
@@ -107,10 +130,8 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
                 axs[1].imshow(self.normalize(prev - denoised_image + 128).astype(np.uint8), cmap="gray")
                 axs[1].set_title(f"diff")
                 plt.show()
-            randomized_noisy_image = self.randomize(
-                noisy_image,
-                RS_mean,
-                RS_sigma).astype(np.float32)
+            #randomized_noisy_image = self._randomize(noisy_image, max_distance=50)
+            randomized_noisy_image = self.randomize(noisy_image, mean=0, std_dev=RS_sigma)
             #randomized_noisy_image = randomize(noisy_image)
             randomized_and_compensated_noisy_image = self.project_A_to_B(
                 A=denoised_image,
