@@ -41,7 +41,7 @@ def __warp_slice(reference, flow):
     return warped_slice
 
 def project(image, flow):
-    return motion_estimation.project(image, flow, interpolation_mode=cv2.INTER_LINEAR, extension_mode=cv2.BORDER_REPLICATE)
+    return motion_estimation.helpers.project(image, flow, interpolation_mode=cv2.INTER_LINEAR, extension_mode=cv2.BORDER_REPLICATE)
 
 def gray_vertical_OF_gaussian_filtering(noisy_image, kernel, l=3, w=5, sigma=0.5):
     KL = kernel.size
