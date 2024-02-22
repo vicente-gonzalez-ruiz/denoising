@@ -17,6 +17,9 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
 import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+from skimage.metrics import structural_similarity as ssim
+from scipy import stats
+import math
 
 class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
     def __init__(self, l=3, w=15, OF_iters=3, poly_n=5, poly_sigma=1.0, flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN, verbosity=logging.INFO):
@@ -35,7 +38,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         flow = self.get_flow(target=B, reference=A, prev_flow=None)
         self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
         #return flow_estimation.project(A, flow)
-        projection = motion_estimation.project(image=A, flow=flow)
+        projection = motion_estimation.helpers.project(image=A, flow=flow)
         return projection
 
     def normalize(self, img):
@@ -56,7 +59,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         displacements_x = displacements_x.astype(np.int32)
         displacements_y = displacements_y.astype(np.int32)
 
-        self.logger.info(f"np.max(displacements_x)={np.max(displacements_x)} np.max(displacements_y)={np.max(displacements_y)}")
+        self.logger.info(f"np.average(np.abs(displacements_x))={np.average(np.abs(displacements_x))} np.average(np.abs(displacements_y))={np.average(np.abs(displacements_y))}")
         randomized_x_coords = flattened_x_coords + displacements_x
         randomized_y_coords = flattened_y_coords + displacements_y
         randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
@@ -65,7 +68,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         #randomized_y_coords = np.mod(randomized_y_coords, height)
         #randomized_image = np.ones_like(image) * np.average(image)
         randomized_image = np.zeros_like(image)
-        #randomized_image[...] = image
+        randomized_image[...] = image
         randomized_image[randomized_y_coords, randomized_x_coords] = image[flattened_y_coords, flattened_x_coords]
         return randomized_image
 
@@ -90,6 +93,16 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         noise = np.random.normal(0, max_distance, image.shape).reshape(image.shape)
         return np.clip(a=image.astype(np.float32) + noise, a_min=0, a_max=255).astype(np.uint8)
 
+    def compute_quality_index(self, img, denoised_img):
+        diff_img = (img - denoised_img).astype(np.uint8)
+        _, N = ssim(img, diff_img, full=True)
+        _, P = ssim(img, denoised_img.astype(np.uint8), full=True)
+        quality, _ = stats.pearsonr(N.flatten(), P.flatten())
+        if math.isnan(quality):
+            return 0.0
+        else:
+            return -quality
+
     def filter(self,
                noisy_image,
                GT=None,
@@ -112,10 +125,11 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         acc_image[...] = noisy_image
         if self.logger.level <= logging.DEBUG:
             denoised_image = noisy_image
+        current_QI = -1.0
         for i in range(N_iters):
             self.logger.info(f"Iteration {i}/{N_iters}")
             if self.logger.level <= logging.DEBUG:
-                fig, axs = plt.subplots(1, 2)
+                fig, axs = plt.subplots(1, 2, figsize=(16, 32))
                 prev = denoised_image
             denoised_image = acc_image/(i+1)
             if self.logger.level <= logging.INFO:
@@ -127,7 +141,8 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
             if self.logger.level <= logging.DEBUG:
                 axs[0].imshow(denoised_image.astype(np.uint8))
                 axs[0].set_title(f"iter {i} " + f"({_PSNR:4.2f}dB)")
-                axs[1].imshow(self.normalize(prev - denoised_image + 128).astype(np.uint8), cmap="gray")
+                #axs[1].imshow(self.normalize(noisy_image - denoised_image + 128).astype(np.uint8), cmap="gray")
+                axs[1].imshow((noisy_image.astype(np.float32) - denoised_image), cmap="gray")
                 axs[1].set_title(f"diff")
                 plt.show()
             #randomized_noisy_image = self._randomize(noisy_image, max_distance=50)
@@ -137,6 +152,11 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
                 A=denoised_image,
                 B=randomized_noisy_image)
             acc_image += randomized_and_compensated_noisy_image
+            prev_QI = current_QI
+            current_QI = self.compute_quality_index(noisy_image, denoised_image)
+            self.logger.info(f"prev_QI={prev_QI} current_QI={current_QI}")
+            #if current_QI < prev_QI:
+            #    break
         denoised_image = acc_image/(N_iters + 1)
         #print(flush=True)
 
@@ -170,7 +190,7 @@ class Filter_Color_Image(Filter_Monochrome_Image):
         #return flow_estimation.project(A, flow)
         #return super().warp_B_to_A(A_luma,
         #                           B_luma)
-        projection = motion_estimation.project(image=A, flow=flow)
+        projection = motion_estimation.helpers.project(image=A, flow=flow)
         return projection
 
 
