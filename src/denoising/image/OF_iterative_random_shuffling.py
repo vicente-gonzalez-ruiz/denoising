@@ -60,6 +60,8 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         displacements_y = displacements_y.astype(np.int32)
 
         self.logger.info(f"np.average(np.abs(displacements_x))={np.average(np.abs(displacements_x))} np.average(np.abs(displacements_y))={np.average(np.abs(displacements_y))}")
+        self.logger.info(f"np.max(displacements_x)={np.max(displacements_x)} np.max(displacements_y)={np.max(displacements_y)}")
+        self.logger.info(f"np.min(displacements_x)={np.min(displacements_x)} np.min(displacements_y)={np.min(displacements_y)}")
         randomized_x_coords = flattened_x_coords + displacements_x
         randomized_y_coords = flattened_y_coords + displacements_y
         randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
@@ -68,7 +70,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         #randomized_y_coords = np.mod(randomized_y_coords, height)
         #randomized_image = np.ones_like(image) * np.average(image)
         randomized_image = np.zeros_like(image)
-        randomized_image[...] = image
+        #randomized_image[...] = image
         randomized_image[randomized_y_coords, randomized_x_coords] = image[flattened_y_coords, flattened_x_coords]
         return randomized_image
 
@@ -193,7 +195,17 @@ class Filter_Color_Image(Filter_Monochrome_Image):
         projection = motion_estimation.helpers.project(image=A, flow=flow)
         return projection
 
-
+    def compute_quality_index(self, img, denoised_img):
+        Y_img = YUV.from_RGB(img)[..., 0]
+        Y_denoised_img = YUV.from_RGB(denoised_img)[..., 0]
+        diff_img = (Y_img - Y_denoised_img).astype(np.uint8)
+        _, N = ssim(Y_img, diff_img, full=True)
+        _, P = ssim(Y_img, Y_denoised_img.astype(np.uint8), full=True)
+        quality, _ = stats.pearsonr(N.flatten(), P.flatten())
+        if math.isnan(quality):
+            return 0.0
+        else:
+            return -quality
 '''
 class Filter_Monochrome_Image_OLD(flow_estimation.Farneback_Flow_Estimator):
 
