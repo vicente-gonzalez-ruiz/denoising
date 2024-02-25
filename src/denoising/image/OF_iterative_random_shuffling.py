@@ -36,6 +36,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
     def project_A_to_B(self, A, B):
         #flow = self.get_flow_to_project_A_to_B(A, B)
         flow = self.get_flow(target=B, reference=A, prev_flow=None)
+        flow = np.zeros_like(flow)
         self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
         #return flow_estimation.project(A, flow)
         projection = motion_estimation.helpers.project(image=A, flow=flow)
@@ -71,6 +72,7 @@ class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
         #randomized_image = np.ones_like(image) * np.average(image)
         randomized_image = np.zeros_like(image)
         #randomized_image[...] = image
+        #randomized_image[...] = 255
         randomized_image[randomized_y_coords, randomized_x_coords] = image[flattened_y_coords, flattened_x_coords]
         return randomized_image
 
