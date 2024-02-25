@@ -12,6 +12,10 @@ def randomize(vol, mean=0.0, std_dev=1.0):
   displacements_x = np.random.normal(mean, std_dev, flattened_x_coords.shape).astype(np.int32)
   displacements_y = np.random.normal(mean, std_dev, flattened_y_coords.shape).astype(np.int32)
   displacements_z = np.random.normal(mean, std_dev, flattened_z_coords.shape).astype(np.int32)
+  #_d = 5
+  #displacements_x = np.random.uniform(low=-_d, high=_d, size=flattened_x_coords.shape).astype(np.int32)
+  #displacements_y = np.random.uniform(low=-_d, high=_d, size=flattened_y_coords.shape).astype(np.int32)
+  #displacements_z = np.random.uniform(low=-_d, high=_d, size=flattened_z_coords.shape).astype(np.int32)
   print("min displacements", np.min(displacements_z), np.min(displacements_y), np.min(displacements_x))
   print("average abs(displacements)", np.average(np.abs(displacements_z)), np.average(np.abs(displacements_y)), np.average(np.abs(displacements_x)))
   print("max displacements", np.max(displacements_z), np.max(displacements_y), np.max(displacements_x))
@@ -29,6 +33,7 @@ def randomize(vol, mean=0.0, std_dev=1.0):
   #randomized_vol = np.ones_like(vol)*np.average(vol) #np.zeros_like(vol)
   randomized_vol = np.zeros_like(vol)
   randomized_vol[...] = vol
+  #randomized_vol[...] = 128
   randomized_vol[randomized_z_coords, randomized_y_coords, randomized_x_coords] = vol[flattened_z_coords, flattened_y_coords, flattened_x_coords]
   return randomized_vol
 
