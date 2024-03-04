@@ -1,4 +1,4 @@
-'''Random image denoising using the optical flow.'''
+'''Random image denoising using optical flow.'''
 
 import numpy as np
 import cv2
@@ -16,12 +16,14 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.WARNING)
 #logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
-import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+#import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+from motion_estimation._2D.farneback import Estimator_in_CPU as Farneback
 from skimage.metrics import structural_similarity as ssim
 from scipy import stats
 import math
 
-class Filter_Monochrome_Image(motion_estimation.farneback.Estimator_in_CPU):
+class Monocrome_Denoiser(Farneback):
+    
     def __init__(self, l=3, w=15, OF_iters=3, poly_n=5, poly_sigma=1.0, flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN, verbosity=logging.INFO):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(verbosity)
