@@ -207,8 +207,6 @@ def filter_RGB(noisy_img, kernel, l=3, w=5, sigma=0.5):
     OF_filtered_noisy_img = np.transpose(filtered_noisy_img_YX, (1, 0, 2))
     return OF_filtered_noisy_img
 
-
-
 class _Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
     def __init__(self, sigma_gaussian=1.5, l=3, w=9, sigma_OF=2.5, verbosity=logging.INFO):
