@@ -132,6 +132,7 @@ class Monochrome_Denoising:
             if self.logger.getEffectiveLevel() < logging.INFO:
                 prev = denoised_img
             denoised_img = self.filter(denoised_img, kernel)
+            denoised_img = np.clip(denoised_img, a_min=0, a_max=255)
             if self.logger.getEffectiveLevel() < logging.INFO:
                 if isinstance(GT, np.ndarray):
                     _PSNR = information_theory.distortion.avg_PSNR(denoised_img, GT)
@@ -139,9 +140,9 @@ class Monochrome_Denoising:
                     _PSNR = 0.0
                 PSNR_vs_iteration.append(_PSNR)
                 fig, axs = plt.subplots(1, 2, figsize=(10, 20))
-                axs[0].imshow(normalize(denoised_img), cmap="gray")
+                axs[0].imshow(denoised_img, cmap="gray")
                 axs[0].set_title(f"iter {i} " + f"({_PSNR:4.2f}dB)")
-                axs[1].imshow(normalize(denoised_img - prev + 128), cmap="gray")
+                axs[1].imshow(denoised_img - GT + 128, cmap="gray")
                 axs[1].set_title(f"diff")
                 plt.show()
         print()
@@ -180,7 +181,7 @@ class Color_Denoising(Monochrome_Denoising):
                 fig, axs = plt.subplots(1, 2, figsize=(10, 20))
                 axs[0].imshow(denoised_img)
                 axs[0].set_title(f"iter {i} " + f"({_PSNR:4.2f}dB)")
-                axs[1].imshow(denoised_img)
+                axs[1].imshow(denoised_img - GT + 128)
                 axs[1].set_title(f"diff")
                 plt.show()
         print()
