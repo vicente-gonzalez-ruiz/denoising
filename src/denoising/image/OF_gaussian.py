@@ -38,22 +38,25 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.logger.info(f"pyr_levels={self.pyr_levels}")
 
     def filter_iterate(self, noisy_img, sigma=1.5, GT=None, N_iters=1):
-        x = super().filter_iterate(noisy_img, sigma, GT, N_iters)
+        _ = super().filter_iterate(noisy_img, sigma, GT, N_iters)
         self.logger.warning(f"Number of singular matrices = {self.counter}")
         self.logger.info(f"sigma_poly={self.sigma_poly}")
         self.logger.info(f"sigma_flow={self.sigma_flow}")
         self.logger.info(f"pyr_levels={self.pyr_levels}")
-        return x
+        return _
 
     def project_A_to_B(self, A, B):
         try:
             MVs = self.estimator.pyramid_get_flow(target=B, reference=A, sigma_poly=self.sigma_poly, sigma_flow=self.sigma_flow, pyr_levels=self.pyr_levels)
         except LinAlgError as e:
             print(f"Caught LinAlgError: {e}")
-            MVs = np.zeros_like(A)
             self.counter += 1
-        #print(np.average(np.abs(MVs)))
+            return A
+        print(np.average(np.abs(MVs)))
+        #MVs = np.zeros_like(A)
         projection = project(A, np.squeeze(MVs))
+        #print("A", A.shape, "projection", projection.shape)
+        #print("A", np.sum(A)/len(A), "p", np.sum(projection)/len(projection))
         return projection
 
 ###################################33
