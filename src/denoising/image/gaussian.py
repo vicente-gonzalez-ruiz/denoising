@@ -112,12 +112,13 @@ class Monochrome_Denoising:
     def filter(self, noisy_img, kernel):
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
-        filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
+        #filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
         #print(filtered_noisy_img_Y.dtype)
         #t1 = time.perf_counter()
         #print(t1 - t0)
-        mean = np.average(filtered_noisy_img_Y)
-        filtered_noisy_img_YX = self.filter_horizontal(filtered_noisy_img_Y, kernel, mean)
+        #mean = np.average(filtered_noisy_img_Y)
+        #filtered_noisy_img_YX = self.filter_horizontal(filtered_noisy_img_Y, kernel, mean)
+        filtered_noisy_img_YX = self.filter_horizontal(noisy_img, kernel, mean)
         #t2 = time.perf_counter()
         #print(t2 - t1)
         return filtered_noisy_img_YX
