@@ -67,7 +67,7 @@ class Monochrome_Denoising:
             horizontal_line = np.zeros(N_cols, dtype=np.float32)
             for i in range(KL):
                 line = self.project_A_to_B(A=extended_noisy_img[y + i, :], B=extended_noisy_img[y, :])
-                horizontal_line += extended_noisy_img[y + i, :] * kernel[i]
+                horizontal_line += line * kernel[i]
             filtered_noisy_img.append(horizontal_line)
             #filtered_noisy_img[y, :] = horizontal_line[:]
             print(f"{y}", end=" ")
@@ -89,7 +89,7 @@ class Monochrome_Denoising:
             vertical_line.fill(0)
             for i in range(KL):
                 line = self.project_A_to_B(A=extended_noisy_img[:, x + i], B=extended_noisy_img[:, x])
-                vertical_line += extended_noisy_img[:, x + i] * kernel[i]
+                vertical_line += line * kernel[i]
             #filtered_noisy_img.append(vertical_line)
             filtered_noisy_img[:, x] = vertical_line[:]
             print(f"{x}", end=" ")
@@ -113,7 +113,7 @@ class Monochrome_Denoising:
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
         filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
-        print(filtered_noisy_img_Y.dtype)
+        #print(filtered_noisy_img_Y.dtype)
         #t1 = time.perf_counter()
         #print(t1 - t0)
         mean = np.average(filtered_noisy_img_Y)
