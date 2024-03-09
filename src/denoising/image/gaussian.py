@@ -63,6 +63,7 @@ class Monochrome_Denoising:
         #horizontal_line = np.empty(N_cols, dtype=np.float32)
         #print(horizontal_line.shape)
         for y in range(N_rows):
+            print(y, end=' ')
             #horizontal_line.fill(0)
             horizontal_line = np.zeros(N_cols, dtype=np.float32)
             for i in range(KL):
@@ -70,7 +71,6 @@ class Monochrome_Denoising:
                 horizontal_line += line * kernel[i]
             filtered_noisy_img.append(horizontal_line)
             #filtered_noisy_img[y, :] = horizontal_line[:]
-            print(f"{y}", end=" ")
         filtered_noisy_img = np.stack(filtered_noisy_img, axis=0)
         return filtered_noisy_img
     
@@ -85,6 +85,7 @@ class Monochrome_Denoising:
         N_cols = noisy_img.shape[1]
         vertical_line = np.empty(N_rows, dtype=np.float32)
         for x in range(N_cols):
+            print(x, end=' ')
             #vertical_line = np.zeros(N_rows, dtype=np.float32)
             vertical_line.fill(0)
             for i in range(KL):
@@ -92,7 +93,6 @@ class Monochrome_Denoising:
                 vertical_line += line * kernel[i]
             #filtered_noisy_img.append(vertical_line)
             filtered_noisy_img[:, x] = vertical_line[:]
-            print(f"{x}", end=" ")
         #filtered_noisy_img = np.stack(filtered_noisy_img, axis=1)
         return filtered_noisy_img
     
