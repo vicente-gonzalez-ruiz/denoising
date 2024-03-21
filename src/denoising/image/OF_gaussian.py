@@ -8,7 +8,7 @@ import math
 #from . import kernels
 #from . import flow_estimation
 #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._1D.farneback_python import Farneback as Estimator
+from motion_estimation._1D.farneback_python import Estimator
 from motion_estimation._1D.project import project
 from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
@@ -16,7 +16,7 @@ from . import gaussian
 
 import logging
 #logger = logging.getLogger(__name__)
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
 #logger.setLevel(logging.CRITICAL)
 #logger.setLevel(logging.ERROR)
 #logger.setLevel(logging.WARNING)
@@ -26,35 +26,33 @@ from numpy.linalg import LinAlgError
 
 class Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
-    def __init__(self, verbosity=logging.WARNING, sigma_poly=1.0, sigma_flow=1.0, pyr_levels=2):
-        super().__init__(verbosity)
-        self.estimator = Estimator(verbosity=logging.WARNING)
+    def __init__(self, logger, sigma_poly=1.0, win_side=17, pyr_levels=3, num_iters=3):
+        super().__init__(logger)
+        self.estimator = Estimator(logger, pyr_levels=pyr_levels, sigma_poly=sigma_poly, win_side=win_side, num_iters=num_iters)
         self.counter = 0
         self.sigma_poly = sigma_poly
-        self.sigma_flow = sigma_flow
+        self.win_side = win_side
         self.pyr_levels = pyr_levels
         self.logger.info(f"sigma_poly={self.sigma_poly}")
-        self.logger.info(f"sigma_flow={self.sigma_flow}")
+        self.logger.info(f"win_side={self.win_side}")
         self.logger.info(f"pyr_levels={self.pyr_levels}")
 
-    def filter_iterate(self, noisy_img, sigma=1.5, GT=None, N_iters=1):
-        _ = super().filter_iterate(noisy_img, sigma, GT, N_iters)
+    def iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
+        self.logger.info(f"sigma_kernel={sigma_kernel}")
+        _ = super().iterate_filter(noisy_img, sigma_kernel, GT, N_iters)
         self.logger.warning(f"Number of singular matrices = {self.counter}")
-        self.logger.info(f"sigma_poly={self.sigma_poly}")
-        self.logger.info(f"sigma_flow={self.sigma_flow}")
-        self.logger.info(f"pyr_levels={self.pyr_levels}")
         return _
 
     def project_A_to_B(self, A, B):
         try:
-            MVs = self.estimator.pyramid_get_flow(target=B, reference=A, sigma_poly=self.sigma_poly, sigma_flow=self.sigma_flow, pyr_levels=self.pyr_levels)
+            flow = self.estimator.pyramid_get_flow(target=B, reference=A, flow=None)
         except LinAlgError as e:
-            print(f"Caught LinAlgError: {e}")
+            print(f"Caught exception: {e}")
             self.counter += 1
             return A
-        print(np.average(np.abs(MVs)))
+        self.logger.debug(f"{np.average(np.abs(flow))}")
         #MVs = np.zeros_like(A)
-        projection = project(A, np.squeeze(MVs))
+        projection = project(self.logger, signal=A, flow=np.squeeze(flow))
         #print("A", A.shape, "projection", projection.shape)
         #print("A", np.sum(A)/len(A), "p", np.sum(projection)/len(projection))
         return projection
