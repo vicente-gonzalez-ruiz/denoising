@@ -13,7 +13,7 @@ from color_transforms import YCoCg as YUV
 #image_denoising.logger.info(f"Logging level: {image_denoising.logger.getEffectiveLevel()}")
 
 import logging
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
 #logger = logging.getLogger(__name__)
 #logger.setLevel(logging.CRITICAL)
 #logger.setLevel(logging.ERROR)
@@ -32,15 +32,14 @@ def normalize(img):
 
 class Monochrome_Denoising:
 
-    def __init__(self, verbosity=logging.INFO):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(verbosity)
+    def __init__(self, logger):
+        self.logger = logger
 
     def get_kernel(self, sigma=1.5):
         self.logger.info(f"sigma={sigma}")
         number_of_coeffs = 3
         number_of_zeros = 0
-        while number_of_zeros < 2 :
+        while number_of_zeros < 2:
             delta = np.zeros(number_of_coeffs)
             delta[delta.size//2] = 1
             coeffs = scipy.ndimage.gaussian_filter1d(delta, sigma=sigma)
@@ -112,22 +111,22 @@ class Monochrome_Denoising:
     def filter(self, noisy_img, kernel):
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
-        #filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
+        filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
         #print(filtered_noisy_img_Y.dtype)
         #t1 = time.perf_counter()
         #print(t1 - t0)
-        #mean = np.average(filtered_noisy_img_Y)
-        #filtered_noisy_img_YX = self.filter_horizontal(filtered_noisy_img_Y, kernel, mean)
-        filtered_noisy_img_YX = self.filter_horizontal(noisy_img, kernel, mean)
+        mean = np.average(filtered_noisy_img_Y)
+        filtered_noisy_img_YX = self.filter_horizontal(filtered_noisy_img_Y, kernel, mean)
+        #filtered_noisy_img_YX = self.filter_horizontal(noisy_img, kernel, mean)
         #t2 = time.perf_counter()
         #print(t2 - t1)
         return filtered_noisy_img_YX
 
-    def filter_iterate(self, noisy_img, sigma=1.5, GT=None, N_iters=1):
-        self.logger.info(f"sigma={sigma}")
+    def iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
+        self.logger.info(f"sigma_kernel={sigma_kernel}")
         if self.logger.getEffectiveLevel() < logging.INFO:
             PSNR_vs_iteration = []
-        kernel = self.get_kernel(sigma)
+        kernel = self.get_kernel(sigma_kernel)
         denoised_img = noisy_img.copy()
         for i in range(N_iters):
             if self.logger.getEffectiveLevel() < logging.INFO:
@@ -154,8 +153,8 @@ class Monochrome_Denoising:
 
 class Color_Denoising(Monochrome_Denoising):
 
-    def __init__(self, verbosity=logging.INFO):
-        super().__init__(verbosity=verbosity)
+    def __init__(self, logger):
+        super().__init__(logger)
 
     def filter(self, noisy_img, kernel):
         filtered_noisy_img_R = super().filter(noisy_img[..., 0], kernel)
@@ -163,7 +162,7 @@ class Color_Denoising(Monochrome_Denoising):
         filtered_noisy_img_B = super().filter(noisy_img[..., 2], kernel)
         return np.stack([filtered_noisy_img_R, filtered_noisy_img_G, filtered_noisy_img_B], axis=2)
 
-    def filter_iterate(self, noisy_img, sigma=1.5, GT=None, N_iters=1):
+    def iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
         if self.logger.getEffectiveLevel() < logging.INFO:
             PSNR_vs_iteration = []
         kernel = self.get_kernel()
