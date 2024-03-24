@@ -50,7 +50,7 @@ class Monochrome_Denoising:
         shape_of_img = np.shape(img)
         padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
         padded_img[:, kernel.size//2:shape_of_img[1] + kernel.size//2] = img
-        X_dim = img.shape[2]
+        X_dim = img.shape[1]
         for x in range(X_dim):
             tmp_line = np.zeros_like(img[:, x]).astype(np.float32)
             prev_flow = np.zeros(shape=(shape_of_img[0], 1), dtype=np.float32)
@@ -68,15 +68,15 @@ class Monochrome_Denoising:
                 prev_flow = flow
                 warped_line = self.warp_line(padded_img[:, x + i], flow)
                 tmp_line += warped_line * kernel[i]
-            filtered_img[:, x] = tmp_slice
+            filtered_img[:, x] = tmp_line
         return filtered_img
 
     def filter(self, img, kernel, l=0, w=0):
         mean = img.mean()
         self.logger.info(f"mean={mean}")
-        filtered_img_Y = self.filter_Y(img, kernel[1], mean, l, w)
+        filtered_img_Y = self.filter_Y(img, kernel[0], mean, l, w)
         self.logger.info(f"filtered along Y")
-        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[2], mean, l, w)
+        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[1], mean, l, w)
         self.logger.info(f"filtered along X")
         return filtered_img_YX
 
