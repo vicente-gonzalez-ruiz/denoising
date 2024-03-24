@@ -1,55 +1,87 @@
 '''Gaussian image denoising.'''
 
 import numpy as np
-import cv2
-import scipy
-import math
-#from . import kernels
+
 #pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
-from color_transforms import YCoCg as YUV
-#import img_denoising
-#from . import OF_gaussian
+#from color_transforms import YCoCg as YUV
 
-#image_denoising.logger.info(f"Logging level: {image_denoising.logger.getEffectiveLevel()}")
-
-import logging
-#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
-#logger = logging.getLogger(__name__)
-#logger.setLevel(logging.CRITICAL)
-#logger.setLevel(logging.ERROR)
-#logger.setLevel(logging.WARNING)
-#logger.setLevel(logging.INFO)
-#logger.setLevel(logging.DEBUG)
-
-import scipy.ndimage
-import information_theory
-from matplotlib import pyplot as plt
-
-def normalize(img):
-    min_img = np.min(img)
-    max_img = np.max(img)
-    return 255*((img - min_img)/(max_img - min_img))
 
 class Monochrome_Denoising:
 
     def __init__(self, logger):
         self.logger = logger
+    
+    def warp_line(self, line, flow):
+        return line
 
-    def get_kernel(self, sigma=1.5):
-        self.logger.info(f"sigma={sigma}")
-        number_of_coeffs = 3
-        number_of_zeros = 0
-        while number_of_zeros < 2:
-            delta = np.zeros(number_of_coeffs)
-            delta[delta.size//2] = 1
-            coeffs = scipy.ndimage.gaussian_filter1d(delta, sigma=sigma)
-            number_of_zeros = coeffs.size - np.count_nonzero(coeffs)
-            number_of_coeffs += 1
-        return coeffs[1:-1]
-    
-    def project_A_to_B(self, A, B):
-        return A
-    
+    def get_flow(self, reference, target, prev_flow=None, l=0, w=0):
+        return prev_flow
+
+    def filter_Y(self, img, kernel, mean, l=0, w=0):
+        assert kernel.size % 2 != 0 # kernel.size must be odd
+        filtered_img = np.zeros_like(img).astype(np.float32)
+        shape_of_img = np.shape(img)
+        padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
+        padded_img[kernel.size//2:shape_of_img[0] + kernel.size//2, :] = img
+        Y_dim = img.shape[0]
+        for y in range(Y_dim):
+            tmp_line = np.zeros_like(img[y, :]).astype(np.float32)
+            prev_flow = np.zeros(shape=(shape_of_img[1], 1), dtype=np.float32)
+            for i in range((kernel.size//2) - 1, -1, -1):
+                flow = self.get_flow(padded_img[y + i, :], img[y, :], prev_flow, l, w)
+                self.logger.debug(f"{np.average(np.abs(flow))}")
+                prev_flow = flow                     
+                warped_line = self.warp_line(padded_img[y + i, :], flow)
+                tmp_line += warped_line * kernel[i]
+            tmp_line += img[y, :] * kernel[kernel.size//2]
+            prev_flow = np.zeros(shape=(shape_of_img[1], 1), dtype=np.float32)
+            for i in range(kernel.size//2+1, kernel.size):
+                flow = self.get_flow(padded_img[y + i, :], img[y, :], prev_flow, l, w)
+                self.logger.debug(f"{np.average(np.abs(flow))}")
+                prev_flow = flow                      
+                warped_line = self.warp_line(padded_img[y + i, :], flow)
+                tmp_line += warped_line * kernel[i]
+            filtered_img[y, :] = tmp_line
+        return filtered_img
+
+    def filter_X(self, img, kernel, mean, l=0, w=0):
+        assert kernel.size % 2 != 0 # kernel.size must be odd
+        filtered_img = np.zeros_like(img).astype(np.float32)
+        shape_of_img = np.shape(img)
+        padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
+        padded_img[:, kernel.size//2:shape_of_img[1] + kernel.size//2] = img
+        X_dim = img.shape[2]
+        for x in range(X_dim):
+            tmp_line = np.zeros_like(img[:, x]).astype(np.float32)
+            prev_flow = np.zeros(shape=(shape_of_img[0], 1), dtype=np.float32)
+            for i in range((kernel.size//2) - 1, -1, -1):
+                flow = self.get_flow(padded_img[:, x + i], img[:, x], prev_flow, l, w)
+                self.logger.debug(f"{np.average(np.abs(flow))}")
+                prev_flow = flow
+                warped_line = self.warp_line(padded_img[:, x + i], flow)
+                tmp_line += warped_line * kernel[i]
+            tmp_line += img[:, x] * kernel[kernel.size//2]
+            prev_flow = np.zeros(shape=(shape_of_img[0], 1), dtype=np.float32)
+            for i in range(kernel.size//2+1, kernel.size):
+                flow = self.get_flow(padded_img[:, x + i], img[:, x], prev_flow, l, w)
+                self.logger.debug(f"{np.average(np.abs(flow))}")
+                prev_flow = flow
+                warped_line = self.warp_line(padded_img[:, x + i], flow)
+                tmp_line += warped_line * kernel[i]
+            filtered_img[:, x] = tmp_slice
+        return filtered_img
+
+    def filter(self, img, kernel, l=0, w=0):
+        mean = img.mean()
+        self.logger.info(f"mean={mean}")
+        filtered_img_Y = self.filter_Y(img, kernel[1], mean, l, w)
+        self.logger.info(f"filtered along Y")
+        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[2], mean, l, w)
+        self.logger.info(f"filtered along X")
+        return filtered_img_YX
+
+class old:
+        
     def filter_vertical(self, noisy_img, kernel, mean):
         KL = kernel.size
         KL2 = KL//2
@@ -108,7 +140,7 @@ class Monochrome_Denoising:
         filtered_noisy_img = (filtered_in_vertical + filtered_in_horizontal)/2
         return filtered_noisy_img
 
-    def filter(self, noisy_img, kernel):
+    def _filter(self, noisy_img, kernel):
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
         filtered_noisy_img_Y = self.filter_vertical(noisy_img, kernel, mean)
