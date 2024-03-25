@@ -12,13 +12,12 @@ NUM_ITERS = 3
 
 class Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
-    def __init__(self, logger, l=PYRAMID_LEVELS, w=WINDOW_SIDE, sigma_poly=SIGMA_POLY, N_poly=N_POLY, num_iters=NUM_ITERS):
+    def __init__(self, logger, pyramid_levels=PYRAMID_LEVELS, window_side=WINDOW_SIDE, sigma_poly=SIGMA_POLY, N_poly=N_POLY, num_iters=NUM_ITERS):
         super().__init__(logger)
-        #self.number_of_singular_matrices = 0
-        self.l = l
-        self.logger.info(f"l={self.l}")
-        self.w = w
-        self.logger.info(f"lw{self.w}")
+        self.pyramid_levels = pyramid_levels
+        self.logger.info(f"l={self.pyramid_levels}")
+        self.window_side = window_side
+        self.logger.info(f"lw{self.window_side}")
         self.sigma_poly = sigma_poly
         self.logger.info(f"sigma_poly={self.sigma_poly}")
         self.num_iters = num_iters
@@ -34,7 +33,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         warped_slice = cv2.remap(slice, map_xy, None, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
         return warped_slice
 
-    def get_flow(self, reference, target, prev_flow, l, w):
-        flow = cv2.calcOpticalFlowFarneback(prev=target, next=reference, flow=prev_flow, pyr_scale=0.5, levels=self.l, winsize=self.w, iterations=self.num_iters, poly_n=self.N_poly, poly_sigma=self.sigma_poly, flags=cv2.OPTFLOW_USE_INITIAL_FLOW)
+    def get_flow(self, reference, target, prev_flow, pyramid_levels, window_side):
+        flow = cv2.calcOpticalFlowFarneback(prev=target, next=reference, flow=prev_flow, pyr_scale=0.5, levels=self.pyramid_levels, winsize=self.window_side, iterations=self.num_iters, poly_n=self.N_poly, poly_sigma=self.sigma_poly, flags=cv2.OPTFLOW_USE_INITIAL_FLOW)
         return flow
 
