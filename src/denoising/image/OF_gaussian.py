@@ -1,49 +1,135 @@
-'''Gaussian image denoising using optical flow.'''
+'''Gaussian image denoising using optical flow (Python version).'''
 
 #import time
 import numpy as np
 import cv2
-import scipy
-import math
 #from . import kernels
 #from . import flow_estimation
 #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._1D.farneback_python import Estimator
 from motion_estimation._1D.project import project
-from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
+#from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
 from . import gaussian
-
-import logging
-#logger = logging.getLogger(__name__)
-#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
-#logger.setLevel(logging.CRITICAL)
-#logger.setLevel(logging.ERROR)
-#logger.setLevel(logging.WARNING)
-#logger.setLevel(logging.INFO)
+import logging # borrame
 
 from numpy.linalg import LinAlgError
 
+N_POLY = 7
+PYRAMID_LEVELS = 3
+WINDOW_LENGTH = 27
+NUM_ITERS = 1
+MODEL="constant"
+MU=0
+
 class Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
-    def __init__(self, logger, sigma_poly=1.0, win_side=17, pyr_levels=3, num_iters=3):
+    def __init__(self, logger,
+                 pyramid_levels=PYRAMID_LEVELS,
+                 window_length=WINDOW_LENGTH,
+                 N_poly=N_POLY,
+                 num_iters=NUM_ITERS,
+                 model=MODEL,
+                 mu=MU):
         super().__init__(logger)
-        self.estimator = Estimator(logger, pyr_levels=pyr_levels, sigma_poly=sigma_poly, win_side=win_side, num_iters=num_iters)
-        self.counter = 0
-        self.sigma_poly = sigma_poly
-        self.win_side = win_side
-        self.pyr_levels = pyr_levels
-        self.logger.info(f"sigma_poly={self.sigma_poly}")
-        self.logger.info(f"win_side={self.win_side}")
-        self.logger.info(f"pyr_levels={self.pyr_levels}")
+        self.estimator = Estimator(logger)
+        self.singular_matrices_found = 0
+        self.pyramid_levels = pyramid_levels
+        self.window_length = window_length
+        self.N_poly = N_poly
+        self.num_iters = num_iters
+        self.model = model
+        self.mu = mu
 
-    def iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
+    def warp_line(self, line, flow):
+        length = flow.shape[0]
+        warped_line = project(self.logger, signal=line, flow=np.squeeze(flow))
+        return warped_line
+
+    def get_flow(self, reference, target, flow):
+        try: 
+            flow = self.estimator.pyramid_get_flow(
+                target, reference,
+                N_poly=self.N_poly,
+                window_length=self.window_length,
+                num_iters=self.num_iters,
+                pyramid_levels=self.pyramid_levels,
+                flow=flow,
+                model=self.model,
+                mu=self.mu)
+        except LinAlgError as e:
+            flow = np.zeros(shape=(reference.size, 1), dtype=np.float32)
+            print(f"Caught exception: {e} {self.singular_matrices_found }")
+            self.singular_matrices_found += 1
+        finally:
+            return flow
+
+    def filter_Y_line(self, img, padded_img, kernel, y):
+        tmp_line = np.zeros_like(img[y, :]).astype(np.float32)
+        prev_flow = np.zeros(shape=(img.shape[1], 1), dtype=np.float32)
+        for i in range((kernel.size//2) - 1, -1, -1):
+            flow = self.get_flow(
+                target=padded_img[y + i, :],
+                reference=img[y, :],
+                flow=prev_flow)
+            self.logger.debug(f"{np.average(np.abs(flow))}")
+            prev_flow = flow                     
+            warped_line = self.warp_line(padded_img[y + i, :], flow)
+            tmp_line += warped_line * kernel[i]
+        tmp_line += img[y, :] * kernel[kernel.size//2]
+        prev_flow = np.zeros(shape=(img.shape[1], 1), dtype=np.float32)
+        for i in range(kernel.size//2+1, kernel.size):
+            flow = self.get_flow(
+                target=padded_img[y + i, :],
+                reference=img[y, :],
+                flow=prev_flow)
+            self.logger.debug(f"{np.average(np.abs(flow))}")
+            prev_flow = flow                      
+            warped_line = self.warp_line(padded_img[y + i, :], flow)
+            tmp_line += warped_line * kernel[i]
+        return tmp_line
+
+    def filter_X_line(self, img, padded_img, kernel, x):
+        tmp_line = np.zeros_like(img[:, x]).astype(np.float32)
+        prev_flow = np.zeros(shape=(img.shape[0], 1), dtype=np.float32)
+        for i in range((kernel.size//2) - 1, -1, -1):
+            flow = self.get_flow(
+                target=padded_img[:, x + i],
+                reference=img[:, x],
+                flow=prev_flow)
+            self.logger.debug(f"{np.average(np.abs(flow))}")
+            prev_flow = flow
+            warped_line = self.warp_line(padded_img[:, x + i], flow)
+            tmp_line += warped_line * kernel[i]
+        tmp_line += img[:, x] * kernel[kernel.size//2]
+        prev_flow = np.zeros(shape=(img.shape[0], 1), dtype=np.float32)
+        for i in range(kernel.size//2+1, kernel.size):
+            flow = self.get_flow(
+                target=padded_img[:, x + i],
+                reference=img[:, x],
+                flow=prev_flow)
+            self.logger.debug(f"{np.average(np.abs(flow))}")
+            prev_flow = flow
+            warped_line = self.warp_line(padded_img[:, x + i], flow)
+            tmp_line += warped_line * kernel[i]
+        return tmp_line
+
+    def filter(self, img, kernel):
+        mean = img.mean()
+        self.logger.info(f"mean={mean}")
+        filtered_img_Y = self.filter_Y(img, kernel[0], mean)
+        self.logger.info(f"filtered along Y")
+        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[1], mean)
+        self.logger.info(f"filtered along X")
+        return filtered_img_YX
+
+    def __iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
         self.logger.info(f"sigma_kernel={sigma_kernel}")
         _ = super().iterate_filter(noisy_img, sigma_kernel, GT, N_iters)
         self.logger.warning(f"Number of singular matrices = {self.counter}")
         return _
 
-    def project_A_to_B(self, A, B):
+    def __project_A_to_B(self, A, B):
         try:
             flow = self.estimator.pyramid_get_flow(target=B, reference=A, flow=None)
         except LinAlgError as e:
