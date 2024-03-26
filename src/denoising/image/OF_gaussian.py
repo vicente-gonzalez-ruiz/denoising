@@ -15,7 +15,7 @@ import logging # borrame
 
 from numpy.linalg import LinAlgError
 
-N_POLY = 7
+N_POLY = 27
 PYRAMID_LEVELS = 3
 WINDOW_LENGTH = 27
 NUM_ITERS = 1
@@ -40,6 +40,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.num_iters = num_iters
         self.model = model
         self.mu = mu
+        for attr, value in vars(self).items():
+            self.logger.info(f"{attr}: {value}")
 
     def warp_line(self, line, flow):
         length = flow.shape[0]
@@ -47,6 +49,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         return warped_line
 
     def get_flow(self, reference, target, flow):
+        #flow = np.zeros(shape=(reference.size, 1), dtype=np.float32)
+        #return flow
         try: 
             flow = self.estimator.pyramid_get_flow(
                 target, reference,
@@ -59,7 +63,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                 mu=self.mu)
         except LinAlgError as e:
             flow = np.zeros(shape=(reference.size, 1), dtype=np.float32)
-            print(f"Caught exception: {e} {self.singular_matrices_found }")
+            print(f"Caught exception: {e} {self.singular_matrices_found} ")
             self.singular_matrices_found += 1
         finally:
             return flow
