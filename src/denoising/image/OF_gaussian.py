@@ -15,10 +15,10 @@ import logging # borrame
 
 from numpy.linalg import LinAlgError
 
-N_POLY = 27
-PYRAMID_LEVELS = 3
-WINDOW_LENGTH = 27
-NUM_ITERS = 1
+N_POLY = 17
+PYRAMID_LEVELS = 2
+WINDOW_LENGTH = 17
+NUM_ITERS = 3
 MODEL="constant"
 MU=0
 
@@ -73,8 +73,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         prev_flow = np.zeros(shape=(img.shape[1], 1), dtype=np.float32)
         for i in range((kernel.size//2) - 1, -1, -1):
             flow = self.get_flow(
-                target=padded_img[y + i, :],
-                reference=img[y, :],
+                target=img[y, :],
+                reference=padded_img[y + i, :],
                 flow=prev_flow)
             self.logger.debug(f"{np.average(np.abs(flow))}")
             prev_flow = flow                     
@@ -84,8 +84,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         prev_flow = np.zeros(shape=(img.shape[1], 1), dtype=np.float32)
         for i in range(kernel.size//2+1, kernel.size):
             flow = self.get_flow(
-                target=padded_img[y + i, :],
-                reference=img[y, :],
+                target=img[y, :],
+                reference=padded_img[y + i, :],
                 flow=prev_flow)
             self.logger.debug(f"{np.average(np.abs(flow))}")
             prev_flow = flow                      
@@ -98,8 +98,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         prev_flow = np.zeros(shape=(img.shape[0], 1), dtype=np.float32)
         for i in range((kernel.size//2) - 1, -1, -1):
             flow = self.get_flow(
-                target=padded_img[:, x + i],
-                reference=img[:, x],
+                target=img[:, x],
+                reference=padded_img[:, x + i],
                 flow=prev_flow)
             self.logger.debug(f"{np.average(np.abs(flow))}")
             prev_flow = flow
@@ -109,8 +109,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         prev_flow = np.zeros(shape=(img.shape[0], 1), dtype=np.float32)
         for i in range(kernel.size//2+1, kernel.size):
             flow = self.get_flow(
-                target=padded_img[:, x + i],
-                reference=img[:, x],
+                target=img[:, x],
+                reference=padded_img[:, x + i],
                 flow=prev_flow)
             self.logger.debug(f"{np.average(np.abs(flow))}")
             prev_flow = flow
