@@ -17,23 +17,36 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
 #import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._2D.farneback import Estimator_in_CPU as Farneback
+from motion_estimation._2D.farneback_OpenCV import Estimator_in_CPU as Estimator
 from skimage.metrics import structural_similarity as ssim
 from scipy import stats
 import math
 
-class Monocrome_Denoiser(Farneback):
-    
-    def __init__(self, l=3, w=15, OF_iters=3, poly_n=5, poly_sigma=1.0, flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN, verbosity=logging.INFO):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(verbosity)
-        super().__init__(levels=l, win_side=w, iters=OF_iters, poly_n=poly_n, poly_sigma=poly_sigma, flags=flags)
-        self.logger.info(f"l={l}")
-        self.logger.info(f"w={w}")
-        self.logger.info(f"OF_iters={OF_iters}")
-        self.logger.info(f"poly_n={poly_n}")
-        self.logger.info(f"poly_sigma={poly_sigma}")
-        self.logger.info(f"flags={flags}")
+N_POLY = 7
+PYRAMID_LEVELS = 2
+WINDOW_SIDE = 7
+NUM_ITERATIONS = 3
+FLAGS = 0
+
+class Monochrome_Denoiser:
+
+    def __init__(
+        self, logger,
+        pyramid_levels=PYRAMID_LEVELS,
+        window_side=WINDOW_SIDE,
+        N_poly=N_POLY,
+        num_iterations=NUM_ITERATIONS,
+        lags=FLAGS
+    ):
+        self.logger = logger
+        self.estimator = Estimator(logger)
+        self.pyramid_levels = pyramid_levels
+        self.window_side = window_side
+        self.N_poly = N_poly
+        self.num_iterations = num_iterations
+        self.flags = flags
+        for attr, value in vars(self).items():
+            self.logger.info(f"{attr}: {value}")
 
     def project_A_to_B(self, A, B):
         #flow = self.get_flow_to_project_A_to_B(A, B)
@@ -171,7 +184,7 @@ class Monocrome_Denoiser(Farneback):
         else:
             return denoised_image, None
 
-class Filter_Color_Image(Filter_Monochrome_Image):
+class Filter_Color_Image(Monochrome_Denoiser):
 
     def __init__(
             self,
@@ -182,7 +195,7 @@ class Filter_Color_Image(Filter_Monochrome_Image):
             poly_sigma=1.0, # Standard deviation of the Gaussian basis used in the polynomial expansion
             flags=cv2.OPTFLOW_FARNEBACK_GAUSSIAN,
             verbosity=logging.INFO):
-        super().__init__(l, w, OF_iters, poly_n, poly_sigma, flags, verbosity)
+        super().__init__(l, w, OF_iters, poly_n, flags, verbosity)
 
     def project_A_to_B(self, A, B):
         self.logger.debug(f"A.shape={A.shape} B.shape={B.shape}")
