@@ -11,7 +11,8 @@ class Monochrome_Denoising:
 
     def __init__(self, logger):
         self.logger = logger
-    
+        self.window_size = 0 # Ojo, no sé si se va a usar
+
     def __warp_line(self, line, flow):
         return line
 
@@ -32,7 +33,8 @@ class Monochrome_Denoising:
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
         #padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
-        padded_img = cv2.resize(img, (shape_of_img[1], shape_of_img[0] + kernel.size))
+        #padded_img = cv2.resize(src=img, dsize=(shape_of_img[1] + self.window_size, shape_of_img[0] + kernel.size + self.window_size))
+        padded_img = cv2.resize(src=img, dsize=(shape_of_img[1], shape_of_img[0] + kernel.size))
         padded_img[kernel.size//2:shape_of_img[0] + (kernel.size//2), :] = img
         Y_dim = img.shape[0]
         for y in range(Y_dim):
