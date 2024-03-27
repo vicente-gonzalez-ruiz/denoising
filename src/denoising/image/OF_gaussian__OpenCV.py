@@ -1,4 +1,6 @@
-'''Gaussian image denoising using optical flow (Python version).'''
+# Unfinished
+
+'''Gaussian image denoising using optical flow (OpenCV version).'''
 
 #import time
 import numpy as np
@@ -6,21 +8,16 @@ import cv2
 #from . import kernels
 #from . import flow_estimation
 #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._1D.farneback_python import Estimator
-from motion_estimation._1D.project import project
 #from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
 from . import gaussian
 import logging # borrame
 
-from numpy.linalg import LinAlgError
-
 N_POLY = 17
 PYRAMID_LEVELS = 2
 WINDOW_LENGTH = 17
 NUM_ITERS = 3
-MODEL="constant"
-MU=0
+FLAGS = 0
 
 class Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
@@ -29,17 +26,14 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  window_length=WINDOW_LENGTH,
                  N_poly=N_POLY,
                  num_iters=NUM_ITERS,
-                 model=MODEL,
-                 mu=MU):
+                 flags=FLAGS):
         super().__init__(logger)
         self.estimator = Estimator(logger)
-        self.singular_matrices_found = 0
         self.pyramid_levels = pyramid_levels
         self.window_length = window_length
         self.N_poly = N_poly
         self.num_iters = num_iters
-        self.model = model
-        self.mu = mu
+        self.flags = flags
         for attr, value in vars(self).items():
             self.logger.info(f"{attr}: {value}")
 
