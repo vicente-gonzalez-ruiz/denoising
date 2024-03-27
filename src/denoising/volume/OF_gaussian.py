@@ -15,15 +15,12 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
     def __init__(self, logger, pyramid_levels=PYRAMID_LEVELS, window_side=WINDOW_SIDE, sigma_poly=SIGMA_POLY, N_poly=N_POLY, num_iters=NUM_ITERS):
         super().__init__(logger)
         self.pyramid_levels = pyramid_levels
-        self.logger.info(f"l={self.pyramid_levels}")
         self.window_side = window_side
-        self.logger.info(f"lw{self.window_side}")
         self.sigma_poly = sigma_poly
-        self.logger.info(f"sigma_poly={self.sigma_poly}")
         self.num_iters = num_iters
-        self.logger.info(f"num_iters={self.num_iters}")
         self.N_poly = N_poly
-        self.logger.info(f"N_poly={self.N_poly}")
+        for attr, value in vars(self).items():
+            self.logger.info(f"{attr}: {value}")
 
     def warp_slice(self, slice, flow):
         height, width = flow.shape[:2]

@@ -1,6 +1,7 @@
 '''Gaussian image denoising.'''
 
 import numpy as np
+import cv2
 
 #pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #from color_transforms import YCoCg as YUV
@@ -30,8 +31,9 @@ class Monochrome_Denoising:
         assert kernel.size % 2 != 0 # kernel.size must be odd
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
-        padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
-        padded_img[kernel.size//2:shape_of_img[0] + kernel.size//2, :] = img
+        #padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
+        padded_img = cv2.resize(img, (shape_of_img[1], shape_of_img[0] + kernel.size))
+        padded_img[kernel.size//2:shape_of_img[0] + (kernel.size//2), :] = img
         Y_dim = img.shape[0]
         for y in range(Y_dim):
             filtered_img[y, :] = self.filter_Y_line(img, padded_img, kernel, y)
@@ -77,8 +79,9 @@ class Monochrome_Denoising:
         assert kernel.size % 2 != 0 # kernel.size must be odd
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
-        padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
-        padded_img[:, kernel.size//2:shape_of_img[1] + kernel.size//2] = img
+        #padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
+        padded_img = cv2.resize(img, (shape_of_img[1] + kernel.size, shape_of_img[0]))
+        padded_img[:, kernel.size//2:shape_of_img[1] + (kernel.size//2)] = img
         X_dim = img.shape[1]
         for x in range(X_dim):
             filtered_img[:, x] = self.filter_X_line(img, padded_img, kernel, x)
