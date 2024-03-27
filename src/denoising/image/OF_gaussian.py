@@ -18,7 +18,7 @@ from numpy.linalg import LinAlgError
 N_POLY = 17
 PYRAMID_LEVELS = 2
 WINDOW_LENGTH = 17
-NUM_ITERS = 3
+NUM_ITERATIONS = 3
 MODEL="constant"
 MU=0
 
@@ -28,7 +28,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  pyramid_levels=PYRAMID_LEVELS,
                  window_length=WINDOW_LENGTH,
                  N_poly=N_POLY,
-                 num_iters=NUM_ITERS,
+                 num_iterations=NUM_ITERATIONS,
                  model=MODEL,
                  mu=MU):
         super().__init__(logger)
@@ -37,7 +37,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.pyramid_levels = pyramid_levels
         self.window_length = window_length
         self.N_poly = N_poly
-        self.num_iters = num_iters
+        self.num_iterations = num_iterations
         self.model = model
         self.mu = mu
         for attr, value in vars(self).items():
@@ -56,7 +56,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                 target, reference,
                 N_poly=self.N_poly,
                 window_length=self.window_length,
-                num_iters=self.num_iters,
+                num_iterations=self.num_iterations,
                 pyramid_levels=self.pyramid_levels,
                 flow=flow,
                 model=self.model,
@@ -65,8 +65,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             flow = np.zeros(shape=(reference.size, 1), dtype=np.float32)
             print(f"Caught exception: {e} counter={self.singular_matrices_found} ")
             self.singular_matrices_found += 1
-        finally:
-            return flow
+        return flow
 
     def filter_Y_line(self, img, padded_img, kernel, y):
         tmp_line = np.zeros_like(img[y, :]).astype(np.float32)
