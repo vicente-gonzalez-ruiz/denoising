@@ -18,6 +18,7 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.DEBUG)
 #import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._2D.farneback_OpenCV import Estimator_in_CPU as Estimator
+from motion_estimation._2D.project import project
 from skimage.metrics import structural_similarity as ssim
 from scipy import stats
 import math
@@ -36,7 +37,7 @@ class Monochrome_Denoiser:
         window_side=WINDOW_SIDE,
         N_poly=N_POLY,
         num_iterations=NUM_ITERATIONS,
-        lags=FLAGS
+        flags=FLAGS
     ):
         self.logger = logger
         self.estimator = Estimator(logger)
@@ -50,11 +51,16 @@ class Monochrome_Denoiser:
 
     def project_A_to_B(self, A, B):
         #flow = self.get_flow_to_project_A_to_B(A, B)
-        flow = self.get_flow(target=B, reference=A, prev_flow=None)
-        flow = np.zeros_like(flow)
+        flow = self.estimator.pyramid_get_flow(
+            target=B, reference=A, flow=None, flags=0,
+            pyramid_levels=self.pyramid_levels,
+            window_side=self.window_side,
+            N_poly=self.N_poly,
+            num_iterations=self.num_iterations)
+        #flow = np.zeros_like(flow)
         self.logger.info(f"np.average(np.abs(flow))={np.average(np.abs(flow))}")
         #return flow_estimation.project(A, flow)
-        projection = motion_estimation.helpers.project(image=A, flow=flow)
+        projection = project(self.logger, image=A, flow=flow)
         return projection
 
     def normalize(self, img):
@@ -125,7 +131,7 @@ class Monochrome_Denoiser:
     def filter(self,
                noisy_image,
                GT=None,
-               N_iters=50,
+               N_iters=10,
                RS_sigma=1.0, # Standard deviation of the maximum random (gaussian-distributed) displacements of the pixels
                RS_mean=0.0, # Mean of the randomized distances
                #RD_sigma=1.0,
@@ -179,7 +185,7 @@ class Monochrome_Denoiser:
         denoised_image = acc_image/(N_iters + 1)
         #print(flush=True)
 
-        if self.logger.level <= logging.INFO:
+        if self.logger.level <= logging.DEBUG:
             return denoised_image, PSNR_vs_iteration
         else:
             return denoised_image, None
