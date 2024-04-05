@@ -118,6 +118,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         return tmp_line
 
     def filter(self, img, kernel):
+        print("1")
         mean = img.mean()
         self.logger.info(f"mean={mean}")
         filtered_img_Y = self.filter_Y(img, kernel[0], mean)
@@ -126,6 +127,19 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.logger.info(f"filtered along X")
         return filtered_img_YX
 
+    def filter(self, img, kernel):
+        print("2")
+        mean = np.average(img)
+        #t0 = time.perf_counter()
+        filtered_img_Y = self.filter_Y(img, kernel[0], mean)
+        #t1 = time.perf_counter()
+        #print(t1 - t0)
+        filtered_img_X = self.filter_X(img, kernel[1], mean)
+        #t2 = time.perf_counter()
+        #print(t2 - t1)
+        filtered_img_YX = (filtered_img_Y + filtered_img_X)/2
+        return filtered_img_YX
+        
     def __iterate_filter(self, noisy_img, sigma_kernel=1.5, GT=None, N_iters=1):
         self.logger.info(f"sigma_kernel={sigma_kernel}")
         _ = super().iterate_filter(noisy_img, sigma_kernel, GT, N_iters)
