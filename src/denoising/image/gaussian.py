@@ -126,7 +126,7 @@ class Monochrome_Denoising:
         self.logger.info(f"filtered along X")
         return filtered_img_YX
 
-    def filter(self, noisy_img, kernel):
+    def _filter(self, noisy_img, kernel):
         print("2")
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
