@@ -117,7 +117,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             tmp_line += warped_line * kernel[i]
         return tmp_line
 
-    def filter(self, img, kernel):
+    def _filter(self, img, kernel):
         print("1")
         mean = img.mean()
         self.logger.info(f"mean={mean}")
