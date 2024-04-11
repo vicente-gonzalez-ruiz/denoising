@@ -32,7 +32,7 @@ def randomize(vol, mean=0.0, std_dev=1.0):
   #print(np.max(randomized_z_coords), np.max(randomized_y_coords), np.max(randomized_x_coords))
   #randomized_vol = np.ones_like(vol)*np.average(vol) #np.zeros_like(vol)
   randomized_vol = np.zeros_like(vol)
-  randomized_vol[...] = vol
+  #randomized_vol[...] = vol
   #randomized_vol[...] = 128
   randomized_vol[randomized_z_coords, randomized_y_coords, randomized_x_coords] = vol[flattened_z_coords, flattened_y_coords, flattened_x_coords]
   return randomized_vol
@@ -68,7 +68,7 @@ def project_A_to_B(farneback, block_size, A, B):
   #output_vx[...] = 0
   #output_vy[...] = 0
   #output_vz[...] = 0
-  projection = opticalflow3D.helpers.generate_inverse_image(B, output_vx, output_vy, output_vz)
+  projection = opticalflow3D.helpers.generate_inverse_image(A, output_vx, output_vy, output_vz)
   return projection
 
 def filter(farneback, block_size, noisy_vol, N_iters=50, RS_sigma=2.0, RS_mean=0.0):
