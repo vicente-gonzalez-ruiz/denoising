@@ -59,7 +59,7 @@ def project_A_to_B(farneback, block_size, A, B):
                                                                               start_point=(0, 0, 0),
                                                                               total_vol=(A.shape[0], A.shape[1], A.shape[2]),
                                                                               sub_volume=block_size,
-                                                                              overlap=8, 8, 8),
+                                                                              overlap=(8, 8, 8),
                                                                               threadsperblock=(8, 8, 8)
                                                                              )
   print("min flow", np.min(output_vx), np.min(output_vy), np.min(output_vz))

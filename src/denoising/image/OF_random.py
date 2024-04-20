@@ -18,6 +18,7 @@ logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s
 #logger.setLevel(logging.DEBUG)
 #import motion_estimation #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._2D.farneback_OpenCV import Estimator_in_CPU as Estimator
+#from motion_estimation._2D.farneback_python import Estimator
 from motion_estimation._2D.project import project
 from skimage.metrics import structural_similarity as ssim
 from scipy import stats
@@ -52,7 +53,7 @@ class Monochrome_Denoiser:
     def project_A_to_B(self, A, B):
         #flow = self.get_flow_to_project_A_to_B(A, B)
         flow = self.estimator.pyramid_get_flow(
-            target=B, reference=A, flow=None, flags=0,
+            target=B, reference=A, flow=None,
             pyramid_levels=self.pyramid_levels,
             window_side=self.window_side,
             N_poly=self.N_poly,
