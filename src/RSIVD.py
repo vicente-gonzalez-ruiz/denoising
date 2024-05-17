@@ -54,6 +54,51 @@ def _randomize(vol, max_distance=10):
     randomized_image = motion_estimation.project(image, flow)
     return randomized_image.astype(np.uint8)
 
+def shake(x, y, std_dev=1.0):
+  displacements = np.random.normal(0, std_dev, len(x))
+  #print(f"{np.min(displacements):.2f} {np.average(np.abs(displacements)):.2f} {np.max(displacements):.2f}", end=' ')
+  return np.stack((y + displacements, x), axis=1)
+
+def randomize(vol, mean=0.0, std_dev=1.0):
+  print(vol.shape)
+  print(std_dev)
+  randomized_vol = np.empty_like(vol)
+  
+  # Randomization in X
+  #values = np.arange(1, vol.shape[2]+1).astype(np.int32)
+  values = np.arange(vol.shape[2]).astype(np.int32)
+  for z in range(vol.shape[0]):
+    print(z, end=' ', flush=True)
+    for y in range(vol.shape[1]):
+      #pairs = np.array(list(map(tuplify, values, range(len(values)))), dtype=np.int32)
+      pairs = shake(values, np.arange(len(values)), std_dev).astype(np.int32)
+      pairs = pairs[pairs[:, 0].argsort()]
+      randomized_vol[z, y, values] = vol[z, y, pairs[:, 1]]
+  vol = np.copy(randomized_vol)
+
+  # Randomization in Y
+  values = np.arange(vol.shape[1]).astype(np.int32)
+  for z in range(vol.shape[0]):
+    print(z, end=' ', flush=True)
+    for x in range(vol.shape[2]):
+      #pairs = np.array(list(map(tuplify, values, range(len(values)))), dtype=np.int32)
+      pairs = shake(values, np.arange(len(values)), std_dev).astype(np.int32)
+      pairs = pairs[pairs[:, 0].argsort()]
+      randomized_vol[z, values, x] = vol[z, pairs[:, 1], x]
+  vol = np.copy(randomized_vol)
+
+  # Randomization in Z
+  values = np.arange(vol.shape[0]).astype(np.int32)
+  for y in range(vol.shape[1]):
+    print(y, end=' ', flush=True)
+    for x in range(vol.shape[2]):
+      #pairs = np.array(list(map(tuplify, values, range(len(values)))), dtype=np.int32)
+      pairs = shake(values, np.arange(len(values)), std_dev).astype(np.int32)
+      pairs = pairs[pairs[:, 0].argsort()]
+      randomized_vol[values, y, x] = vol[pairs[:, 1], y , x]
+
+  return randomized_vol
+
 def project_A_to_B(farneback, block_size, A, B):
   output_vz, output_vy, output_vx, output_confidence = farneback.calculate_flow(A, B,
                                                                               start_point=(0, 0, 0),
