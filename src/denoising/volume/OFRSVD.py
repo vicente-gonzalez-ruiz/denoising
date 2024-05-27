@@ -5,7 +5,7 @@ import threading
 import time
 import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as OF_Estimation 
+from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
 from motion_estimation._3D.project_opticalflow3d import Volume_Projection
 
 PYRAMID_LEVELS = 3
@@ -13,12 +13,12 @@ WINDOW_SIDE = 5
 ITERATIONS = 5
 N_POLY = 11
 
-class Random_Shaking_Denoising(OF_Estimation, Volume_Projection):
+class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
         self,
         logging_level=logging.INFO
     ):
-        OF_Estimation.__init__(self, logging_level)
+        _3D_OF_Estimation.__init__(self, logging_level)
         Volume_Projection.__init__(self, logging_level)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging_level)
@@ -144,4 +144,125 @@ class Random_Shaking_Denoising(OF_Estimation, Volume_Projection):
 
         return denoised_volume
 
+from motion_estimation._2D.farneback_OpenCV import OF_Estimation as _2D_OF_Estimation 
+from motion_estimation._2D.project import Slice_Projection
+import cv2
 
+class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estimation, Slice_Projection):
+    def __init__(
+        self,
+        logging_level=logging.INFO
+    ):
+        Random_Shaking_Denoising.__init__(self, logging_level)
+        _2D_OF_Estimation.__init__(self, logging_level)
+        Slice_Projection.__init__(self, logging_level)
+
+    def shake_slice(self, slc, mean=0.0, std_dev=1.0):
+        shaked_slice = np.empty_like(slc)
+    
+        # Shaking in Y
+        values = np.arange(slc.shape[0]).astype(np.int16)
+        for x in range(slc.shape[1]):
+            pairs = self.shake_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
+            pairs = pairs[pairs[:, 0].argsort()]
+            shaked_slice[values, x] = slc[pairs[:, 1], x]
+        slc = shaked_slice
+    
+        # Shaking in X
+        values = np.arange(slc.shape[1]).astype(np.int16)
+        for y in range(slc.shape[0]):
+            pairs = self.shake_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
+            pairs = pairs[pairs[:, 0].argsort()]
+            shaked_slice[y, values] = slc[y, pairs[:, 1]]
+    
+        return shaked_slice
+
+    def project_slice_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, interpolation_mode, extension_mode):
+        self.flow = _2D_OF_Estimation.pyramid_get_flow(self,
+            target=target,
+            reference=reference,
+            flow=None,
+            pyramid_levels=pyramid_levels,
+            window_side=window_side,
+            iterations=iterations,
+            N_poly=N_poly)
+        projection = Slice_Projection.remap(self, reference, self.flow, interpolation_mode, extension_mode)
+        return projection
+
+    def filter_slice(self, noisy_slice, denoised_slice, mean, std_dev, pyramid_levels, window_side, iterations, N_poly, interpolation_mode, extension_mode):
+        shaked_noisy_slice = self.shake_slice(slc=noisy_slice, mean=mean, std_dev=std_dev)
+        
+        shaked_and_compensated_noisy_slice = self.project_slice_reference_to_target(
+            reference=denoised_slice,
+            target=shaked_noisy_slice,
+            pyramid_levels=pyramid_levels,
+            window_side=window_side,
+            iterations=iterations,
+            N_poly=N_poly,
+            interpolation_mode=interpolation_mode,
+            extension_mode=extension_mode)
+        return shaked_and_compensated_noisy_slice
+
+    def filter_volume(
+        self,
+        noisy_vol,
+        N_iters=25,
+        mean=0.0,
+        std_dev=1.0,
+        pyramid_levels=3,
+        window_side=5,
+        iterations=2,
+        N_poly=5,
+        interpolation_mode=cv2.INTER_LINEAR,
+        extension_mode=cv2.BORDER_REPLICATE
+    ):
+        acc_vol = np.zeros_like(noisy_vol, dtype=np.float32)
+        acc_vol[...] = noisy_vol
+        for i in range(N_iters):
+            self.iter = i
+            denoised_vol = acc_vol/(i+1)
+
+            for z in range(noisy_vol.shape[0]):
+                acc_vol[z, :, :] += self.filter_slice(
+                    noisy_slice=noisy_vol[z, :, :],
+                    denoised_slice=denoised_vol[z, :, :],
+                    mean=mean,
+                    std_dev=std_dev,
+                    pyramid_levels=pyramid_levels,
+                    window_side=window_side,
+                    iterations=iterations,
+                    N_poly=N_poly,
+                    interpolation_mode=interpolation_mode,
+                    extension_mode=extension_mode)
+            self.stop_event.set()
+
+            for y in range(noisy_vol.shape[1]):
+                acc_vol[:, y, :] += self.filter_slice(
+                    noisy_slice=noisy_vol[:, y, :],
+                    denoised_slice=denoised_vol[:, y, :],
+                    mean=mean,
+                    std_dev=std_dev,
+                    pyramid_levels=pyramid_levels,
+                    window_side=window_side,
+                    iterations=iterations,
+                    N_poly=N_poly,
+                    interpolation_mode=interpolation_mode,
+                    extension_mode=extension_mode)
+            self.stop_event.set()
+
+            for x in range(noisy_vol.shape[2]):
+                acc_vol[:, :, x] += self.filter_slice(
+                    noisy_slice=noisy_vol[:, :, x],
+                    denoised_slice=denoised_vol[:, :, x],
+                    mean=mean,
+                    std_dev=std_dev,
+                    pyramid_levels=pyramid_levels,
+                    window_side=window_side,
+                    iterations=iterations,
+                    N_poly=N_poly,
+                    interpolation_mode=interpolation_mode,
+                    extension_mode=extension_mode)
+            self.stop_event.set()
+
+        denoised_vol = acc_vol/(N_iters + 1)
+        return denoised_vol
