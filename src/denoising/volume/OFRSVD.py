@@ -1,4 +1,5 @@
 '''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
+'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
 import logging
 import threading
@@ -16,8 +17,10 @@ N_POLY = 11
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
         self,
-        logging_level=logging.INFO
+        logging_level=logging.INFO,
+        #estimator="opticalflow3d"
     ):
+        #self.estimator = estimator
         _3D_OF_Estimation.__init__(self, logging_level)
         Volume_Projection.__init__(self, logging_level)
         self.logger = logging.getLogger(__name__)
