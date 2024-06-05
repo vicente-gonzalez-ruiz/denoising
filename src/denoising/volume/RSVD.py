@@ -1,13 +1,15 @@
 '''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
 '''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
-import logging
 import threading
 import time
 import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
 from motion_estimation._3D.project_opticalflow3d import Volume_Projection
+
+import logging
+import inspect
 
 PYRAMID_LEVELS = 3
 WINDOW_SIDE = 5
@@ -17,16 +19,29 @@ N_POLY = 11
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
         self,
-        logging_level=logging.INFO,
+        logging_level=logging.INFO
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
         _3D_OF_Estimation.__init__(self, logging_level)
         Volume_Projection.__init__(self, logging_level)
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging_level)
+        #self.logger = logging.getLogger(__name__)
+        #self.logger.setLevel(logging_level)
+        self.logging_level = logging_level
 
-        if self.logger.getEffectiveLevel() <= logging.INFO:
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+            '''
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+            '''
+
+        if self.logging_level <= logging.INFO:
             self.max = 0
             self.min = 0
         print(f"{'iter':>5s}", end='')
@@ -66,6 +81,17 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         return np.stack((y + self.displacements, x), axis=1)
 
     def shake_volume(self, volume, mean=0.0, std_dev=1.0):
+
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+
         shaked_volume = np.empty_like(volume)
 
         # Shaking in Z
@@ -97,6 +123,17 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         return shaked_volume
 
     def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block):
+
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+
         self.flow = self.pyramid_get_flow(
             target=target,
             reference=reference,
@@ -122,9 +159,20 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         iterations=ITERATIONS,
         N_poly=N_POLY,
         block_size=(256, 256, 256),
-        overlap=(64, 64, 64),
+        overlap=(8, 8, 8),
         threads_per_block=(8, 8, 8)
     ):
+
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+
         acc_volume = np.zeros_like(noisy_volume, dtype=np.float32)
         acc_volume[...] = noisy_volume
         for i in range(N_iters):
@@ -148,7 +196,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         return denoised_volume
 
 from motion_estimation._2D.farneback_OpenCV import OF_Estimation as _2D_OF_Estimation 
-from motion_estimation._2D.project import Slice_Projection
+from motion_estimation._2D.project import Projection as Slice_Projection
 import cv2
 
 class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estimation, Slice_Projection):
