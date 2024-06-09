@@ -7,7 +7,8 @@ import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
 from motion_estimation._3D.project_opticalflow3d import Volume_Projection
-
+import information_theory
+from matplotlib import pyplot as plt
 import logging
 import inspect
 
@@ -29,17 +30,17 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         #self.logger.setLevel(logging_level)
         self.logging_level = logging_level
 
-        if self.logging_level <= logging.INFO:
-            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-            '''
-            args, _, _, values = inspect.getargvalues(inspect.currentframe())
-            for arg in args:
-                if isinstance(values[arg], np.ndarray):
-                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
-                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
-                else:
-                    print(f"{arg}: {values[arg]}")
-            '''
+        #if self.logging_level <= logging.INFO:
+        #    print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        #    '''
+        #    args, _, _, values = inspect.getargvalues(inspect.currentframe())
+        #    for arg in args:
+        #        if isinstance(values[arg], np.ndarray):
+        #            print(f"{arg}.shape: {values[arg].shape}", end=' ')
+        #            print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+        #        else:
+        #            print(f"{arg}: {values[arg]}")
+        #    '''
 
         if self.logging_level <= logging.INFO:
             self.max = 0
@@ -51,8 +52,10 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         print(f"{'avg_abs_flow':>15s}", end='')
         print(f"{'max_flow':>15s}", end='')
         print(f"{'time':>15s}", end='')
+        print(f"{'quality_index':>15s}", end='')
         print()
 
+        self.quality_index = 0.0
         self.stop_event = threading.Event()
         self.logger_daemon = threading.Thread(target=self.show_log)
         self.logger_daemon.daemon = True
@@ -71,6 +74,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             print(f"{np.average(np.abs(self.flow)):>15.2f}", end='')
             print(f"{np.max(self.flow):>15.2f}", end='')
             print(f"{running_time:>15.2f}", end='')
+            print(f"{self.quality_index:>15.2f}", end='')
             print()
             self.stop_event.clear()
             self.time_0 = time.perf_counter()
@@ -84,6 +88,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -126,6 +131,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -165,6 +171,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -190,6 +197,14 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 overlap=overlap,
                 threads_per_block=threads_per_block)
             acc_volume += shaked_and_compensated_noisy_volume
+
+            if self.logging_level <= logging.INFO:
+                self.quality_index = information_theory.information.compute_quality_index(noisy_volume, acc_volume/(N_iters + 1))
+            if self.logging_level < logging.INFO:
+                fig, axs = plt.subplots(1, 1)
+                axs.imshow(denoised_volume[noisy_volume.shape[0]//2].astype(np.uint8), cmap="gray")
+                plt.show()
+
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
@@ -260,10 +275,10 @@ class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estima
         N_iters=25,
         mean=0.0,
         std_dev=1.0,
-        pyramid_levels=3,
-        window_side=5,
-        iterations=2,
-        N_poly=5,
+        pyramid_levels=PYRAMID_LEVELS,
+        window_side=WINDOW_SIDE,
+        iterations=ITERATIONS,
+        N_poly=N_POLY,
         interpolation_mode=cv2.INTER_LINEAR,
         extension_mode=cv2.BORDER_REPLICATE
     ):
