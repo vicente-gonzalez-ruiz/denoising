@@ -122,7 +122,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 
         return shaked_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block, use_gpu=True):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -145,7 +145,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             block_size=block_size,
             overlap=overlap,
             threads_per_block=threads_per_block)
-        projection = self.remap(reference, self.flow)
+        projection = self.remap(volume=reference, flow=self.flow, use_gpu=use_gpu)
         return projection
 
     def filter_volume(
