@@ -13,9 +13,9 @@ import logging
 import inspect
 
 PYRAMID_LEVELS = 3
-WINDOW_SIDE = 5
+WINDOW_SIDE = 3 # 7
 ITERATIONS = 5
-N_POLY = 11
+N_POLY = 5 # 11
 
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
@@ -203,9 +203,10 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             acc_volume += shaked_and_compensated_noisy_volume
 
             if self.logging_level <= logging.INFO:
-                self.quality_index = self.get_quality(noisy_volume, acc_volume/(N_iters + 1))
+                denoised = acc_volume/(i + 1)
+                self.quality_index = self.get_quality(noisy_volume, denoised)
                 title = f"iter={i} DQI={self.quality_index:3.2f}"
-                self.show_image(acc_volume/(N_iters + 1), title)
+                self.show_image(denoised, title)
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
