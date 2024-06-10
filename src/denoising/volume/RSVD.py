@@ -7,8 +7,8 @@ import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
 from motion_estimation._3D.project_opticalflow3d import Volume_Projection
-import information_theory
-from matplotlib import pyplot as plt
+#import information_theory
+#from matplotlib import pyplot as plt
 import logging
 import inspect
 
@@ -20,7 +20,9 @@ N_POLY = 11
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
         self,
-        logging_level=logging.INFO
+        logging_level=logging.INFO,
+        show_image=None,
+        get_quality=None
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
@@ -55,6 +57,8 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         print(f"{'quality_index':>15s}", end='')
         print()
 
+        self.show_image = show_image
+        self.get_quality = get_quality
         self.quality_index = 0.0
         self.stop_event = threading.Event()
         self.logger_daemon = threading.Thread(target=self.show_log)
@@ -166,7 +170,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         N_poly=N_POLY,
         block_size=(256, 256, 256),
         overlap=(8, 8, 8),
-        threads_per_block=(8, 8, 8)
+        threads_per_block=(8, 8, 8),
     ):
 
         if self.logging_level <= logging.INFO:
@@ -199,12 +203,9 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             acc_volume += shaked_and_compensated_noisy_volume
 
             if self.logging_level <= logging.INFO:
-                self.quality_index = information_theory.information.compute_quality_index(noisy_volume, acc_volume/(N_iters + 1))
-            if self.logging_level < logging.INFO:
-                fig, axs = plt.subplots(1, 1)
-                axs.imshow(denoised_volume[noisy_volume.shape[0]//2].astype(np.uint8), cmap="gray")
-                plt.show()
-
+                self.quality_index = self.get_quality(noisy_volume, acc_volume/(N_iters + 1))
+                title = f"iter={i} DQI={self.quality_index:3.2f}"
+                self.show_image(acc_volume/(N_iters + 1), title)
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
