@@ -44,22 +44,25 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         #            print(f"{arg}: {values[arg]}")
         #    '''
 
+        self.show_image = show_image
+        self.get_quality = get_quality
+        self.quality_index = 0.0
+
         if self.logging_level <= logging.INFO:
             self.max = 0
             self.min = 0
         print(f"{'iter':>5s}", end='')
-        print(f"{'min_shaking':>15s}", end='')
-        print(f"{'max_shaking':>15s}", end='')
-        print(f"{'min_flow':>15s}", end='')
-        print(f"{'avg_abs_flow':>15s}", end='')
-        print(f"{'max_flow':>15s}", end='')
-        print(f"{'time':>15s}", end='')
-        print(f"{'quality_index':>15s}", end='')
+        print(f"{'min_shaking':>16s}", end='')
+        print(f"{'avg_abs_shaking':>16s}", end='')
+        print(f"{'max_shaking':>16s}", end='')
+        print(f"{'min_flow':>16s}", end='')
+        print(f"{'avg_abs_flow':>16s}", end='')
+        print(f"{'max_flow':>16s}", end='')
+        print(f"{'time':>16s}", end='')
+        if get_quality!=None:
+            print(f"{'quality_index':>16s}", end='')
         print()
 
-        self.show_image = show_image
-        self.get_quality = get_quality
-        self.quality_index = 0.0
         self.stop_event = threading.Event()
         self.logger_daemon = threading.Thread(target=self.show_log)
         self.logger_daemon.daemon = True
@@ -72,13 +75,15 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             time_1 = time.perf_counter()
             running_time = time_1 - self.time_0
             print(f"{self.iter:>5d}", end='')
-            print(f"{np.min(self.displacements):>15.2f}", end='')
-            print(f"{np.max(self.displacements):>15.2f}", end='')
-            print(f"{np.min(self.flow):>15.2f}", end='')
-            print(f"{np.average(np.abs(self.flow)):>15.2f}", end='')
-            print(f"{np.max(self.flow):>15.2f}", end='')
-            print(f"{running_time:>15.2f}", end='')
-            print(f"{self.quality_index:>15.2f}", end='')
+            print(f"{np.min(self.displacements):>16.2f}", end='')
+            print(f"{np.average(np.abs(self.displacements)):>16.2f}", end='')
+            print(f"{np.max(self.displacements):>16.2f}", end='')
+            print(f"{np.min(self.flow):>16.2f}", end='')
+            print(f"{np.average(np.abs(self.flow)):>16.2f}", end='')
+            print(f"{np.max(self.flow):>16.2f}", end='')
+            print(f"{running_time:>16.2f}", end='')
+            if self.get_quality!=None:
+                print(f"{self.quality_index:>16.4f}", end='')
             print()
             self.stop_event.clear()
             self.time_0 = time.perf_counter()
@@ -204,9 +209,13 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
 
             if self.logging_level <= logging.INFO:
                 denoised = acc_volume/(i + 1)
-                self.quality_index = self.get_quality(noisy_volume, denoised)
-                title = f"iter={i} DQI={self.quality_index:3.2f}"
-                self.show_image(denoised, title)
+                if self.show_image != None:
+                    if self.quality_index != None:
+                        self.quality_index = self.get_quality(noisy_volume, denoised)
+                        title = f"iter={i} DQI={self.quality_index:3.2f}"
+                    else:
+                        title = ''
+                    self.show_image(denoised, title)
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
