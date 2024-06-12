@@ -13,9 +13,9 @@ import logging
 import inspect
 
 PYRAMID_LEVELS = 3
-WINDOW_SIDE = 3 # 7
+WINDOW_SIDE = 3 # Size of the (Gaussian) window use for everating the points, before computing the OF. Used to minimize the impact of noise. Default: 7
 ITERATIONS = 5
-N_POLY = 5 # 11
+N_POLY = 5 # Size of the Gaussian window used for computing the applicability used for computing the polinomial expansion. Controls the scale of the structures we want to estimate for. Default: 11
 
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
@@ -170,7 +170,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE,
+        window_side=WINDOW_SIDE, # Control the size of the 3D gaussian kernel used to compute the polynomial expansion. 
         iterations=ITERATIONS,
         N_poly=N_POLY,
         block_size=(256, 256, 256),
