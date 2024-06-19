@@ -207,15 +207,15 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 threads_per_block=threads_per_block)
             acc_volume += shaked_and_compensated_noisy_volume
 
-            if self.logging_level <= logging.INFO:
-                denoised = acc_volume/(i + 1)
-                if self.show_image != None:
-                    if self.quality_index != None:
-                        self.quality_index = self.get_quality(noisy_volume, denoised)
-                        title = f"iter={i} DQI={self.quality_index:3.2f}"
-                    else:
-                        title = ''
-                    self.show_image(denoised, title)
+            if self.quality_index != None:
+                denoised = acc_volume/(i + 2)
+                self.quality_index = self.get_quality(noisy_volume, denoised)
+                title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
+            else:
+                title = ''
+            if self.show_image != None:
+                self.show_image(denoised, title)
+
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
