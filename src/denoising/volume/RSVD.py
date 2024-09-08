@@ -7,19 +7,22 @@ import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
 from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
 from motion_estimation._3D.project_opticalflow3d import Volume_Projection
-
+#import information_theory
+#from matplotlib import pyplot as plt
 import logging
 import inspect
 
 PYRAMID_LEVELS = 3
-WINDOW_SIDE = 5
+WINDOW_SIDE = 3 # Size of the (Gaussian) window use for everating the points, before computing the OF. Used to minimize the impact of noise. Default: 7
 ITERATIONS = 5
-N_POLY = 11
+N_POLY = 5 # Size of the Gaussian window used for computing the applicability used for computing the polinomial expansion. Controls the scale of the structures we want to estimate for. Default: 11
 
 class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
     def __init__(
         self,
-        logging_level=logging.INFO
+        logging_level=logging.INFO,
+        show_image=None,
+        get_quality=None
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
@@ -29,28 +32,35 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         #self.logger.setLevel(logging_level)
         self.logging_level = logging_level
 
-        if self.logging_level <= logging.INFO:
-            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-            '''
-            args, _, _, values = inspect.getargvalues(inspect.currentframe())
-            for arg in args:
-                if isinstance(values[arg], np.ndarray):
-                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
-                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
-                else:
-                    print(f"{arg}: {values[arg]}")
-            '''
+        #if self.logging_level <= logging.INFO:
+        #    print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        #    '''
+        #    args, _, _, values = inspect.getargvalues(inspect.currentframe())
+        #    for arg in args:
+        #        if isinstance(values[arg], np.ndarray):
+        #            print(f"{arg}.shape: {values[arg].shape}", end=' ')
+        #            print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+        #        else:
+        #            print(f"{arg}: {values[arg]}")
+        #    '''
+
+        self.show_image = show_image
+        self.get_quality = get_quality
+        self.quality_index = 0.0
 
         if self.logging_level <= logging.INFO:
             self.max = 0
             self.min = 0
         print(f"{'iter':>5s}", end='')
-        print(f"{'min_shaking':>15s}", end='')
-        print(f"{'max_shaking':>15s}", end='')
-        print(f"{'min_flow':>15s}", end='')
-        print(f"{'avg_abs_flow':>15s}", end='')
-        print(f"{'max_flow':>15s}", end='')
-        print(f"{'time':>15s}", end='')
+        print(f"{'min_shaking':>16s}", end='')
+        print(f"{'avg_abs_shaking':>16s}", end='')
+        print(f"{'max_shaking':>16s}", end='')
+        print(f"{'min_flow':>16s}", end='')
+        print(f"{'avg_abs_flow':>16s}", end='')
+        print(f"{'max_flow':>16s}", end='')
+        print(f"{'time':>16s}", end='')
+        if get_quality!=None:
+            print(f"{'quality_index':>16s}", end='')
         print()
 
         self.stop_event = threading.Event()
@@ -65,12 +75,15 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             time_1 = time.perf_counter()
             running_time = time_1 - self.time_0
             print(f"{self.iter:>5d}", end='')
-            print(f"{np.min(self.displacements):>15.2f}", end='')
-            print(f"{np.max(self.displacements):>15.2f}", end='')
-            print(f"{np.min(self.flow):>15.2f}", end='')
-            print(f"{np.average(np.abs(self.flow)):>15.2f}", end='')
-            print(f"{np.max(self.flow):>15.2f}", end='')
-            print(f"{running_time:>15.2f}", end='')
+            print(f"{np.min(self.displacements):>16.2f}", end='')
+            print(f"{np.average(np.abs(self.displacements)):>16.2f}", end='')
+            print(f"{np.max(self.displacements):>16.2f}", end='')
+            print(f"{np.min(self.flow):>16.2f}", end='')
+            print(f"{np.average(np.abs(self.flow)):>16.2f}", end='')
+            print(f"{np.max(self.flow):>16.2f}", end='')
+            print(f"{running_time:>16.2f}", end='')
+            if self.get_quality!=None:
+                print(f"{self.quality_index:>16.4f}", end='')
             print()
             self.stop_event.clear()
             self.time_0 = time.perf_counter()
@@ -84,6 +97,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -122,10 +136,11 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 
         return shaked_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block, use_gpu=True):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -145,7 +160,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
             block_size=block_size,
             overlap=overlap,
             threads_per_block=threads_per_block)
-        projection = self.remap(reference, self.flow)
+        projection = self.remap(volume=reference, flow=self.flow, use_gpu=use_gpu)
         return projection
 
     def filter_volume(
@@ -155,16 +170,17 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE,
+        window_side=WINDOW_SIDE, # Control the size of the 3D gaussian kernel used to compute the polynomial expansion. 
         iterations=ITERATIONS,
         N_poly=N_POLY,
         block_size=(256, 256, 256),
         overlap=(8, 8, 8),
-        threads_per_block=(8, 8, 8)
+        threads_per_block=(8, 8, 8),
     ):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -190,6 +206,16 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 overlap=overlap,
                 threads_per_block=threads_per_block)
             acc_volume += shaked_and_compensated_noisy_volume
+
+            if self.quality_index != None:
+                denoised = acc_volume/(i + 2)
+                self.quality_index = self.get_quality(noisy_volume, denoised)
+                title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
+            else:
+                title = ''
+            if self.show_image != None:
+                self.show_image(denoised, title)
+
             self.stop_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
@@ -260,10 +286,10 @@ class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estima
         N_iters=25,
         mean=0.0,
         std_dev=1.0,
-        pyramid_levels=3,
-        window_side=5,
-        iterations=2,
-        N_poly=5,
+        pyramid_levels=PYRAMID_LEVELS,
+        window_side=WINDOW_SIDE,
+        iterations=ITERATIONS,
+        N_poly=N_POLY,
         interpolation_mode=cv2.INTER_LINEAR,
         extension_mode=cv2.BORDER_REPLICATE
     ):
