@@ -1,23 +1,26 @@
-'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
-'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
+'''Random Shaking Volume Denoising.'''
+#'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
+#'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
 import threading
 import time
 import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
-from motion_estimation._3D.project_opticalflow3d import Volume_Projection
+from motion_estimation._3D.farneback_opticalflow3d import OF_Estimation
+from motion_estimation._3D.project_opticalflow3d import Projection
 #import information_theory
 #from matplotlib import pyplot as plt
 import logging
 import inspect
 
 PYRAMID_LEVELS = 3
-WINDOW_SIDE = 3 # Size of the (Gaussian) window use for everating the points, before computing the OF. Used to minimize the impact of noise. Default: 7
+SPATIAL_SIZE = 7
 ITERATIONS = 5
-N_POLY = 5 # Size of the Gaussian window used for computing the applicability used for computing the polinomial expansion. Controls the scale of the structures we want to estimate for. Default: 11
+SIGMA_K = 5
+FILTER_SIZE = 21
+FILTER_TYPE = "box"
 
-class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
+class Random_Shaking_Denoising(OF_Estimation, Projection):
     def __init__(
         self,
         logging_level=logging.INFO,
@@ -26,8 +29,8 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
-        _3D_OF_Estimation.__init__(self, logging_level)
-        Volume_Projection.__init__(self, logging_level)
+        OF_Estimation.__init__(self, logging_level)
+        Projection.__init__(self, logging_level)
         #self.logger = logging.getLogger(__name__)
         #self.logger.setLevel(logging_level)
         self.logging_level = logging_level
@@ -136,7 +139,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 
         return shaked_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block, use_gpu=True):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing, block_size, overlap, threads_per_block, use_gpu=True):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -152,11 +155,13 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         self.flow = self.pyramid_get_flow(
             target=target,
             reference=reference,
-            flow=None,
             pyramid_levels=pyramid_levels,
-            window_side=window_side,
+            spatial_size=spatial_size,
             iterations=iterations,
-            N_poly=N_poly,
+            sigma_k=sigma_k,
+            filter_type=filter_type,
+            filter_size=filter_size,
+            presmoothing=presmoothing,
             block_size=block_size,
             overlap=overlap,
             threads_per_block=threads_per_block)
@@ -170,9 +175,12 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE, # Control the size of the 3D gaussian kernel used to compute the polynomial expansion. 
+        spatial_size=SPATIAL_SIZE,
         iterations=ITERATIONS,
-        N_poly=N_POLY,
+        sigma_k=SIGMA_K,
+        filter_type=FILTER_TYPE,
+        filter_size=FILTER_SIZE,
+        presmoothing=None,
         block_size=(256, 256, 256),
         overlap=(8, 8, 8),
         threads_per_block=(8, 8, 8),
@@ -199,9 +207,12 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 reference=denoised_volume,
                 target=shaked_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                window_side=window_side,
+                spatial_size=spatial_size,
                 iterations=iterations,
-                N_poly=N_poly,
+                sigma_k=sigma_k,
+                filter_type=filter_type,
+                filter_size=filter_size,
+                presmoothing=presmoothing,
                 block_size=block_size,
                 overlap=overlap,
                 threads_per_block=threads_per_block)
@@ -287,9 +298,9 @@ class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estima
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE,
+        window_side=5,
         iterations=ITERATIONS,
-        N_poly=N_POLY,
+        N_poly=1.2,
         interpolation_mode=cv2.INTER_LINEAR,
         extension_mode=cv2.BORDER_REPLICATE
     ):
