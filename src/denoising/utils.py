@@ -1,3 +1,6 @@
+import numpy as np
+import scipy.ndimage
+
 def get_gaussian_kernel(sigma=1):
     number_of_coeffs = 3
     number_of_zeros = 0
