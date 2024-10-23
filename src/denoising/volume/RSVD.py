@@ -1,33 +1,53 @@
-'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
-'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
+'''Random Shaking Volume Denoising.'''
+#'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
+#'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
 import threading
 import time
 import numpy as np
 # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._3D.farneback_opticalflow3d import Farneback_Estimator as _3D_OF_Estimation 
-from motion_estimation._3D.project_opticalflow3d import Volume_Projection
+from motion_estimation._3D.farneback_opticalflow3d import OF_Estimation
+from motion_estimation._3D.project_opticalflow3d import Projection
 #import information_theory
 #from matplotlib import pyplot as plt
 import logging
 import inspect
 
-PYRAMID_LEVELS = 3
-WINDOW_SIDE = 3 # Size of the (Gaussian) window use for everating the points, before computing the OF. Used to minimize the impact of noise. Default: 7
-ITERATIONS = 5
-N_POLY = 5 # Size of the Gaussian window used for computing the applicability used for computing the polinomial expansion. Controls the scale of the structures we want to estimate for. Default: 11
+N_ITERS = 25
+STD_DEV = 1.5
 
-class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
+SPATIAL_SIZE = 9    # Side of the Gaussian applicability window used
+                    # during the polynomial expansion. Applicability (that is, the relative importance of the points in the neighborhood) size should match the scale of the structures we wnat to estimate orientation for (page 77). However, small applicabilities are more sensitive to noise.
+SIGMA_K = 0.15      # Scaling factor used to calculate the standard
+                    # deviation of the Gaussian applicability. The
+                    # formula to calculate the standard deviation is
+                    # sigma = sigma_k*(spatial_size - 1).
+
+# OF estimation
+FILTER_TYPE = "box" # Shape of the filer used to average the flow. It
+                    # can be "box" or "gaussian".
+FILTER_SIZE = 21    # Size of the filter used to average the G and
+                    # matrices (see Eqs. 4.7 and 4.27 of the thesis).
+PYRAMID_LEVELS = 3  # Number of pyramid layers
+ITERATIONS = 5      # Number of iterations at each pyramid level
+PYRAMID_SCALE = 0.5
+
+class Random_Shaking_Denoising(OF_Estimation, Projection):
+#class Random_Shaking_Denoising:
     def __init__(
         self,
         logging_level=logging.INFO,
+        block_size=(256, 256, 256),
+        overlap=(8, 8, 8),
+        threads_per_block=(8, 8, 8),
+        use_gpu=True,
+        device_id=0,
         show_image=None,
         get_quality=None
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
-        _3D_OF_Estimation.__init__(self, logging_level)
-        Volume_Projection.__init__(self, logging_level)
+        #OF_Estimation.__init__(self, logging_level)
         #self.logger = logging.getLogger(__name__)
         #self.logger.setLevel(logging_level)
         self.logging_level = logging_level
@@ -43,6 +63,17 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         #        else:
         #            print(f"{arg}: {values[arg]}")
         #    '''
+
+        OF_Estimation.__init__(
+            self,
+            logging_level = logging_level,
+            block_size = block_size,
+            overlap = overlap,
+            threads_per_block = threads_per_block,
+            use_gpu = use_gpu,
+            device_id = device_id)
+
+        Projection.__init__(self, logging_level)
 
         self.show_image = show_image
         self.get_quality = get_quality
@@ -136,7 +167,7 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 
         return shaked_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, block_size, overlap, threads_per_block, use_gpu=True):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -152,16 +183,91 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         self.flow = self.pyramid_get_flow(
             target=target,
             reference=reference,
-            flow=None,
             pyramid_levels=pyramid_levels,
-            window_side=window_side,
+            spatial_size=spatial_size,
             iterations=iterations,
-            N_poly=N_poly,
-            block_size=block_size,
-            overlap=overlap,
-            threads_per_block=threads_per_block)
-        projection = self.remap(volume=reference, flow=self.flow, use_gpu=use_gpu)
+            sigma_k=sigma_k,
+            filter_type=filter_type,
+            filter_size=filter_size,
+            presmoothing=presmoothing)
+        projection = self.remap(volume=reference, flow=self.flow, use_gpu=self.use_gpu)
         return projection
+
+    def project_volume_reference_to_target_old(
+        self,
+        reference,
+        target,
+        OF_estimator,
+        projector
+    ):
+
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+
+        self.flow = OF_estimator.pyramid_get_flow(
+            target=target,
+            reference=reference,
+            OF_estimator = OF_estimator)
+        projection = projector.remap(volume=reference, flow=self.flow, use_gpu=use_gpu)
+        return projection
+
+    def filter_volume_old(
+        self,
+        noisy_volume,
+        OF_estimator,
+        projector,
+        N_iters=N_ITERS,
+        mean=0.0,
+        std_dev=STD_DEV
+    ):
+        
+        if self.logging_level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logging_level < logging.INFO:
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}") 
+
+        #total_vol=(noisy_volume.shape[0], noisy_volume.shape[1], noisy_volume.shape[2]),
+
+        acc_volume = np.zeros_like(noisy_volume, dtype=np.float32)
+        acc_volume[...] = noisy_volume
+        for i in range(N_iters):
+            self.iter = i
+            denoised_volume = acc_volume/(i+1)
+            shaked_noisy_volume = self.shake_volume(noisy_volume, mean=mean, std_dev=std_dev)
+            shaked_and_compensated_noisy_volume = self.project_volume_reference_to_target(
+                reference=denoised_volume,
+                target=shaked_noisy_volume,
+                OF_estimator=OF_estimator,
+                projector=projector)
+            acc_volume += shaked_and_compensated_noisy_volume
+
+            if self.quality_index != None:
+                denoised = acc_volume/(i + 2)
+                self.quality_index = self.get_quality(noisy_volume, denoised)
+                title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
+            else:
+                title = ''
+            if self.show_image != None:
+                self.show_image(denoised, title)
+
+            self.stop_event.set()
+        denoised_volume = acc_volume/(N_iters + 1)
+
+        return denoised_volume
 
     def filter_volume(
         self,
@@ -170,12 +276,12 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE, # Control the size of the 3D gaussian kernel used to compute the polynomial expansion. 
+        spatial_size=SPATIAL_SIZE,
         iterations=ITERATIONS,
-        N_poly=N_POLY,
-        block_size=(256, 256, 256),
-        overlap=(8, 8, 8),
-        threads_per_block=(8, 8, 8),
+        sigma_k=SIGMA_K,
+        filter_type=FILTER_TYPE,
+        filter_size=FILTER_SIZE,
+        presmoothing=None
     ):
 
         if self.logging_level <= logging.INFO:
@@ -199,12 +305,12 @@ class Random_Shaking_Denoising(_3D_OF_Estimation, Volume_Projection):
                 reference=denoised_volume,
                 target=shaked_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                window_side=window_side,
+                spatial_size=spatial_size,
                 iterations=iterations,
-                N_poly=N_poly,
-                block_size=block_size,
-                overlap=overlap,
-                threads_per_block=threads_per_block)
+                sigma_k=sigma_k,
+                filter_type=filter_type,
+                filter_size=filter_size,
+                presmoothing=presmoothing)
             acc_volume += shaked_and_compensated_noisy_volume
 
             if self.quality_index != None:
@@ -287,9 +393,9 @@ class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estima
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        window_side=WINDOW_SIDE,
+        window_side=5,
         iterations=ITERATIONS,
-        N_poly=N_POLY,
+        N_poly=1.2,
         interpolation_mode=cv2.INTER_LINEAR,
         extension_mode=cv2.BORDER_REPLICATE
     ):
