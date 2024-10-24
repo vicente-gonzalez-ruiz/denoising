@@ -11,3 +11,7 @@ def get_gaussian_kernel(sigma=1):
         number_of_zeros = coeffs.size - np.count_nonzero(coeffs)
         number_of_coeffs += 1
     return coeffs[1:-1]
+
+def gaussian_noise(shape, mean=0, sigma=20):
+    noise = np.random.normal(mean, sigma, shape).reshape(shape)
+    return noise
