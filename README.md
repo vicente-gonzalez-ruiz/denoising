@@ -1,2 +1,1 @@
-# denoising
-Signals denoising.
+# Signal denoising
