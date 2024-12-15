@@ -176,8 +176,8 @@ Some SDN cases are:
   \end{equation}
   where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. The noise present
   in synthetic aperture radar (SAR) and ultrasound images is usually
-  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of how zero-mean Gaussian noise
-  is cancelled by stacking.
+  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of
+  how zero-mean Gaussian noise is cancelled by stacking.
 
   \begin{figure}
     \centering
@@ -234,8 +234,27 @@ Some SDN cases are:
   interval (for example, of time) when, in average, we have
   $\lambda\in\mathbb{R}$ events in such interval size). Poisson noise
   can be significative in capturing devices that work with low doses
-  of electrons, such as often happens in Electron Microscopy.
-\end{enumerate}
+  of electrons, such as often happens in electron microscopy.
+ Fig.~\ref{fig:Poisson} shows an example of
+  how zero-mean Gaussian noise is cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \includegraphics{barb} & \includegraphics{Poisson_barb} \\
+        \includegraphics{denoised_Poisson_barb} & \includegraphics{PSNR_Poisson_barb}
+      \end{tabular}
+    }
+    \caption{Effect of Poisson noise in an image and how stacking can
+      be used to reduced by stacking. The clean image of Barb is shown
+      on the top left, and a noisy version on the top right. On to
+      bottom, the left image shows a denoised version after stacking
+      and the right graph shows the performance of the stacking
+      process for different levels of noise.\label{fig:Poisson}}
+  \end{figure}\end{enumerate}
 
 \section{Metrics}
 
