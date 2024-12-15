@@ -2,6 +2,10 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{graphicx}\graphicspath{{figs}{.}}
+\usepackage{subcaption}
+\usepackage{tabularx}
+%\usepackage[margin=1in]{geometry}
 
 \title{Denoising in Electron Microscopy Imaging}
 
@@ -18,7 +22,7 @@
   denoised version of the signal and we have not.
 \end{abstract}
 
-\section{Signal denoising by averaging}
+\section{Noise reduction by stacking noisy instances}
 Let $\mathbf{X}$ be a \emph{clean} (without noise, ground truth
 usually unknown) tensor\footnote{Which usually represents an image or
   a volume.}, and $\hat{\mathbf X}^{(i)}$ the $i$-th noisy-version
@@ -52,7 +56,8 @@ known, we can still find ${\mathbf X}$ through
   {\mathbf X} = \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right]  - \overline{\mathbf N},
   \label{eq:averaging_result_with_bias}
 \end{equation}
-where, in general, $\overline{\mathbf N}$ can be a function of the amplitude of the noise. 
+where, in general, $\overline{\mathbf N}$ can be a function of the
+amplitude of the noise.
 
 As can be seen in Eq.~\ref{eq:averaging_result}, notice that we are
 supposing an impossible scenario in which we have an infinite number
@@ -86,10 +91,8 @@ SIN models, also called additive noise models, are defined by
 Some examples of SIN are:
 \begin{enumerate}
 \item \textbf{Quantization noise}, that is usually modeled as additive
-  zero-mean uniform
-  noise\footnote{\url{https://github.com/vicente-gonzalez-ruiz/denoising_analysis_using_FSC/tree/main/figs/average_denoising.ipynb}}
-  (${\mathbf N}\sim{\mathcal U}(c)$) with PDF (Probability Density
-  Function) defined as
+  zero-mean uniform noise (${\mathbf N}\sim{\mathcal U}(c)$) with PDF
+  (Probability Density Function) defined as
   \begin{equation}
     f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) = \begin{cases}
       \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
@@ -98,9 +101,30 @@ Some examples of SIN are:
   \end{equation}
   $x$ and $f$ continuous, where $\Pr(\cdot)$ represents the
   probability of $\cdot$, and $c$ controls the amplitude of the
-  noise. Notice that in this case,
-  $\overline{\mathbf{N}}^{(i)}=0$ and therefore,
-  $\overline{\mathbf N}={\mathbf 0}$.
+  noise. Notice that in this case, $\overline{\mathbf{N}}^{(i)}=0$ and
+  therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
+  Eq.~\ref{eq:noise_expectation_2}). Fig.~\ref{fig:0MAUN} shows an
+  example of how zero-mean uniform noise is cancelled by stacking.
+  
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \includegraphics{barb} & \includegraphics{0MAUN_barb} \\
+        \includegraphics{denoised_0MAUN_barb} & \includegraphics{PSNR_0MAUN_barb}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean additive uniform noise in an image
+      and how stacking can be used to reduced by stacking. The clean
+      image of Barb is shown on the top left, and a noisy version on
+      the top right. On to bottom, the left image shows a denoised
+      version after stacking and the right graph shows the performance
+      of the stacking process for different levels of
+      noise.\label{fig:0MAUN}}
+  \end{figure}
+
 \item \textbf{Thermal noise}, generally modeled as additive zero-mean
   Gaussian noise (${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with
   PDF defined by
@@ -109,7 +133,28 @@ Some examples of SIN are:
   \end{equation}
   $x$ and $f$ continuous, representing $\mu$ the mean and $\sigma$ the
   variance of the noise. Again, $\overline{\mathbf{N}}^{(i)}=0$ i.e.,
-  $\overline{\mathbf N}={\mathbf 0}$.
+  $\overline{\mathbf N}={\mathbf 0}$. Fig.~\ref{fig:0MAGN} shows an
+  example of how zero-mean Gaussian noise is cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \includegraphics{barb} & \includegraphics{0MAGN_barb} \\
+        \includegraphics{denoised_0MAGN_barb} & \includegraphics{PSNR_0MAGN_barb}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean additive Gaussian noise in an image
+      and how stacking can be used to reduced by stacking. The clean
+      image of Barb is shown on the top left, and a noisy version on
+      the top right. On to bottom, the left image shows a denoised
+      version after stacking and the right graph shows the performance
+      of the stacking process for different levels of
+      noise.\label{fig:0MAGN}}
+  \end{figure}
+
 \end{enumerate}
 
 \subsection{Signal-dependent noise (SDN) models}
@@ -131,8 +176,28 @@ Some SDN cases are:
   \end{equation}
   where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. The noise present
   in synthetic aperture radar (SAR) and ultrasound images is usually
-  considered speckle noise.
+  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of how zero-mean Gaussian noise
+  is cancelled by stacking.
 
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \includegraphics{barb} & \includegraphics{0MMGN_barb} \\
+        \includegraphics{denoised_0MMGN_barb} & \includegraphics{PSNR_0MMGN_barb}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean multiplicative Gaussian noise in an
+      image and how stacking can be used to reduced by stacking. The
+      clean image of Barb is shown on the top left, and a noisy
+      version on the top right. On to bottom, the left image shows a
+      denoised version after stacking and the right graph shows the
+      performance of the stacking process for different levels of
+      noise.\label{fig:0MMGN}}
+  \end{figure}
+  
   Another distribution used for modeling speckle noise is the Rice
   distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
   \begin{equation}
@@ -156,7 +221,7 @@ Some SDN cases are:
   ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
   is not zero. The noise that corrupts magnetic resonance images is
   usually modeled as Rician noise.
-
+  
 \item \textbf{Shot noise} modeled as Poisson noise
   ($\mathbf{N}\sim\mathrm{Poisson}(\lambda)$), with PMD (Probability Mass
   Distribution)\footnote{Also called discrete PDF.} equal to
