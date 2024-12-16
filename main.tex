@@ -3,8 +3,6 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{graphicx}\graphicspath{{figs}{.}}
-\usepackage{subcaption}
-\usepackage{tabularx}
 %\usepackage[margin=1in]{geometry}
 
 \title{Denoising in Electron Microscopy Imaging}
@@ -112,7 +110,7 @@ Some examples of SIN are:
       \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
       \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
       \begin{tabular}{cc}
-        \includegraphics{barb} & \includegraphics{0MAUN_barb} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MAUN-Barb}{\includegraphics{0MAUN_barb}} \\
         \includegraphics{denoised_0MAUN_barb} & \includegraphics{PSNR_0MAUN_barb}
       \end{tabular}
     }
