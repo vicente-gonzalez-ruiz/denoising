@@ -20,240 +20,6 @@
   denoised version of the signal and we have not.
 \end{abstract}
 
-\section{Noise reduction by stacking noisy instances}
-Let $\mathbf{X}$ be a \emph{clean} (without noise, ground truth
-usually unknown) tensor\footnote{Which usually represents an image or
-  a volume.}, and $\hat{\mathbf X}^{(i)}$ the $i$-th noisy-version
-tensor random instance of $\mathbf{X}$ generated, in general, through
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
-  \label{eq:general_model}
-\end{equation}
-where ${\mathbf N}^{(i)}$ the $i$-th (unknown) noise tensor instance
-with the same shape as $\mathbf{X}$.
-
-We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
-independent, and therefore, nothing can be said about
-${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
-viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
-from a single $\hat{\mathbf X}^{(i)}$, althouth we can approximate ${\mathbf X}$ by
-averaging $\hat{\mathbf X}^{(i)}$ instances, performing
-\begin{equation}
-  \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] = \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
-  \label{eq:averaging_result}
-\end{equation}
-Notice that Eq.~\ref{eq:averaging_result} is true if 
-\begin{equation}
-  \overline{\mathbf N} = \lim_{I \to \infty}{\mathbb E}[\{{\mathbf N^{(i)}}\}_{i=1}^I]=\lim_{I \to \infty}\frac{1}{I} \sum_{i=1}^I {\mathbf N}^{(i)}={\mathbf 0},
-  \label{eq:noise_expectation_2}
-\end{equation}
-where ${\mathbf 0}$ is the zero tensor with the same shape as
-$\mathbf{X}$, and when $\overline{\mathbf N}\ne {\mathbf 0}$, but
-known, we can still find ${\mathbf X}$ through
-\begin{equation}
-  {\mathbf X} = \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right]  - \overline{\mathbf N},
-  \label{eq:averaging_result_with_bias}
-\end{equation}
-where, in general, $\overline{\mathbf N}$ can be a function of the
-amplitude of the noise.
-
-As can be seen in Eq.~\ref{eq:averaging_result}, notice that we are
-supposing an impossible scenario in which we have an infinite number
-of noisy instances of the clean signal. Logically, in practice, $I$
-will be finite and we will be able only to obtain an approximation of
-${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
-
-\section{Noise models}
-\label{sec:noise_models}
-
-\subsection{Signal-independent noise (SIN) models}
-In SIN models, the noise is statistically i.i.d. (independent and
-identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
-\begin{equation}
-  {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
-  \label{eq:noise_expectation_1}
-\end{equation}
-where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
-of ${\mathbf N}^{(i)}$, and
-\begin{equation}
-  J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
-\end{equation}
-being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
-
-SIN models, also called additive noise models, are defined by
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
-  \label{eq:additive_noisy_model}
-\end{equation}
-
-Some examples of SIN are:
-\begin{enumerate}
-\item \textbf{Quantization noise}, that is usually modeled as additive
-  zero-mean uniform noise (${\mathbf N}\sim{\mathcal U}(c)$) with PDF
-  (Probability Density Function) defined as
-  \begin{equation}
-    f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) = \begin{cases}
-      \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
-      0 & \text{for } x < c \ \text{ or } \ x > -c,
-    \end{cases}
-  \end{equation}
-  $x$ and $f$ continuous, where $\Pr(\cdot)$ represents the
-  probability of $\cdot$, and $c$ controls the amplitude of the
-  noise. Notice that in this case, $\overline{\mathbf{N}}^{(i)}=0$ and
-  therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
-  Eq.~\ref{eq:noise_expectation_2}). Fig.~\ref{fig:0MAUN} shows an
-  example of how zero-mean uniform noise is cancelled by stacking.
-  
-  \begin{figure}
-    \centering
-    \resizebox{1.0\textwidth}{!}{
-      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
-      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-      \begin{tabular}{cc}
-        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MAUN-Barb}{\includegraphics{0MAUN_barb}} \\
-        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MAUN_barb}{\includegraphics{denoised_0MAUN_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MAUN_barb}{\includegraphics{PSNR_0MAUN_barb}}
-      \end{tabular}
-    }
-    \caption{Effect of zero-mean additive uniform noise in an image
-      and how stacking can be used to reduced by stacking. The clean
-      image of Barb is shown on the top left, and a noisy version on
-      the top right. On to bottom, the left image shows a denoised
-      version after stacking and the right graph shows the performance
-      of the stacking process for different levels of
-      noise.\label{fig:0MAUN}}
-  \end{figure}
-
-\item \textbf{Thermal noise}, generally modeled as additive zero-mean
-  Gaussian noise (${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with
-  PDF defined by
-  \begin{equation}
-    f(x; \sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} },
-  \end{equation}
-  $x$ and $f$ continuous, representing $\mu$ the mean and $\sigma$ the
-  variance of the noise. Again, $\overline{\mathbf{N}}^{(i)}=0$ i.e.,
-  $\overline{\mathbf N}={\mathbf 0}$. Fig.~\ref{fig:0MAGN} shows an
-  example of how zero-mean Gaussian noise is cancelled by stacking.
-
-  \begin{figure}
-    \centering
-    \resizebox{1.0\textwidth}{!}{
-      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
-      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-      \begin{tabular}{cc}
-        \includegraphics{barb} & \includegraphics{0MAGN_barb} \\
-        \includegraphics{denoised_0MAGN_barb} & \includegraphics{PSNR_0MAGN_barb}
-      \end{tabular}
-    }
-    \caption{Effect of zero-mean additive Gaussian noise in an image
-      and how stacking can be used to reduced by stacking. The clean
-      image of Barb is shown on the top left, and a noisy version on
-      the top right. On to bottom, the left image shows a denoised
-      version after stacking and the right graph shows the performance
-      of the stacking process for different levels of
-      noise.\label{fig:0MAGN}}
-  \end{figure}
-
-\end{enumerate}
-
-\subsection{Signal-dependent noise (SDN) models}
-In SDN models, the amplitude of the random noise samples depends on
-the clean signal (see Eq.~\ref{eq:general_model}).
-
-%\begin{equation}
-%  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
-%  \label{eq:SDN_model}
-%\end{equation}
-
-Some SDN cases are:
-\begin{enumerate}
-\item \textbf{Speckle noise}, which can be considered multiplicative
-  zero-mean Gaussian noise, modeled as
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
-    \label{eq:MGN}
-  \end{equation}
-  where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. The noise present
-  in synthetic aperture radar (SAR) and ultrasound images is usually
-  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of
-  how zero-mean Gaussian noise is cancelled by stacking.
-
-  \begin{figure}
-    \centering
-    \resizebox{1.0\textwidth}{!}{
-      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
-      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-      \begin{tabular}{cc}
-        \includegraphics{barb} & \includegraphics{0MMGN_barb} \\
-        \includegraphics{denoised_0MMGN_barb} & \includegraphics{PSNR_0MMGN_barb}
-      \end{tabular}
-    }
-    \caption{Effect of zero-mean multiplicative Gaussian noise in an
-      image and how stacking can be used to reduced by stacking. The
-      clean image of Barb is shown on the top left, and a noisy
-      version on the top right. On to bottom, the left image shows a
-      denoised version after stacking and the right graph shows the
-      performance of the stacking process for different levels of
-      noise.\label{fig:0MMGN}}
-  \end{figure}
-  
-  Another distribution used for modeling speckle noise is the Rice
-  distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
-  \begin{equation}
-    f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
-  \end{equation}
-  where $x$ is continuous, and $I_o$ is the modified Bessel function
-  of the first kind with order zero. Rician noisy tensor instances can
-  be generated with
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
-  \end{equation}
-  %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
-  %which is defined by the PDF
-  %\begin{equation}
-  %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
-  %\end{equation}
-  %continuous both, $x$ and $\sigma$ (the scale parameter) is a
-  %particular case of Rice distribution when $\nu=0$.
-  Notice that, even being $\nu=0$ (in whose case we are working with
-  the Rayleigh distribution
-  ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
-  is not zero. The noise that corrupts magnetic resonance images is
-  usually modeled as Rician noise.
-  
-\item \textbf{Shot noise} modeled as Poisson noise
-  ($\mathbf{N}\sim\mathrm{Poisson}(\lambda)$), with PMD (Probability Mass
-  Distribution)\footnote{Also called discrete PDF.} equal to
-  \begin{equation}
-    f(k; \lambda={\mathbf X}) = \Pr({\mathbf N}^{(i)}{=}k) = \frac{\lambda^k e^{-\lambda}}{k!},
-    \label{eq:PN}
-  \end{equation}
-  where both $f\in\mathbb{R}$, $k\in\mathbb{Z}$ are discrete ($f$
-  describes the probability of $k$ events occurring within an observed
-  interval (for example, of time) when, in average, we have
-  $\lambda\in\mathbb{R}$ events in such interval size). Poisson noise
-  can be significative in capturing devices that work with low doses
-  of electrons, such as often happens in electron microscopy.
- Fig.~\ref{fig:Poisson} shows an example of
-  how Poisson noise is cancelled by stacking.
-
-  \begin{figure}
-    \centering
-    \resizebox{1.0\textwidth}{!}{
-      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
-      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-      \begin{tabular}{cc}
-        \includegraphics{barb} & \includegraphics{Poisson_barb} \\
-        \includegraphics{denoised_Poisson_barb} & \includegraphics{PSNR_Poisson_barb}
-      \end{tabular}
-    }
-    \caption{Effect of Poisson noise in an image and how stacking can
-      be used to reduced by stacking. The clean image of Barb is shown
-      on the top left, and a noisy version on the top right. On to
-      bottom, the left image shows a denoised version after stacking
-      and the right graph shows the performance of the stacking
-      process for different levels of noise.\label{fig:Poisson}}
-  \end{figure}\end{enumerate}
-
 \section{Metrics}
 
 The following metrics have been used to compare the noisy (original)
@@ -326,6 +92,263 @@ even slices, in each dimension (resulting a total of 6 subvolumes),
 computing the FSC and averaging the correlations
 \cite{verbeke2024self}. Another approach can split the data into two
 random half volumes \cite{verbeke2024self}.
+
+% ¿Se puede poner como primera técnica de denoising??
+\section{Noise reduction by stacking noisy instances}
+Let $\mathbf{X}$ be a \emph{clean} (without noise, ground truth
+usually unknown) tensor\footnote{Which usually represents an image or
+  a volume.}, and $\hat{\mathbf X}^{(i)}$ the $i$-th noisy-version
+tensor random instance of $\mathbf{X}$ generated, in general, through
+\begin{equation}
+  \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
+  \label{eq:general_model}
+\end{equation}
+where ${\mathbf N}^{(i)}$ the $i$-th (unknown) noise tensor instance
+with the same shape as $\mathbf{X}$.
+
+We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
+independent, and therefore, nothing can be said about
+${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
+viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
+from a single $\hat{\mathbf X}^{(i)}$, althouth we can approximate ${\mathbf X}$ by
+averaging $\hat{\mathbf X}^{(i)}$ instances, performing
+\begin{equation}
+  \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] = \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
+  \label{eq:averaging_result}
+\end{equation}
+Notice that Eq.~\ref{eq:averaging_result} is true if 
+\begin{equation}
+  \overline{\mathbf N} = \lim_{I \to \infty}{\mathbb E}[\{{\mathbf N^{(i)}}\}_{i=1}^I]=\lim_{I \to \infty}\frac{1}{I} \sum_{i=1}^I {\mathbf N}^{(i)}={\mathbf 0},
+  \label{eq:noise_expectation_2}
+\end{equation}
+where ${\mathbf 0}$ is the zero tensor with the same shape as
+$\mathbf{X}$, and when $\overline{\mathbf N}\ne {\mathbf 0}$, but
+known, we can still find ${\mathbf X}$ through
+\begin{equation}
+  {\mathbf X} = \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right]  - \overline{\mathbf N},
+  \label{eq:averaging_result_with_bias}
+\end{equation}
+where, in general, $\overline{\mathbf N}$ can be a function of the
+amplitude of the noise.
+
+As can be seen in Eq.~\ref{eq:averaging_result}, notice that we are
+supposing an impossible scenario in which we have an infinite number
+of noisy instances of the clean signal. Logically, in practice, $I$
+will be finite and we will be able only to obtain an approximation of
+${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
+
+% ¿Se puede poner sin tener delante la primera técnica?
+\section{Noise models}
+\label{sec:noise_models}
+
+\subsection{Signal-independent noise (SIN) models}
+In SIN models, the noise is statistically i.i.d. (independent and
+identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
+\begin{equation}
+  {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
+  \label{eq:noise_expectation_1}
+\end{equation}
+where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
+of ${\mathbf N}^{(i)}$, and
+\begin{equation}
+  J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
+\end{equation}
+being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+
+SIN models, also called additive noise models, are defined by
+\begin{equation}
+  \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
+  \label{eq:additive_noisy_model}
+\end{equation}
+
+Some examples of SIN are:
+\begin{enumerate}
+\item \textbf{Quantization noise}, that is usually modeled as additive
+  zero-mean uniform noise (${\mathbf N}\sim{\mathcal U}(c)$) with PDF
+  (Probability Density Function) defined as
+  \begin{equation}
+    f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) = \begin{cases}
+      \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
+      0 & \text{for } x < c \ \text{ or } \ x > -c,
+    \end{cases}
+  \end{equation}
+  $x$ and $f$ continuous, where $\Pr(\cdot)$ represents the
+  probability of $\cdot$, and $c$ controls the amplitude of the
+  noise. Notice that in this case, $\overline{\mathbf{N}}^{(i)}=0$ and
+  therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
+  Eq.~\ref{eq:noise_expectation_2}). Fig.~\ref{fig:0MAUN} shows an
+  example of how zero-mean uniform noise is cancelled by stacking.
+  
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MAUN_barb}{\includegraphics{0MAUN_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MAUN_barb}{\includegraphics{denoised_0MAUN_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MAUN_barb}{\includegraphics{PSNR_0MAUN_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean additive uniform noise in an image
+      and how stacking can be used to reduced by stacking. The clean
+      image of Barb is shown on the top left, and a noisy version on
+      the top right. On to bottom, the left image shows a denoised
+      version after stacking and the right graph shows the performance
+      of the stacking process for different levels of
+      noise.\label{fig:0MAUN}}
+  \end{figure}
+
+\item \textbf{Thermal noise}, generally modeled as additive zero-mean
+  Gaussian noise (${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with
+  PDF defined by
+  \begin{equation}
+    f(x; \sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} },
+  \end{equation}
+  $x$ and $f$ continuous, representing $\mu$ the mean and $\sigma$ the
+  variance of the noise. Again, $\overline{\mathbf{N}}^{(i)}=0$ i.e.,
+  $\overline{\mathbf N}={\mathbf 0}$. Fig.~\ref{fig:0MAGN} shows an
+  example of how zero-mean Gaussian noise is cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MAGN_barb}{\includegraphics{0MAGN_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MAGN_barb}{\includegraphics{denoised_0MAGN_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MAGN_barb}{\includegraphics{PSNR_0MAGN_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean additive Gaussian noise in an image
+      and how stacking can be used to reduced by stacking. The clean
+      image of Barb is shown on the top left, and a noisy version on
+      the top right. On to bottom, the left image shows a denoised
+      version after stacking and the right graph shows the performance
+      of the stacking process for different levels of
+      noise.\label{fig:0MAGN}}
+  \end{figure}
+
+\end{enumerate}
+
+\subsection{Signal-dependent noise (SDN) models}
+In SDN models, the amplitude of the random noise samples depends on
+the clean signal (see Eq.~\ref{eq:general_model}).
+
+%\begin{equation}
+%  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
+%  \label{eq:SDN_model}
+%\end{equation}
+
+Some SDN cases are:
+\begin{enumerate}
+\item \textbf{Speckle noise}, which can be considered multiplicative
+  zero-mean Gaussian noise, modeled as
+  \begin{equation}
+    \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
+    \label{eq:MGN}
+  \end{equation}
+  where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. The noise present
+  in synthetic aperture radar (SAR) and ultrasound images is usually
+  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of
+  how zero-mean Gaussian noise is cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMGN_barb}{\includegraphics{0MMGN_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MMGN_barb}{\includegraphics{denoised_0MMGN_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MMGN_barb}{\includegraphics{PSNR_0MMGN_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean multiplicative Gaussian noise in an
+      image and how stacking can be used to reduced by stacking. The
+      clean image of Barb is shown on the top left, and a noisy
+      version on the top right. On to bottom, the left image shows a
+      denoised version after stacking and the right graph shows the
+      performance of the stacking process for different levels of
+      noise.\label{fig:0MMGN}}
+  \end{figure}
+  
+  Another distribution used for modeling speckle noise is the Rice
+  distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
+  \begin{equation}
+    f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
+  \end{equation}
+  where $x$ is continuous, and $I_o$ is the modified Bessel function
+  of the first kind with order zero. Rician noisy tensor instances can
+  be generated with
+  \begin{equation}
+    \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
+  \end{equation}
+  %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
+  %which is defined by the PDF
+  %\begin{equation}
+  %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
+  %\end{equation}
+  %continuous both, $x$ and $\sigma$ (the scale parameter) is a
+  %particular case of Rice distribution when $\nu=0$.
+  Notice that, even being $\nu=0$ (in whose case we are working with
+  the Rayleigh distribution
+  ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
+  is not zero. The noise that corrupts magnetic resonance images is
+  usually modeled as Rician/Rayleigh noise. Fig.~\ref{fig:Poisson}
+  shows an example of how Rayleigh noise is cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Rayleigh_barb}{\includegraphics{Rayleigh_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_Rayleigh_barb}{\includegraphics{denoised_Rayleigh_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_Rayleigh_barb}{\includegraphics{PSNR_Rayleigh_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of Rayleigh noise in an image and how stacking can
+      be used to reduced by stacking. The clean image of Barb is shown
+      on the top left, and a noisy version on the top right. On to
+      bottom, the left image shows a denoised version after stacking
+      and the right graph shows the performance of the stacking
+      process for different levels of noise.\label{fig:Rayleigh}}
+  \end{figure}
+
+\item \textbf{Shot noise} modeled as Poisson noise
+  ($\mathbf{N}\sim\mathrm{Poisson}(\lambda)$), with PMD (Probability Mass
+  Distribution)\footnote{Also called discrete PDF.} equal to
+  \begin{equation}
+    f(k; \lambda={\mathbf X}) = \Pr({\mathbf N}^{(i)}{=}k) = \frac{\lambda^k e^{-\lambda}}{k!},
+    \label{eq:PN}
+  \end{equation}
+  where both $f\in\mathbb{R}$, $k\in\mathbb{Z}$ are discrete ($f$
+  describes the probability of $k$ events occurring within an observed
+  interval (for example, of time) when, in average, we have
+  $\lambda\in\mathbb{R}$ events in such interval size). Poisson noise
+  can be significative in capturing devices that work with low doses
+  of electrons, such as often happens in electron microscopy.
+  Fig.~\ref{fig:Poisson} shows an example of how Poisson noise is
+  cancelled by stacking.
+
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Poisson_barb}{\includegraphics{Poisson_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_Poisson_barb}{\includegraphics{denoised_Poisson_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_Poisson_barb}{\includegraphics{PSNR_Poisson_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of Poisson noise in an image and how stacking can
+      be used to reduced by stacking. The clean image of Barb is shown
+      on the top left, and a noisy version on the top right. On to
+      bottom, the left image shows a denoised version after stacking
+      and the right graph shows the performance of the stacking
+      process for different levels of noise.\label{fig:Poisson}}
+  \end{figure}
+
+\end{enumerate}
 
 \section{Denoising techniques}
 
