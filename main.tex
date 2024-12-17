@@ -93,7 +93,6 @@ computing the FSC and averaging the correlations
 \cite{verbeke2024self}. Another approach can split the data into two
 random half volumes \cite{verbeke2024self}.
 
-% ¿Se puede poner como primera técnica de denoising??
 \section{Noise reduction by stacking noisy instances}
 Let $\mathbf{X}$ be a \emph{clean} (without noise, ground truth
 usually unknown) tensor\footnote{Which usually represents an image or
@@ -137,7 +136,6 @@ of noisy instances of the clean signal. Logically, in practice, $I$
 will be finite and we will be able only to obtain an approximation of
 ${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
 
-% ¿Se puede poner sin tener delante la primera técnica?
 \section{Noise models}
 \label{sec:noise_models}
 
@@ -351,6 +349,11 @@ Some SDN cases are:
 \end{enumerate}
 
 \section{Denoising techniques}
+
+We consider denoising techniques where there is only one noisy
+instance or a few instances, usually in the latter case with slightly
+different versions of the clean signal. Stacking as such is therefore
+excluded.
 
 \subsection{Gaussian Denoising (GD)}
 
