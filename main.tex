@@ -5,7 +5,7 @@
 \usepackage{graphicx}\graphicspath{{figs}{.}}
 %\usepackage[margin=1in]{geometry}
 
-\title{Denoising in Electron Microscopy Imaging}
+\title{Denoising in (Electron?) Microscopy Imaging}
 
 \author{Vicente González-Ruiz and José Jesús Fernández Rodríguez}
 
@@ -13,27 +13,156 @@
 \maketitle
 
 \begin{abstract}
-  We analyze the denoising performance of signal averaging for several
-  noise statistical distributions. Then, we perform an objective
-  comparison between some of the denoising algoritms in the field
-  of 3D Electron Microscopy, in two situations, when we have a
-  denoised version of the signal and we have not.
+  We perform an objective comparison between some of the most used
+  denoising algoritms in the field of Electron Microscopy. Two cases
+  are considered: (1) when we have a denoised version of the signal to
+  compare, and (2) when only a noisy version of the signal is known.
 \end{abstract}
 
-\section{Metrics}
+\section{Noise models}
+\label{sec:noise_models}
 
-The following metrics have been used to compare the noisy (original)
-volume and the denoised volume.
+Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
+usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
+noisy-version tensor random instance of $\mathbf{X}$ generated, in
+general, through
+\begin{equation}
+  \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
+  \label{eq:general_model}
+\end{equation}
+where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
+with the same shape as $\mathbf{X}$.
 
-\subsection{\href{https://en.wikipedia.org/wiki/Mean_squared_error}{MSE (Mean
+We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
+independent, and therefore, nothing can be said about
+${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
+viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
+from a single $\hat{\mathbf X}^{(i)}$.
+
+\subsection{Signal-independent noise model}
+In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
+identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
+\begin{equation}
+  {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
+  \label{eq:noise_expectation_1}
+\end{equation}
+where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
+of ${\mathbf N}^{(i)}$, and
+\begin{equation}
+  J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
+\end{equation}
+being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+
+SIN models are also called additive noise models defined by
+\begin{equation}
+  \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
+  \label{eq:additive_noisy_model}
+\end{equation}
+
+\subsection{Signal-dependent noise (SDN) models}
+In SDN models, the amplitude of the random noise samples depends on
+the clean signal (see Eq.~\ref{eq:general_model}).
+
+%\begin{equation}
+%  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
+%  \label{eq:SDN_model}
+%\end{equation}
+
+\section{Common sources of noise in microscopy}
+
+\subsection{Quantization noise}
+All digital capturing devices generate quantization noise which is
+usually modeled as additive zero-mean uniform noise
+(${\mathbf N}\sim{\mathcal U}(c)$). The PDF (Probability Density
+Function) is defined by
+\begin{equation}
+  f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) := \begin{cases}
+    \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
+    0 & \text{for } x < c \ \text{ or } \ x > -c,
+  \end{cases}
+\end{equation}
+$x$ and $f$ continuous, where $\Pr(\cdot)$ represents the
+probability of $\cdot$, and $c$ controls the amplitude of the
+noise. Notice that in this case, $\overline{\mathbf{N}}^{(i)}=0$ and
+therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
+Eq.~\ref{eq:noise_expectation_2}). 
+
+\subsection{Thermal noise}
+As happen with quantization noise, in all capturing devices, the
+thermal noise degrades the quality of the signals. Thermal noise is
+generally modeled as additive zero-mean Gaussian noise
+(${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with PDF defined by
+\begin{equation}
+  f(x; \sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} },
+\end{equation}
+$x$ and $f$ continuous, representing $\mu$ the mean and $\sigma$ the
+variance of the noise. Again, $\overline{\mathbf{N}}^{(i)}=0$ i.e.,
+$\overline{\mathbf N}={\mathbf 0}$.
+
+\subsection{Speckle noise}
+Speckle noise is generated in optical devices that use coherent light sources (lasers) \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
+
+Multiplicative zero-mean Gaussian noise, modeled as
+  \begin{equation}
+    \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
+    \label{eq:MGN}
+  \end{equation}
+  where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. This is a signal-dependent noise present
+  in synthetic aperture radar (SAR) and ultrasound images is usually
+  considered speckle noise.
+  
+  Another distribution used for modeling speckle noise is the Rice
+  distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
+  \begin{equation}
+    f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
+  \end{equation}
+  where $x$ is continuous, and $I_o$ is the modified Bessel function
+  of the first kind with order zero. Rician noisy tensor instances can
+  be generated with
+  \begin{equation}
+    \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
+  \end{equation}
+  %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
+  %which is defined by the PDF
+  %\begin{equation}
+  %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
+  %\end{equation}
+  %continuous both, $x$ and $\sigma$ (the scale parameter) is a
+  %particular case of Rice distribution when $\nu=0$.
+  Notice that, even being $\nu=0$ (in whose case we are working with
+  the Rayleigh distribution
+  ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
+  is not zero. The noise that corrupts magnetic resonance images is
+  usually modeled as Rician/Rayleigh noise.
+
+  \subsection{Shot noise}
+  Also known by photon noise \cite{zhou2020wirtinger}
+Modeled as Poisson noise
+  ($\mathbf{N}\sim\mathrm{Poisson}(\lambda)$), with PMD (Probability Mass
+  Distribution)\footnote{Also called discrete PDF.} equal to
+  \begin{equation}
+    f(k; \lambda={\mathbf X}) = \Pr({\mathbf N}^{(i)}{=}k) = \frac{\lambda^k e^{-\lambda}}{k!},
+    \label{eq:PN}
+  \end{equation}
+  where both $f\in\mathbb{R}$, $k\in\mathbb{Z}$ are discrete ($f$
+  describes the probability of $k$ events occurring within an observed
+  interval (for example, of time) when, in average, we have
+  $\lambda\in\mathbb{R}$ events in such interval size). Poisson noise
+  can be significative in capturing devices that work with low doses
+  of electrons, such as often happens in electron microscopy.
+
+\section{Distortion metrics}
+
+\subsection{\href{https://en.wikipedia.org/wiki/Root_mean_square_deviation}{RMSE (Root Mean
     Squared Error)}}
 
-Having two volumes $\mathbf{X}$ and $\mathbf{Y}$,
+Having two tensors $\mathbf{X}$ and $\mathbf{Y}$,
 \begin{equation}
-  \text{MSE}(\mathbf{X},\mathbf{Y}) = \frac{1}{N}\sum_{i=1}^N(\mathbf{X}_i - \mathbf{Y}_i)^2,
+  \text{RMSE}(\mathbf{X},\mathbf{Y}) := \sqrt{\frac{1}{N}\sum_{i=1}^N(\mathbf{X}_i - \mathbf{Y}_i)^2},
 \end{equation}
-where $N$ is the number of samples in one of the volumes (that must
-have the same number of samples).
+where $N$ is the number of samples in one of the tensors (that must
+have the same number of samples). Notice that the RMSE expresses the
+distortion in the same units as the samples.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Structural_similarity_index_measure}{SSIM
     (Structural Similarity Index Measure)}}
@@ -93,23 +222,15 @@ computing the FSC and averaging the correlations
 \cite{verbeke2024self}. Another approach can split the data into two
 random half volumes \cite{verbeke2024self}.
 
-\section{Noise reduction by stacking noisy instances}
-Let $\mathbf{X}$ be a \emph{clean} (without noise, ground truth
-usually unknown) tensor\footnote{Which usually represents an image or
-  a volume.}, and $\hat{\mathbf X}^{(i)}$ the $i$-th noisy-version
-tensor random instance of $\mathbf{X}$ generated, in general, through
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
-  \label{eq:general_model}
-\end{equation}
-where ${\mathbf N}^{(i)}$ the $i$-th (unknown) noise tensor instance
-with the same shape as $\mathbf{X}$.
+\section{Denoising techniques}
 
-We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
-independent, and therefore, nothing can be said about
-${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
-viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
-from a single $\hat{\mathbf X}^{(i)}$, althouth we can approximate ${\mathbf X}$ by
+We consider denoising techniques where there is only one noisy
+instance or a few instances, usually in the latter case with slightly
+different versions of the clean signal. Stacking as such is therefore
+excluded.
+
+\subsection{Noise reduction by stacking noisy instances}
+We can approximate ${\mathbf X}$ by
 averaging $\hat{\mathbf X}^{(i)}$ instances, performing
 \begin{equation}
   \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] = \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
@@ -136,46 +257,8 @@ of noisy instances of the clean signal. Logically, in practice, $I$
 will be finite and we will be able only to obtain an approximation of
 ${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
 
-\section{Noise models}
-\label{sec:noise_models}
-
-\subsection{Signal-independent noise (SIN) models}
-In SIN models, the noise is statistically i.i.d. (independent and
-identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
-\begin{equation}
-  {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
-  \label{eq:noise_expectation_1}
-\end{equation}
-where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
-of ${\mathbf N}^{(i)}$, and
-\begin{equation}
-  J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
-\end{equation}
-being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
-
-SIN models, also called additive noise models, are defined by
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
-  \label{eq:additive_noisy_model}
-\end{equation}
-
-Some examples of SIN are:
-\begin{enumerate}
-\item \textbf{Quantization noise}, that is usually modeled as additive
-  zero-mean uniform noise (${\mathbf N}\sim{\mathcal U}(c)$) with PDF
-  (Probability Density Function) defined as
-  \begin{equation}
-    f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) = \begin{cases}
-      \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
-      0 & \text{for } x < c \ \text{ or } \ x > -c,
-    \end{cases}
-  \end{equation}
-  $x$ and $f$ continuous, where $\Pr(\cdot)$ represents the
-  probability of $\cdot$, and $c$ controls the amplitude of the
-  noise. Notice that in this case, $\overline{\mathbf{N}}^{(i)}=0$ and
-  therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
-  Eq.~\ref{eq:noise_expectation_2}). Fig.~\ref{fig:0MAUN} shows an
-  example of how zero-mean uniform noise is cancelled by stacking.
+Fig.~\ref{fig:0MAUN} shows an
+example of how zero-mean uniform noise is cancelled by stacking.
   
   \begin{figure}
     \centering
@@ -196,15 +279,7 @@ Some examples of SIN are:
       noise.\label{fig:0MAUN}}
   \end{figure}
 
-\item \textbf{Thermal noise}, generally modeled as additive zero-mean
-  Gaussian noise (${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with
-  PDF defined by
-  \begin{equation}
-    f(x; \sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} },
-  \end{equation}
-  $x$ and $f$ continuous, representing $\mu$ the mean and $\sigma$ the
-  variance of the noise. Again, $\overline{\mathbf{N}}^{(i)}=0$ i.e.,
-  $\overline{\mathbf N}={\mathbf 0}$. Fig.~\ref{fig:0MAGN} shows an
+ Fig.~\ref{fig:0MAGN} shows an
   example of how zero-mean Gaussian noise is cancelled by stacking.
 
   \begin{figure}
@@ -226,28 +301,7 @@ Some examples of SIN are:
       noise.\label{fig:0MAGN}}
   \end{figure}
 
-\end{enumerate}
-
-\subsection{Signal-dependent noise (SDN) models}
-In SDN models, the amplitude of the random noise samples depends on
-the clean signal (see Eq.~\ref{eq:general_model}).
-
-%\begin{equation}
-%  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
-%  \label{eq:SDN_model}
-%\end{equation}
-
-Some SDN cases are:
-\begin{enumerate}
-\item \textbf{Speckle noise}, which can be considered multiplicative
-  zero-mean Gaussian noise, modeled as
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
-    \label{eq:MGN}
-  \end{equation}
-  where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. The noise present
-  in synthetic aperture radar (SAR) and ultrasound images is usually
-  considered speckle noise. Fig.~\ref{fig:0MMGN} shows an example of
+  Fig.~\ref{fig:0MMGN} shows an example of
   how zero-mean Gaussian noise is cancelled by stacking.
 
   \begin{figure}
@@ -268,30 +322,8 @@ Some SDN cases are:
       performance of the stacking process for different levels of
       noise.\label{fig:0MMGN}}
   \end{figure}
-  
-  Another distribution used for modeling speckle noise is the Rice
-  distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
-  \begin{equation}
-    f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
-  \end{equation}
-  where $x$ is continuous, and $I_o$ is the modified Bessel function
-  of the first kind with order zero. Rician noisy tensor instances can
-  be generated with
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
-  \end{equation}
-  %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
-  %which is defined by the PDF
-  %\begin{equation}
-  %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
-  %\end{equation}
-  %continuous both, $x$ and $\sigma$ (the scale parameter) is a
-  %particular case of Rice distribution when $\nu=0$.
-  Notice that, even being $\nu=0$ (in whose case we are working with
-  the Rayleigh distribution
-  ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
-  is not zero. The noise that corrupts magnetic resonance images is
-  usually modeled as Rician/Rayleigh noise. Fig.~\ref{fig:Poisson}
+
+ Fig.~\ref{fig:Rayleigh}
   shows an example of how Rayleigh noise is cancelled by stacking.
 
   \begin{figure}
@@ -312,19 +344,6 @@ Some SDN cases are:
       process for different levels of noise.\label{fig:Rayleigh}}
   \end{figure}
 
-\item \textbf{Shot noise} modeled as Poisson noise
-  ($\mathbf{N}\sim\mathrm{Poisson}(\lambda)$), with PMD (Probability Mass
-  Distribution)\footnote{Also called discrete PDF.} equal to
-  \begin{equation}
-    f(k; \lambda={\mathbf X}) = \Pr({\mathbf N}^{(i)}{=}k) = \frac{\lambda^k e^{-\lambda}}{k!},
-    \label{eq:PN}
-  \end{equation}
-  where both $f\in\mathbb{R}$, $k\in\mathbb{Z}$ are discrete ($f$
-  describes the probability of $k$ events occurring within an observed
-  interval (for example, of time) when, in average, we have
-  $\lambda\in\mathbb{R}$ events in such interval size). Poisson noise
-  can be significative in capturing devices that work with low doses
-  of electrons, such as often happens in electron microscopy.
   Fig.~\ref{fig:Poisson} shows an example of how Poisson noise is
   cancelled by stacking.
 
@@ -345,15 +364,6 @@ Some SDN cases are:
       and the right graph shows the performance of the stacking
       process for different levels of noise.\label{fig:Poisson}}
   \end{figure}
-
-\end{enumerate}
-
-\section{Denoising techniques}
-
-We consider denoising techniques where there is only one noisy
-instance or a few instances, usually in the latter case with slightly
-different versions of the clean signal. Stacking as such is therefore
-excluded.
 
 \subsection{Gaussian Denoising (GD)}
 
