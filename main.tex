@@ -323,6 +323,28 @@ of noisy instances of the clean signal. Logically, in practice, $I$
 will be finite and we will be able only to obtain an approximation of
 ${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
 
+Fig.~\ref{fig:0MPG} shows an example of how zero-mean MPG noise is
+cancelled by stacking.
+  
+  \begin{figure}
+    \centering
+    \resizebox{1.0\textwidth}{!}{
+      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+      \begin{tabular}{cc}
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
+        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MMPG_barb}{\includegraphics{denoised_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MMPG_barb}{\includegraphics{PSNR_0MMPG_barb}}
+      \end{tabular}
+    }
+    \caption{Effect of zero-mean MPG noise in an image and how
+      stacking can be used to reduced by stacking. The clean image of
+      Barb is shown on the top left, and a noisy version on the top
+      right. On to bottom, the left image shows a denoised version
+      after stacking and the right graph shows the performance of the
+      stacking process for different levels of
+      noise.\label{fig:0MAUN}}
+  \end{figure}
+
 
 Fig.~\ref{fig:0MAUN} shows an
 example of how zero-mean uniform noise is cancelled by stacking.
