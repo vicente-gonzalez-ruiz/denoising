@@ -21,10 +21,14 @@
   known. In the first case, for a given type and ratio of simulated
   noise, it is possible to objetively compare the denoising algorithm
   distortion attending to the degradation generated in the denoised
-  image. In the second one this is impossible, and one only can
-  estimate the quality of the denoised images perceptually or
-  considering other known image features such as the maximun
-  resolution of the miscroscopy used to capture the noisy image.
+  image using distortion metrics such as the RMSE, PPC and SSIM. In
+  the second one this is impossible, implying that the input
+  parameters of the denoising algorithms are not (objectively)
+  optimizable using pure distortion metrics. In this case, one only
+  can estimate the quality of the denoised images perceptually or
+  alternatively, consider other prior known image features such as the
+  maximum resolution of the miscroscope used to capture the noisy
+  image, as happens with the FSC curve.
 \end{abstract}
 
 \section{Common sources of noise in microscopy}
@@ -229,12 +233,12 @@ samples\footnote{Pixels in the 2D case and voxels in 3D.}.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Structural_similarity_index_measure}{SSIM
     (Structural Similarity Index Measure)}}
-The SSIM is an objective distortion metric that try to model the
-humman perception of the differences between two images $\mathbf{X}$
-and $\mathbf{Y}$. The metric returns a real number between $[-1, 1]$,
+The SSIM is an objective distortion metric that try to model the human
+perception of the differences between two images $\mathbf{X}$ and
+$\mathbf{Y}$. The metric returns a real number between $[-1, 1]$,
 representing $-1$ the perfect dis-similarity case, $0$ no similarity,
-and $1$ perfect similarity. The SSIM index is computed splitting input
-images into $M$ non-overlapping blocks and doing
+and $1$ perfect similarity. The SSIM index is computed by splitting
+input images into $M$ non-overlapping blocks and doing
 \begin{equation}
   \text{SSIM}(\mathbf{X}, \mathbf{Y}) := \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
@@ -244,30 +248,36 @@ for $\mathbf{Y}$), $\sigma_{\mathbf{x}_j\mathbf{y}_j}$ is the
 covariance of both blocks, $c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two
 variables used to stabilize the division with weak denominator, $L$ is
 the dynamic range of the voxel values, with constants with default
-vales $K_1=0.01$ , and $k_2=0.03$, and where the default size of the
-local blocks is $7^D$.
+vales $K_1=0.01$, and $k_2=0.03$, and where the default size of the
+local blocks is $7^D$, where $D$ is the number of dimensions ($D=2$
+for images and $D=3$ for volumes). When comparing images (or volumes),
+values below $0$ does not make sense.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{PPC
     (Pearson Correlation Coefficient)}}
-The PPC is given by
+The PPC is given
+by
 \begin{equation}
   \text{PPC}(\mathbf{X}, \mathbf{Y}) := \frac{\sum_j(\mathbf{X}_j - \overline{\mathbf{X}})(\mathbf{Y}_j - \overline{\mathbf{Y}})}{\sqrt{\sum_j (\mathbf{X}_j - \overline{\mathbf{X}})^2 \sum_j (\mathbf{Y}_j - \overline{\mathbf{Y}})^2}},
 \end{equation}
-where $\overline{\cdot}$ represents the mean.
+and measures the linear correlation between two tensors $\mathbf{X}$
+and $\mathbf{Y}$.  As happen with the SSIM, the output is in
+$[-1, -1]$, meaning $-1$ a perfect negative linear relationship
+between the input tensors, $0$ no linear relation, and $1$ a perfect
+coincidence. However, as happens with the SSIM, in microscopy values
+below $0$ never should occur.
 
 \subsection{FSC (Fourier Shell Correlation) curve}
-
-Finally, notice that $\sigma$ (GD) is not (objectively) optimizable using
-only pure distortion metrics, such as MSE, PCC, and SSIM.
-
 The FSC curve is a measure of the similarity between two 3D volumes
-represented in the Fourier domain \cite{verbeke2024self}. Each point
-of the curve prepresents the correlation between two ``shells'' of
-Fourier coefficients of both volumes. An advantage of the FSC over
-other similarity metrics such as the MSE, the SSIM and the PPC is that
-FSC values depend on the frequency, and this can be interesting in
-some scenarios, such as microscopy, where the resolution of the
-microscope is finite and known.
+represented in the Fourier domain \cite{verbeke2024self} (for the 2D
+case, the equivalent metric is called Fourier ring correlation or
+FSC). Each point of the curve prepresents the correlation between two
+``shells'' (``rings'') of Fourier coefficients of both volumes
+(images). An advantage of the FSC over other similarity metrics such
+as the RMSE, the SSIM and the PPC is that FSC values depend on the
+frequency, and this can be interesting in some scenarios, such as
+microscopy, where the resolution of the microscope is finite and
+known a priori.
 
 A FSC value of the FSC curve is determined by~\cite{verbeke2024self}
 \begin{equation}
@@ -280,15 +290,15 @@ $\cdot^*$ denotes the complex conjugate of $\cdot$.
 
 In some fields such ashsingle particle electron cryo-microscopy
 (cryo-EM), the FSC curve has become the universal resolution metric
-and is used to assess the quality of a 3-D reconstruction
+and is used to assess the quality of 3D reconstructions
 \cite{rosenthal2003optimal,scheres2012prevention}.
 
-It is possible to compute the Self FSC (SFSC) by subsampling the data
-\cite{koho2019fourier}, for example, splitting the volume in odd and
-even slices, in each dimension (resulting a total of 6 subvolumes),
-computing the FSC and averaging the correlations
-\cite{verbeke2024self}. Another approach can split the data into two
-random half volumes \cite{verbeke2024self}.
+Finally, notice that it is possible to compute the Self FSC (SFSC) by
+subsampling the data \cite{koho2019fourier}, for example, splitting
+the volume in odd and even slices, in each dimension (resulting a
+total of 6 subvolumes in the 3D case), computing the FSC and averaging the
+correlations \cite{verbeke2024self}. Another approach can split the
+data into two random half volumes \cite{verbeke2024self}.
 
 \section{Denoising techniques}
 
@@ -298,46 +308,41 @@ different versions of the clean signal. Stacking as such is therefore
 excluded.
 
 \subsection{Noise reduction by stacking noisy instances}
-We can approximate ${\mathbf X}$ by
+When physically possible, we can approximate ${\mathbf X}$ by
 averaging $\hat{\mathbf X}^{(i)}$ instances, performing
 \begin{equation}
-  \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] = \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
+  \lim_{I \to \infty} \mathbb{E}_I\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] := \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
   \label{eq:averaging_result}
 \end{equation}
-Notice that Eq.~\ref{eq:averaging_result} is true if 
+Notice that Eq.~\ref{eq:averaging_result} is true if and only if
 \begin{equation}
-  \overline{\mathbf N} = \lim_{I \to \infty}{\mathbb E}[\{{\mathbf N^{(i)}}\}_{i=1}^I]=\lim_{I \to \infty}\frac{1}{I} \sum_{i=1}^I {\mathbf N}^{(i)}={\mathbf 0},
+  \overline{\mathbf N} = \lim_{I \to \infty}{\mathbb E}_I[\{{\mathbf N^{(i)}}\}_{i=1}^I]=\lim_{I \to \infty}\frac{1}{I} \sum_{i=1}^I {\mathbf N}^{(i)}={\mathbf 0},
   \label{eq:noise_expectation_2}
 \end{equation}
-where ${\mathbf 0}$ is the zero tensor with the same shape as
-$\mathbf{X}$, and when $\overline{\mathbf N}\ne {\mathbf 0}$, but
-known, we can still find ${\mathbf X}$ through
+where ${\mathbf 0}\in \mathbb{R}^J$ is a zero-valued tensor with the
+same shape that $\mathbf{X}$, and when
+$\overline{\mathbf N}\ne {\mathbf 0}$, but known, we can still find
+${\mathbf X}$ because
 \begin{equation}
-  {\mathbf X} = \lim_{I \to \infty} \mathbb{E}\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right]  - \overline{\mathbf N},
+  {\mathbf X} = \lim_{I \to \infty} \mathbb{E}_I\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right]  - \overline{\mathbf N},
   \label{eq:averaging_result_with_bias}
 \end{equation}
-where, in general, $\overline{\mathbf N}$ can be a function of the
-amplitude of the noise.
+where, in general, $\overline{\mathbf N}$ is a tensor that depends on
+$\hat{\mathbf X}$.
 
-Notice that, for zero-mean AWG noise,
+Notice that for MPG noise, Equations \ref{eq:averaging_result} and
+\ref{eq:noise_expectation_2} are satisfied, and also happens that
 \begin{equation}
-  \overline{\mathbf{N}^{(i)}} = {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=0
+  \overline{\mathbf{N}^{(i)}} = {\mathbb E}_J[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}\approx 0.
 \end{equation}
-and
-\begin{equation}
-  \overline{\mathbf N} = {\mathbb E}[\{{\mathbf N^{(i)}}\}_{i=1}^I] = \frac{1}{I} \sum_{i=1}^I {\mathbf N}^{(i)}={\mathbf 0},
-\end{equation}
-where $\mathbf{0}\in \mathbb{R}^J$.
 
-
-As can be seen in Eq.~\ref{eq:averaging_result}, notice that we are
-supposing an impossible scenario in which we have an infinite number
-of noisy instances of the clean signal. Logically, in practice, $I$
-will be finite and we will be able only to obtain an approximation of
-${\mathbf X}$, that we denote by $\tilde{\mathbf X}$.
-
-Fig.~\ref{fig:0MPG} shows an example of how zero-mean MPG noise is
-cancelled by stacking.
+Finally, as can be seen in Eq.~\ref{eq:averaging_result}, notice that
+we are supposing an impossible scenario in which we have an infinite
+number of noisy instances of the clean signal. Logically, in practice,
+$I$ will be finite and we will be able only to obtain an approximation
+of ${\mathbf X}$, that we denote by $\tilde{\mathbf
+  X}$. Figure~\ref{fig:0MMPG} shows an example of how zero-mean MPG
+noise is cancelled by stacking.
   
   \begin{figure}
     \centering
@@ -355,10 +360,10 @@ cancelled by stacking.
       right. On to bottom, the left image shows a denoised version
       after stacking and the right graph shows the performance of the
       stacking process for different levels of
-      noise.\label{fig:0MAUN}}
+      noise.\label{fig:0MMPG}}
   \end{figure}
 
-
+\begin{comment}
 Fig.~\ref{fig:0MAUN} shows an
 example of how zero-mean uniform noise is cancelled by stacking.
   
@@ -466,7 +471,8 @@ example of how zero-mean uniform noise is cancelled by stacking.
       and the right graph shows the performance of the stacking
       process for different levels of noise.\label{fig:Poisson}}
   \end{figure}
-
+\end{comment}
+  
 \subsection{Gaussian Denoising (GD)}
 
 GD, also known by Gaussian smoothing filtering, works weight-averaging
