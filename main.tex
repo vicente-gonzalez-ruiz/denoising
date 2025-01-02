@@ -14,24 +14,22 @@
 \maketitle
 
 \begin{abstract}
-  We perform an objective comparison between some of the most used
-  denoising algoritms in the field of Electron Microscopy. Two cases
-  are considered: (1) when we have a denoised version of the image to
-  compare with, and (2) when only a noisy version of the image is
-  known. In the first case, for a given type and ratio of simulated
-  noise, it is possible to objetively compare the denoising algorithm
-  distortion attending to the degradation generated in the denoised
-  image using distortion metrics such as the RMSE, PPC and SSIM. In
-  the second one this is impossible, implying that the input
-  parameters of the denoising algorithms are not (objectively)
-  optimizable using pure distortion metrics. In this case, one only
-  can estimate the quality of the denoised images perceptually or
-  alternatively, consider other prior known image features such as the
+  We compare several 3D image denoising algoritms in the field of
+  electron microscopy of biological specimens. Microscopy images are
+  characterized by a very low SNR and therefore, denoising algorithms
+  are required to improve their posterior analysis. It is also common
+  that there exist only one noisy version of the images, which
+  increases the dificulty of a objective comparison of the algorithms
+  because we don't have a ground truth. In this case, one only can
+  estimate the quality of the denoised images perceptually or
+  alternatively, considering prior known image features such as the
   maximum resolution of the miscroscope used to capture the noisy
-  image, as happens with the FSC curve.
+  image.
 \end{abstract}
 
-\section{Common sources of noise in microscopy}
+\tableofcontents
+
+\section{Common sources of noise in microscopy imaging}
 
 In microscopy, there are three main sources of noise, inherent to the
 digital microscopy sensing apparatus: (1) the \emph{dark noise} which
@@ -88,7 +86,12 @@ $x\in\mathbb{R}$ continuous (in our context, the value of a
 pixel/voxel), representing $\mu$ the mean and $\sigma$ the standard
 deviation of the noise. Notice that this is a signal-independent noise
 model because nothing can said about ${\mathbf N}$ known
-$\hat{\mathbf X}$, except that both have the same shape and size $J$.
+$\hat{\mathbf X}$, except that both have the same shape and size
+$J$.
+
+By definition, the spectrum of AWG noise is flat, in
+average. Therefore, the performance of a pure low-pass filter denoiser
+will depend on the shape of the spectrum of $\mathbf{X}$.
 
 \subsection{Poisson noise}
 Poisson noise is defined by the PMD (Probability Mass
@@ -113,6 +116,10 @@ both equal to $\lambda$), and therefore higher noise level (and
 viceversa) \cite{meiniel2018denoising}. When necessary, we will
 highlight this by writting ${\mathbf N}({\mathbf X})$.
 
+Poisson noise is generated based on the intensity of the underlying
+signal and therefore, the frequency characteristics of Poisson noise
+resemble the spectrum of the clean signal.
+
 \subsection{Mixed Poisson-Gaussian noise}
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and AWG noise, which is commonly called mixed
@@ -127,96 +134,94 @@ where
   \hat{\mathbf X} = {\mathbf N}_{\mathrm{Gaussian}} + \gamma{\mathbf N}_{\mathrm{Poisson}}({\mathbf X}).
   \label{eq:MPG_noise_model} 
 \end{equation}
-Therefore, MPG noise is signal-dependent.
+Therefore, MPG noise is signal-dependent and it's spectrum depends on the clean image $\mathbf{X}$.
 
-\begin{comment}
-\subsection{Speckle noise}
-Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
+% \subsection{Speckle noise}
+% Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
 
-Multiplicative zero-mean Gaussian noise, modeled as
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
-    \label{eq:MGN}
-  \end{equation}
-  where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. This is a signal-dependent noise present
-  in synthetic aperture radar (SAR) and ultrasound images is usually
-  considered speckle noise.
+% Multiplicative zero-mean Gaussian noise, modeled as
+%   \begin{equation}
+%     \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
+%     \label{eq:MGN}
+%   \end{equation}
+%   where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. This is a signal-dependent noise present
+%   in synthetic aperture radar (SAR) and ultrasound images is usually
+%   considered speckle noise.
   
-  Another distribution used for modeling speckle noise is the Rice
-  distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
-  \begin{equation}
-    f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
-  \end{equation}
-  where $x$ is continuous, and $I_o$ is the modified Bessel function
-  of the first kind with order zero. Rician noisy tensor instances can
-  be generated with
-  \begin{equation}
-    \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
-  \end{equation}
-  %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
-  %which is defined by the PDF
-  %\begin{equation}
-  %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
-  %\end{equation}
-  %continuous both, $x$ and $\sigma$ (the scale parameter) is a
-  %particular case of Rice distribution when $\nu=0$.
-  Notice that, even being $\nu=0$ (in whose case we are working with
-  the Rayleigh distribution
-  ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
-  is not zero. The noise that corrupts magnetic resonance images is
-  usually modeled as Rician/Rayleigh noise.
+%   Another distribution used for modeling speckle noise is the Rice
+%   distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
+%   \begin{equation}
+%     f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
+%   \end{equation}
+%   where $x$ is continuous, and $I_o$ is the modified Bessel function
+%   of the first kind with order zero. Rician noisy tensor instances can
+%   be generated with
+%   \begin{equation}
+%     \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
+%   \end{equation}
+%   %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
+%   %which is defined by the PDF
+%   %\begin{equation}
+%   %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
+%   %\end{equation}
+%   %continuous both, $x$ and $\sigma$ (the scale parameter) is a
+%   %particular case of Rice distribution when $\nu=0$.
+%   Notice that, even being $\nu=0$ (in whose case we are working with
+%   the Rayleigh distribution
+%   ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
+%   is not zero. The noise that corrupts magnetic resonance images is
+%   usually modeled as Rician/Rayleigh noise.
 
-  \subsection{Shot noise}
+% \subsection{Shot noise}
 
-\section{Noise models}
-\label{sec:noise_models}
+% \section{Noise models}
+% \label{sec:noise_models}
 
-Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
-usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
-noisy-version tensor random instance of $\mathbf{X}$ generated, in
-general, through
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
-  \label{eq:general_model}
-\end{equation}
-where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
-with the same shape as $\mathbf{X}$.
+% Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
+% usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
+% noisy-version tensor random instance of $\mathbf{X}$ generated, in
+% general, through
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
+%   \label{eq:general_model}
+% \end{equation}
+% where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
+% with the same shape as $\mathbf{X}$.
 
-We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
-independent, and therefore, nothing can be said about
-${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
-viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
-from a single $\hat{\mathbf X}^{(i)}$.
+% We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
+% independent, and therefore, nothing can be said about
+% ${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
+% viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
+% from a single $\hat{\mathbf X}^{(i)}$.
 
-\subsection{Signal-independent noise model}
-In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
-identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
-\begin{equation}
-  {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
-  \label{eq:noise_expectation_1}
-\end{equation}
-where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
-of ${\mathbf N}^{(i)}$, and
-\begin{equation}
-  J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
-\end{equation}
-being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+% \subsection{Signal-independent noise model}
+% In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
+% identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
+% \begin{equation}
+%   {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
+%   \label{eq:noise_expectation_1}
+% \end{equation}
+% where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
+% of ${\mathbf N}^{(i)}$, and
+% \begin{equation}
+%   J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
+% \end{equation}
+% being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
 
-SIN models are also called additive noise models defined by
-\begin{equation}
-  \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
-  \label{eq:additive_noisy_model}
-\end{equation}
+% SIN models are also called additive noise models defined by
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
+%   \label{eq:additive_noisy_model}
+% \end{equation}
 
-\subsection{Signal-dependent noise (SDN) models}
-In SDN models, the amplitude of the random noise samples depends on
-the clean signal (see Eq.~\ref{eq:general_model}).
+% \subsection{Signal-dependent noise (SDN) models}
+% In SDN models, the amplitude of the random noise samples depends on
+% the clean signal (see Eq.~\ref{eq:general_model}).
 
-%\begin{equation}
-%  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
-%  \label{eq:SDN_model}
-%\end{equation}
-\end{comment}
+% %\begin{equation}
+% %  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
+% %  \label{eq:SDN_model}
+% %\end{equation}
   
 \section{Distortion metrics}
 
@@ -276,8 +281,11 @@ FSC). Each point of the curve prepresents the correlation between two
 (images). An advantage of the FSC over other similarity metrics such
 as the RMSE, the SSIM and the PPC is that FSC values depend on the
 frequency, and this can be interesting in some scenarios, such as
-microscopy, where the resolution of the microscope is finite and
-known a priori \cite{nieuwenhuizen2013measuring}.
+microscopy, where the resolution of the microscope is finite and known
+a priori \cite{nieuwenhuizen2013measuring}. Notice that, with this
+information, we can know whether the denoising is removing the
+high-frequency components of the image, or on the contrary, basically
+noise.
 
 A FSC value of the FSC curve is determined by~\cite{verbeke2024self}
 \begin{equation}
@@ -341,27 +349,26 @@ we are supposing an impossible scenario in which we have an infinite
 number of noisy instances of the clean signal. Logically, in practice,
 $I$ will be finite and we will be able only to obtain an approximation
 of ${\mathbf X}$, that we denote by $\tilde{\mathbf
-  X}$. Figure~\ref{fig:0MMPG} shows an example of how zero-mean MPG
-noise is cancelled by stacking.
+  X}$. Figure~\ref{fig:stacking_0MMPG} shows an example of how
+zero-mean MPG noise is cancelled by stacking.
   
-  \begin{figure}
-    \centering
-    \resizebox{1.0\textwidth}{!}{
-      \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
-      \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-      \begin{tabular}{cc}
-        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
-        \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_0MMPG_barb}{\includegraphics{denoised_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_0MMPG_barb}{\includegraphics{PSNR_0MMPG_barb}}
-      \end{tabular}
-    }
-    \caption{Effect of zero-mean MPG noise in an image and how
-      stacking can be used to reduced by stacking. The clean image of
-      Barb is shown on the top left, and a noisy version on the top
-      right. On to bottom, the left image shows a denoised version
-      after stacking and the right graph shows the performance of the
-      stacking process for different levels of
-      noise.\label{fig:0MMPG}}
-  \end{figure}
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#stacking_0MMPG_barb}{\includegraphics{stacking_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_stacking_0MMPG_barb}{\includegraphics{PSNR_stacking_0MMPG_barb}}
+    \end{tabular}
+  }
+  \caption{Effect of zero-mean MPG noise in an image and how stacking
+    can be used to remove it. The clean image of Barb is shown on the
+    top left, and a noisy version on the top right. On to bottom, the
+    left image shows a denoised version after stacking and the right
+    graph shows the performance of the stacking process for different
+    levels of noise.\label{fig:stacking_0MMPG}}
+\end{figure}
 
 \begin{comment}
 Fig.~\ref{fig:0MAUN} shows an
@@ -516,7 +523,28 @@ ${\mathbf h}$. For simplicity, Eq.~\ref{eq:3DGF} defines isotropic
 filtering, but variance can be different at each dimension to provide
 anisotropic filtering.
 
-\section{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_GD_0MMPG_barb}{\includegraphics{PSNR_GD_0MMPG_barb}}
+    \end{tabular}
+  }
+  \caption{Effect of zero-mean MPG noise in an image and how Gaussian
+    denoising (GD) can be used to reduce it. The clean image of Barb
+    is shown on the top left, and a noisy version on the top right. On
+    to bottom, the left image shows a denoised using an isotropic
+    Gaussian filter, and the right graph shows the performance of GD
+    for different levels of noise.\label{fig:GD_0MMPG}}
+\end{figure}
+
+Fig.~\ref{fig:GD_0MPG} shows the performance of GD in the antificially
+noisy image.
+
+\subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
 SDPG is based in 3D Gaussian filtering (Eq.~\ref{eq:3DGF}), but the noised
 volume ${\mathbf Y}$ is dynamically warped to decrease the bluring at the
@@ -566,7 +594,7 @@ parameters:
 
 
 
-\section{Cryo-CARE \cite{buchholz2019cryo}}
+\subsection{Cryo-CARE \cite{buchholz2019cryo}}
 CARE (Content-Aware image REstoration) methods leverage
 available knowledge about the data at hand ought to yield superior
 restoration results \cite{weigert2018content}. Concretely, Cryo-CARE
@@ -594,13 +622,13 @@ volume ${\mathbf Y}$, N2N learns to infeer a denoised volume
 Obviously, better approximations to ${\mathbf Y}$ will be obtained
 having more noisy instances, after averaing all the denoised volumes.
 
-\section{NLM (Non Local Means)} 
+\subsection{NLM (Non Local Means)} 
 
-\section{BM4D}
+\subsection{BM4D}
 
-\section{2D-RSVD (2D Random Shuffing Volume Denoising}
+\subsection{2D-RSVD (2D Random Shuffing Volume Denoising}
 
-\section{3D-RSVD (3D Random Shuffling Volume Denoising}
+\subsection{3D-RSVD (3D Random Shuffling Volume Denoising}
 
 
 \bibliographystyle{plain}
