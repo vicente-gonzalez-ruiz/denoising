@@ -530,7 +530,7 @@ anisotropic filtering.
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_GD_0MMPG_barb}{\includegraphics{PSNR_GD_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PSNR_0MMPG_barb}{\includegraphics{GD_PSNR_0MMPG_barb}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
@@ -541,8 +541,11 @@ anisotropic filtering.
     for different levels of noise.\label{fig:GD_0MMPG}}
 \end{figure}
 
-Fig.~\ref{fig:GD_0MPG} shows the performance of GD in the antificially
-noisy image.
+Fig.~\ref{fig:GD_0MPG} shows the performance of GD in a
+artificial-noisy image for different levels of noise. As can be seen,
+the optimal value for the single parameter that GD requires (the
+length of the Gaussian kernels in each dimension) depends on the noise
+level, an information that is generally unknown in microscopy imaging.
 
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
