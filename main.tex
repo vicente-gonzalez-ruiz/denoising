@@ -275,17 +275,17 @@ below $0$ never should occur.
 \subsection{FSC (Fourier Shell Correlation) curve}
 The FSC curve is a measure of the similarity between two 3D volumes
 represented in the Fourier domain \cite{verbeke2024self} (for the 2D
-case, the equivalent metric is called Fourier ring correlation or
-FSC). Each point of the curve prepresents the correlation between two
-``shells'' (``rings'') of Fourier coefficients of both volumes
-(images). An advantage of the FSC over other similarity metrics such
-as the RMSE, the SSIM and the PPC is that FSC values depend on the
-frequency, and this can be interesting in some scenarios, such as
-microscopy, where the resolution of the microscope is finite and known
-a priori \cite{nieuwenhuizen2013measuring}. Notice that, with this
-information, we can know whether the denoising is removing the
-high-frequency components of the image, or on the contrary, basically
-noise.
+case, the equivalent metric is called FSC (Fourier Ring
+Correlation). Each point of the curve prepresents the correlation
+between two ``shells'' (``rings'') of Fourier coefficients of both
+volumes (images). An advantage of the FSC over other similarity
+metrics such as the RMSE, the SSIM and the PPC is that FSC values
+depend on the frequency, and this can be interesting in some
+scenarios, such as microscopy, where the resolution of the microscope
+is finite and known a priori \cite{nieuwenhuizen2013measuring}. Notice
+that, with this information, we can know whether the denoising is
+removing the high-frequency components of the clean signal, or on the
+contrary, basically noise.
 
 A FSC value of the FSC curve is determined by~\cite{verbeke2024self}
 \begin{equation}
@@ -296,17 +296,28 @@ of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$,
 $\mathcal{F}(\cdot)$ is the Fourier transform of $\cdot$, and
 $\cdot^*$ denotes the complex conjugate of $\cdot$.
 
-In some fields such ashsingle particle electron cryo-microscopy
+In some fields such as single particle electron cryo-microscopy
 (cryo-EM), the FSC curve has become the universal resolution metric
 and is used to assess the quality of 3D reconstructions
 \cite{rosenthal2003optimal,scheres2012prevention}.
 
-Finally, notice that it is possible to compute the Self FSC (SFSC) by
-subsampling the data \cite{koho2019fourier}, for example, splitting
-the volume in odd and even slices, in each dimension (resulting a
-total of 6 subvolumes in the 3D case), computing the FSC and averaging the
-correlations \cite{verbeke2024self}. Another approach can split the
-data into two random half volumes \cite{verbeke2024self}.
+Finally, notice that it is possible to compute the so called Self FSC
+(SFSC) by subsampling the data \cite{koho2019fourier}, for example,
+splitting the volume in odd and even slices, in each dimension
+(resulting a total of 6 subvolumes in the 3D case), computing the FSC
+and averaging the correlations \cite{verbeke2024self}. Another
+approach splits the data into two random half volumes
+\cite{verbeke2024self}.
+
+Each point of the SFSC curve shows the correlation between the Fourier
+coefficients extracted from the same subband (shell) from two
+subsampled versions of the same signal, at the cost of reducing the
+spatial resolution to the half of the original frequency (in each
+signal dimension). This information should be taked into account when
+we consider the spatial resolution in any analysis that use the SFSC
+curve instead of the FSC curve. For example, if we are using $N$-taps
+low-pass filter in the original resolution, the equivalent filter
+``SFSC-length'' should be $N/2$.
 
 \section{Denoising techniques}
 
