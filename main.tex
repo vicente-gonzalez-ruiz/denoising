@@ -309,15 +309,15 @@ and averaging the correlations \cite{verbeke2024self}. Another
 approach splits the data into two random half volumes
 \cite{verbeke2024self}.
 
-Each point of the SFSC curve shows the correlation between the Fourier
-coefficients extracted from the same subband (shell) from two
+Each point of a SFSC curve represents the correlation between the
+Fourier coefficients extracted from the same subband (shell) from two
 subsampled versions of the same signal, at the cost of reducing the
 spatial resolution to the half of the original frequency (in each
-signal dimension). This information should be taked into account when
-we consider the spatial resolution in any analysis that use the SFSC
-curve instead of the FSC curve. For example, if we are using $N$-taps
-low-pass filter in the original resolution, the equivalent filter
-``SFSC-length'' should be $N/2$.
+signal dimension). This fact should be taked into account when we
+consider the spatial resolution in any analysis that use the SFSC
+curve instead of the FSC curve. For example, if we are using a
+separable $N$-taps low-pass filter in the original resolution volume,
+the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 
 \section{Denoising techniques}
 
@@ -483,7 +483,7 @@ example of how zero-mean uniform noise is cancelled by stacking.
       \end{tabular}
     }
     \caption{Effect of Poisson noise in an image and how stacking can
-      be used to reduced by stacking. The clean image of Barb is shown
+      be used to reduced by stacking. The clean image is shown
       on the top left, and a noisy version on the top right. On to
       bottom, the left image shows a denoised version after stacking
       and the right graph shows the performance of the stacking
@@ -493,46 +493,50 @@ example of how zero-mean uniform noise is cancelled by stacking.
   
 \subsection{Gaussian Denoising (GD)}
 
-GD, also known by Gaussian smoothing filtering, works weight-averaging
-signal samples. Under the assumption that most of the energy (and
-information) is concentrated in the low frequencies, a Gaussian filter
-(or kernel) is a low-pass filter defined by
+GD, also known by Gaussian smoothing filtering, works by convolving a
+separable Gaussian kernel with the signal samples in each space
+dimension.
+
+1D GD can be expressed by
+\begin{equation}
+  \tilde{\mathbf{X}}(\sigma) = \hat{\mathbf{Y}}*\mathbf{h}(\sigma),
+  \label{eq:GF}
+\end{equation}
+where $\tilde{\mathbf{X}}$ represents the denoised signal,
+$\hat{\mathbf{Y}}$ the noisy instance, and $*$ the convolution of
+digital (in this case, 1D) signals.
+
+The coefficients of the Gaussian kernel
 \begin{equation}
   \mathbf{h}(\sigma) = \{\mathbf{h}_i(\sigma)\} = \frac{1}{\sqrt{2\pi}\sigma}e^{{-i}^2/(2\sigma^2)},
   \label{eq:GK}
 \end{equation}
-where $\sigma$ determines the cut-off frequency of the filter (a higher $\sigma$
-results in a lower the cut-off frequency of the filter, and therefore,
-in a higher smoothing effect).
-
-1-D Gaussian filtering is represented by
-\begin{equation}
-  \hat{\mathbf{Y}}(\sigma) = \mathbf{Y}*\mathbf{h}(\sigma),
-  \label{eq:GF}
-\end{equation}
-where $*$ represent the convolution of digital (in this case, 1D) signals.
+defines a low-pass filter under the assumption that most of the energy
+(and information) is concentrated in the low frequencies, where
+$\sigma$ is a parameter that controls the length of the kernel and
+therefore, the cut-off frequency of GD (a higher $\sigma$ results in a
+lower the cut-off frequency, and therefore, in a higher smoothing
+effect).
 
 As can be seen in Eq.~\ref{eq:GK} (all the kernel coefficients are
-positive), GD requires only a noisy instance, and computes weighted
-averages of neighbour signal samples. This does not mach the calculus
-described in Eq.~\ref{eq:averaging_result}, but as an advantage, GD
-requires only a noisy instance. The results is a smooth denoised
-signal $\tilde{\mathbf X}$, but as we will see, this is a common
-effect in all the denoising algorithms that work only with one noisy
-instance.
+positive), and computes weighted averages of neighbour signal
+samples. This does not mach the calculus described in
+Eq.~\ref{eq:averaging_result}, but as an advantage, GD requires only a
+noisy instance. The result of GD is a smooth denoised signal
+$\tilde{\mathbf X}$.
 
-Multidimensional Gaussian filters are separable, which means that we
-can apply the 1D filter to all the dimensions of the signal to compute
-a $N$D denoising. For the 3D case,
+Multidimensional GD is separable, which means that we can apply the 1D
+filter to all the dimensions of the signal to compute a $N$D
+denoising. For the 3D case, we have that
 \begin{equation}
-  \hat{\mathbf{Y}}(\sigma) = \Big(\big({\mathbf Y}*^{(\text{Z})}{\mathbf h}(\sigma)\big)*^{(\text{Y})}{\mathbf h}(\sigma)\Big)*^{(\text{X})}{\mathbf h}(\sigma),
+  \tilde{\mathbf{X}}(\sigma) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\sigma)\big)*^{(\text{Y})}{\mathbf h}(\sigma)\Big)*^{(\text{X})}{\mathbf h}(\sigma),
     \label{eq:3DGF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
 the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
 ${\mathbf h}$. For simplicity, Eq.~\ref{eq:3DGF} defines isotropic
-filtering, but variance can be different at each dimension to provide
-anisotropic filtering.
+filtering, but the length of the kernel can be different at each
+dimension to provide anisotropic filtering.
 
 \begin{figure}
   \centering
@@ -545,14 +549,14 @@ anisotropic filtering.
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
-    denoising (GD) can be used to reduce it. The clean image of Barb
+    denoising (GD) can be used to reduce it. The clean image
     is shown on the top left, and a noisy version on the top right. On
     to bottom, the left image shows a denoised using an isotropic
     Gaussian filter, and the right graph shows the performance of GD
     for different levels of noise.\label{fig:GD_0MMPG}}
 \end{figure}
 
-Fig.~\ref{fig:GD_0MPG} shows the performance of GD in a
+Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a
 artificial-noisy image for different levels of noise. As can be seen,
 the optimal value for the single parameter that GD requires (the
 length of the Gaussian kernels in each dimension) depends on the noise
