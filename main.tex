@@ -55,7 +55,7 @@ usually modeled as additive zero-mean uniform noise
 (${\mathbf N}\sim{\mathcal U}(c)$). The PDF (Probability Density
 Function) is defined by
 \begin{equation}
-  f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) := \begin{cases}
+  f(x; c) = \Pr({\mathbf N}^{(i)}_j{=}x) \triangleq \begin{cases}
     \frac{1}{2c} & \text{for } -c \le x \le c, \\[8pt]
     0 & \text{for } x < c \ \text{ or } \ x > -c,
   \end{cases}
@@ -231,7 +231,7 @@ Therefore, MPG noise is signal-dependent and it's spectrum depends on the clean 
 Having (in general) two tensors $\mathbf{X}$ and $\mathbf{Y}$ of size
 $J$,
 \begin{equation}
-  \text{RMSE}(\mathbf{X},\mathbf{Y}) := \sqrt{\frac{1}{J}\sum_{i=1}^J(\mathbf{X}_i - \mathbf{Y}_i)^2}.
+  \text{RMSE}(\mathbf{X},\mathbf{Y}) \triangleq \sqrt{\frac{1}{J}\sum_{i=1}^J(\mathbf{X}_i - \mathbf{Y}_i)^2}.
 \end{equation}
 Notice that the RMSE expresses the distortion in the same units as the
 samples\footnote{Pixels in the 2D case and voxels in 3D.}.
@@ -245,7 +245,7 @@ representing $-1$ the perfect dis-similarity case, $0$ no similarity,
 and $1$ perfect similarity. The SSIM index is computed by splitting
 input images into $M$ non-overlapping blocks and doing
 \begin{equation}
-  \text{SSIM}(\mathbf{X}, \mathbf{Y}) := \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
+  \text{SSIM}(\mathbf{X}, \mathbf{Y}) \triangleq \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
 where $\overline{\mathbf x}_j$ is the mean of the $j$-th block of
 $\mathbf{X}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
@@ -544,8 +544,8 @@ dimension to provide anisotropic filtering.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PSNR_0MMPG_barb}{\includegraphics{GD_PSNR_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#ZMMPG_barb}{\includegraphics{ZMMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_ZMMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_ZMMPG_barb}{\includegraphics{GD_PCC_ZMMPG_barb}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
