@@ -2,6 +2,7 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{graphicx}\graphicspath{{figs}{.}}
 % \usepackage[margin=1in]{geometry}
 \usepackage{comment}
@@ -484,7 +485,7 @@ example of how zero-mean uniform noise is cancelled by stacking.
     }
     \caption{Effect of Poisson noise in an image and how stacking can
       be used to reduced by stacking. The clean image is shown
-      on the top left, and a noisy version on the top right. On to
+      on the top left, and a noisy version on the top right. On the
       bottom, the left image shows a denoised version after stacking
       and the right graph shows the performance of the stacking
       process for different levels of noise.\label{fig:Poisson}}
@@ -544,16 +545,16 @@ dimension to provide anisotropic filtering.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#ZMMPG_barb}{\includegraphics{ZMMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_ZMMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_ZMMPG_barb}{\includegraphics{GD_PCC_ZMMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
-    denoising (GD) can be used to reduce it. The clean image
-    is shown on the top left, and a noisy version on the top right. On
-    to bottom, the left image shows a denoised using an isotropic
-    Gaussian filter, and the right graph shows the performance of GD
-    for different levels of noise.\label{fig:GD_0MMPG}}
+    denoising (GD) can be used to reduce it. A noisy version of the
+    image is on the top left. On the right, a denoised version using
+    Gaussian denoising. On the bottom left it is shown the performance
+    of GD for different levels of noise. On the right, the SFRC of one
+    of a denoised image.\label{fig:GD_0MMPG}}
 \end{figure}
 
 Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a
@@ -561,6 +562,17 @@ artificial-noisy image for different levels of noise. As can be seen,
 the optimal value for the single parameter that GD requires (the
 length of the Gaussian kernels in each dimension) depends on the noise
 level, an information that is generally unknown in microscopy imaging.
+
+For this reason, the autocorrelation in the Fourier domain has been
+calculated by subbands of a filtered image, generating a number of
+SFRC curves, one for each different kernel length $\Sigma$. As can be
+seen, the autocorrelation increases when the noise level decreases due
+to increasing $\Sigma$, until it reaches a value for which the
+autocorrelation decreases again. For that $\Sigma^*$, which maximizes
+the area under the curve up to the normalized frequency $\omega/2$, is
+when the PCC metric is also maximized (for $\Sigma^*/2$), which means
+that we can use the SFRC metric (in the 2D case) and the SFSC (in the
+3D case) to optimize the filtering parameters.
 
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
