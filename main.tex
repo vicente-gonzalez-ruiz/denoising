@@ -318,13 +318,13 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 
 \section{Denoising techniques}
 
-We consider denoising techniques where there is only one noisy
-instance or a few instances, usually in the latter case with slightly
-different versions of the clean signal. Stacking as such is therefore
-excluded.
+%We consider denoising techniques where there is only one noisy
+%instance or a few instances, usually in the latter case with slightly
+%different versions of the clean signal. Averaging as such is therefore
+%excluded.
 
-\subsection{Noise reduction by stacking noisy instances}
-When physically possible, we can approximate ${\mathbf X}$ by
+\subsection{Noise reduction by averaging noisy instances}
+When physically possible, ${\mathbf X}$ can approximated by
 averaging $\hat{\mathbf X}^{(i)}$ instances, performing
 \begin{equation}
   \lim_{I \to \infty} \mathbb{E}_I\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] := \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
@@ -352,13 +352,13 @@ Notice that for MPG noise, Equations \ref{eq:averaging_result} and
   \overline{\mathbf{N}^{(i)}} = {\mathbb E}_J[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}\approx 0.
 \end{equation}
 
-Finally, as can be seen in Eq.~\ref{eq:averaging_result}, notice that
-we are supposing an impossible scenario in which we have an infinite
-number of noisy instances of the clean signal. Logically, in practice,
-$I$ will be finite and we will be able only to obtain an approximation
-of ${\mathbf X}$, that we denote by $\tilde{\mathbf
-  X}$. Figure~\ref{fig:stacking_0MMPG} shows an example of how
-zero-mean MPG noise is cancelled by stacking.
+Finally, as can be seen in Eq.~\ref{eq:averaging_result}, we are
+supposing an impossible scenario in which we have an infinite number
+of noisy instances of the clean signal. Logically, in practice, $I$
+will be finite and we will be able only to obtain an approximation of
+${\mathbf X}$, that we denote by $\tilde{\mathbf
+  X}$. Figure~\ref{fig:averaging_0MMPG} shows an example of how
+zero-mean MPG noise can be cancelled by averaging.
   
 \begin{figure}
   \centering
@@ -367,20 +367,20 @@ zero-mean MPG noise is cancelled by stacking.
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#stacking_0MMPG_barb}{\includegraphics{stacking_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_stacking_0MMPG_barb}{\includegraphics{PSNR_stacking_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#averaging_0MMPG_barb}{\includegraphics{averaging_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_averaging_0MMPG_barb}{\includegraphics{PSNR_averaging_0MMPG_barb}}
     \end{tabular}
   }
-  \caption{Effect of zero-mean MPG noise in an image and how stacking
+  \caption{Effect of zero-mean MPG noise in an image and how averaging
     can be used to remove it. The clean image of Barb is shown on the
     top left, and a noisy version on the top right. On to bottom, the
-    left image shows a denoised version after stacking and the right
-    graph shows the performance of the stacking process for different
-    levels of noise.\label{fig:stacking_0MMPG}}
+    left image shows a denoised version after averaging, and on the right
+    the graph shows the performance of the averaging process for different
+    levels of noise.\label{fig:averaging_0MMPG}}
 \end{figure}
 
 \begin{comment}
 Fig.~\ref{fig:0MAUN} shows an
-example of how zero-mean uniform noise is cancelled by stacking.
+example of how zero-mean uniform noise is cancelled by averaging.
   
   \begin{figure}
     \centering
@@ -393,16 +393,16 @@ example of how zero-mean uniform noise is cancelled by stacking.
       \end{tabular}
     }
     \caption{Effect of zero-mean additive uniform noise in an image
-      and how stacking can be used to reduced by stacking. The clean
+      and how averaging can be used to reduced by averaging. The clean
       image of Barb is shown on the top left, and a noisy version on
       the top right. On to bottom, the left image shows a denoised
-      version after stacking and the right graph shows the performance
-      of the stacking process for different levels of
+      version after averaging and the right graph shows the performance
+      of the averaging process for different levels of
       noise.\label{fig:0MAUN}}
   \end{figure}
 
  Fig.~\ref{fig:0MAGN} shows an
-  example of how zero-mean Gaussian noise is cancelled by stacking.
+  example of how zero-mean Gaussian noise is cancelled by averaging.
 
   \begin{figure}
     \centering
@@ -415,16 +415,16 @@ example of how zero-mean uniform noise is cancelled by stacking.
       \end{tabular}
     }
     \caption{Effect of zero-mean additive Gaussian noise in an image
-      and how stacking can be used to reduced by stacking. The clean
+      and how averaging can be used to reduced by averaging. The clean
       image of Barb is shown on the top left, and a noisy version on
       the top right. On to bottom, the left image shows a denoised
-      version after stacking and the right graph shows the performance
-      of the stacking process for different levels of
+      version after averaging and the right graph shows the performance
+      of the averaging process for different levels of
       noise.\label{fig:0MAGN}}
   \end{figure}
 
   Fig.~\ref{fig:0MMGN} shows an example of
-  how zero-mean Gaussian noise is cancelled by stacking.
+  how zero-mean Gaussian noise is cancelled by averaging.
 
   \begin{figure}
     \centering
@@ -437,16 +437,16 @@ example of how zero-mean uniform noise is cancelled by stacking.
       \end{tabular}
     }
     \caption{Effect of zero-mean multiplicative Gaussian noise in an
-      image and how stacking can be used to reduced by stacking. The
+      image and how averaging can be used to reduced by averaging. The
       clean image of Barb is shown on the top left, and a noisy
       version on the top right. On to bottom, the left image shows a
-      denoised version after stacking and the right graph shows the
-      performance of the stacking process for different levels of
+      denoised version after averaging and the right graph shows the
+      performance of the averaging process for different levels of
       noise.\label{fig:0MMGN}}
   \end{figure}
 
  Fig.~\ref{fig:Rayleigh}
-  shows an example of how Rayleigh noise is cancelled by stacking.
+  shows an example of how Rayleigh noise is cancelled by averaging.
 
   \begin{figure}
     \centering
@@ -458,16 +458,16 @@ example of how zero-mean uniform noise is cancelled by stacking.
         \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_Rayleigh_barb}{\includegraphics{denoised_Rayleigh_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_Rayleigh_barb}{\includegraphics{PSNR_Rayleigh_barb}}
       \end{tabular}
     }
-    \caption{Effect of Rayleigh noise in an image and how stacking can
-      be used to reduced by stacking. The clean image of Barb is shown
+    \caption{Effect of Rayleigh noise in an image and how averaging can
+      be used to reduced by averaging. The clean image of Barb is shown
       on the top left, and a noisy version on the top right. On to
-      bottom, the left image shows a denoised version after stacking
-      and the right graph shows the performance of the stacking
+      bottom, the left image shows a denoised version after averaging
+      and the right graph shows the performance of the averaging
       process for different levels of noise.\label{fig:Rayleigh}}
   \end{figure}
 
   Fig.~\ref{fig:Poisson} shows an example of how Poisson noise is
-  cancelled by stacking.
+  cancelled by averaging.
 
   \begin{figure}
     \centering
@@ -479,11 +479,11 @@ example of how zero-mean uniform noise is cancelled by stacking.
         \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#denoised_Poisson_barb}{\includegraphics{denoised_Poisson_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_Poisson_barb}{\includegraphics{PSNR_Poisson_barb}}
       \end{tabular}
     }
-    \caption{Effect of Poisson noise in an image and how stacking can
-      be used to reduced by stacking. The clean image is shown
+    \caption{Effect of Poisson noise in an image and how averaging can
+      be used to reduced by averaging. The clean image is shown
       on the top left, and a noisy version on the top right. On the
-      bottom, the left image shows a denoised version after stacking
-      and the right graph shows the performance of the stacking
+      bottom, the left image shows a denoised version after averaging
+      and the right graph shows the performance of the averaging
       process for different levels of noise.\label{fig:Poisson}}
   \end{figure}
 \end{comment}
@@ -496,7 +496,7 @@ dimension.
 
 1D GD can be expressed by
 \begin{equation}
-  \tilde{\mathbf{X}}(\sigma) = \hat{\mathbf{Y}}*\mathbf{h}(\sigma),
+  \tilde{\mathbf{X}}(\Sigma) = \hat{\mathbf{Y}}*\mathbf{h}(\Sigma),
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
@@ -505,7 +505,7 @@ digital (in this case, 1D) signals.
 
 The coefficients of the Gaussian kernel
 \begin{equation}
-  \mathbf{h}(\Sigma) = \{\mathbf{h}_i(\sigma)\} = \frac{1}{\sqrt{2\pi}\sigma}e^{{-i}^2/(2\sigma^2)},
+  \mathbf{h}(\Sigma) = \{\mathbf{h}_i(\Sigma)\} = \frac{1}{\sqrt{2\pi}\Sigma}e^{{-i}^2/(2\Sigma^2)},
   \label{eq:GK}
 \end{equation}
 defines a low-pass filter under the assumption that most of the energy
@@ -526,7 +526,7 @@ Multidimensional GD is separable, which means that we can apply the 1D
 filter to all the dimensions of the signal to compute a $N$D
 denoising. For the 3D case, we have that
 \begin{equation}
-  \tilde{\mathbf{X}}(\sigma) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\sigma)\big)*^{(\text{Y})}{\mathbf h}(\sigma)\Big)*^{(\text{X})}{\mathbf h}(\sigma),
+  \tilde{\mathbf{X}}(\Sigma) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\Sigma)\big)*^{(\text{Y})}{\mathbf h}(\Sigma)\Big)*^{(\text{X})}{\mathbf h}(\Sigma),
     \label{eq:3DGF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
@@ -553,11 +553,11 @@ dimension to provide anisotropic filtering.
     of a denoised image.\label{fig:GD_0MMPG}}
 \end{figure}
 
-Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a
-artificial-noisy image for different levels of noise. As can be seen,
-the optimal value for the single parameter that GD requires (the
-length of the Gaussian kernels in each dimension) depends on the noise
-level, an information that is generally unknown in microscopy imaging.
+Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a artificially
+noised image, for different levels of noise. As can be seen, the
+optimal value for the single parameter that GD requires (the length of
+the Gaussian kernels in each dimension) depends on the noise level, an
+information that is generally unknown in microscopy imaging.
 
 For this reason, the autocorrelation in the Fourier domain has been
 calculated by subbands of a filtered image, generating a number of
