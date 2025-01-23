@@ -549,8 +549,13 @@ dimension to provide anisotropic filtering.
     denoising (GD) can be used to reduce it. A noisy version of the
     image is on the top left. On the right, a denoised version using
     Gaussian denoising. On the bottom left it is shown the performance
-    of GD for different levels of noise. On the right, the SFRC of one
-    of a denoised image.\label{fig:GD_0MMPG}}
+    of GD for different levels of noise. On the right, the SFRC curves
+    of the denoised image for different filter lengths. As can be seen
+    (bottom-right subfigure), for example, if $\sigma=30$ and
+    $\gamma=0.15$, the optimal $\Sigma^*\approx 1.5$, and for this
+    noise combination ($\sigma=30$, $\gamma=0.15$, see bottom-left
+    subfigure), $\mathrm{argmax}_\Sigma=0.75=\Sigma^*/2$.
+    \label{fig:GD_0MMPG}}
 \end{figure}
 
 Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a artificially
