@@ -323,9 +323,27 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 %different versions of the clean signal. Averaging as such is therefore
 %excluded.
 
-\subsection{Noise reduction by averaging noisy instances}
+\subsection{Arithmetic mean of noisy instances}
+Using the arithmetic mean of noisy instances, defined by
+\begin{equation}
+  \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I} := \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)},
+  \label{eq:mean}
+\end{equation}
+the clean instance can be found with
+\begin{equation}
+  {\mathbf X} = \lim_{I \to \infty} \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I}  - \mathbb{E}\left[\mathbf{N}\right],
+  \label{eq:mean_with_bias}
+\end{equation}
+where $\mathbf{N}$ is the noise, and $\mathbb{E}$ the expectation. Notice that for MPG noise,
+\begin{equation}
+  \mathbb{E}\left[\mathbf{N}\right] = 0.
+\end{equation}
+
+\begin{comment}
 When physically possible, ${\mathbf X}$ can approximated by
-averaging $\hat{\mathbf X}^{(i)}$ instances, performing
+computing the arithmetic mean of $\hat{\mathbf X}^{(i)}$ instances
+
+
 \begin{equation}
   \lim_{I \to \infty} \mathbb{E}_I\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] := \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
   \label{eq:averaging_result}
@@ -351,14 +369,19 @@ Notice that for MPG noise, Equations \ref{eq:averaging_result} and
 \begin{equation}
   \overline{\mathbf{N}^{(i)}} = {\mathbb E}_J[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}\approx 0.
 \end{equation}
+\end{comment}
 
-Finally, as can be seen in Eq.~\ref{eq:averaging_result}, we are
+As can be seen in Eq.~\ref{eq:mean_with_bias}, we are
 supposing an impossible scenario in which we have an infinite number
-of noisy instances of the clean signal. Logically, in practice, $I$
+of noisy instances (of the clean signal). Logically, in practice, $I$
 will be finite and we will be able only to obtain an approximation of
-${\mathbf X}$, that we denote by $\tilde{\mathbf
-  X}$. Figure~\ref{fig:averaging_0MMPG} shows an example of how
-zero-mean MPG noise can be cancelled by averaging.
+${\mathbf X}$, that we denote, in general, by $\tilde{\mathbf
+  X}$.
+
+Finally, since $\tilde{\mathbf X}$ depends on the number $I$ of averaged
+noisy instances, we will use ${\mathbb{A}}_I$ to denote this operation.
+Figure~\ref{fig:averaging_0MMPG} shows an example of how zero-mean MPG
+noise can be cancelled by averaging.
   
 \begin{figure}
   \centering
@@ -496,7 +519,7 @@ dimension.
 
 1D GD can be expressed by
 \begin{equation}
-  \tilde{\mathbf{X}}(\Sigma) = \hat{\mathbf{Y}}*\mathbf{h}(\Sigma),
+  \tilde{\mathbf{X}}(\tau) = \hat{\mathbf{Y}}*\mathbf{h}(\tau),
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
@@ -505,13 +528,13 @@ digital (in this case, 1D) signals.
 
 The coefficients of the Gaussian kernel
 \begin{equation}
-  \mathbf{h}(\Sigma) = \{\mathbf{h}_i(\Sigma)\} = \frac{1}{\sqrt{2\pi}\Sigma}e^{{-i}^2/(2\Sigma^2)},
+  \mathbf{h}(\tau) = \{\mathbf{h}_i(\tau)\} = \frac{1}{\sqrt{2\pi}\tau}e^{{-i}^2/(2\tau^2)},
   \label{eq:GK}
 \end{equation}
 defines a low-pass filter under the assumption that most of the energy
 (and information) is concentrated in the low frequencies, where
-$\Sigma$ is a parameter that controls the length of the kernel and
-therefore, the cut-off frequency of GD (a higher $\Sigma$ results in a
+$\tau$ is a parameter that controls the length of the kernel and
+therefore, the cut-off frequency of GD (a higher $\tau$ results in a
 lower the cut-off frequency, and therefore, in a higher smoothing
 effect).
 
@@ -526,7 +549,7 @@ Multidimensional GD is separable, which means that we can apply the 1D
 filter to all the dimensions of the signal to compute a $N$D
 denoising. For the 3D case, we have that
 \begin{equation}
-  \tilde{\mathbf{X}}(\Sigma) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\Sigma)\big)*^{(\text{Y})}{\mathbf h}(\Sigma)\Big)*^{(\text{X})}{\mathbf h}(\Sigma),
+  \tilde{\mathbf{X}}(\tau) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\tau)\big)*^{(\text{Y})}{\mathbf h}(\tau)\Big)*^{(\text{X})}{\mathbf h}(\tau),
     \label{eq:3DGF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
@@ -552,9 +575,9 @@ dimension to provide anisotropic filtering.
     of GD for different levels of noise. On the right, the SFRC curves
     of the denoised image for different filter lengths. As can be seen
     (bottom-right subfigure), for example, if $\sigma=30$ and
-    $\gamma=0.15$, the optimal $\Sigma^*\approx 1.5$, and for this
+    $\gamma=0.15$, the optimal $\tau^*\approx 1.5$, and for this
     noise combination ($\sigma=30$, $\gamma=0.15$, see bottom-left
-    subfigure), $\mathrm{argmax}_\Sigma=0.75=\Sigma^*/2$.
+    subfigure), $\mathrm{argmax}_\tau=0.75=\tau^*/2$.
     \label{fig:GD_0MMPG}}
 \end{figure}
 
@@ -566,22 +589,22 @@ information that is generally unknown in microscopy imaging.
 
 For this reason, the autocorrelation in the Fourier domain has been
 calculated by subbands of a filtered image, generating a number of
-SFRC curves, one for each different kernel length $\Sigma$. As can be
+SFRC curves, one for each different kernel length $\tau$. As can be
 seen, the autocorrelation increases when the noise level decreases due
-to increasing $\Sigma$, until it reaches a value for which the
-autocorrelation decreases again. For that $\Sigma^*$, which maximizes
+to increasing $\tau$, until it reaches a value for which the
+autocorrelation decreases again. For that $\tau^*$, which maximizes
 the area under the curve up to the frequency $\omega/4$, is
-when the PCC metric is also maximized (for $\Sigma^*/2$), which means
+when the PCC metric is also maximized (for $\tau^*/2$), which means
 that we can use the SFRC metric (in the 2D case) and the SFSC (in the
 3D case) to optimize the filtering parameters.
 
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
-SDPG is based in 3D Gaussian filtering (Eq.~\ref{eq:3DGF}), but the noised
-volume ${\mathbf Y}$ is dynamically warped to decrease the bluring at the
-structures detected by an 2-D OF (Optical Flow) estimator:
+SDPG is based in 3D Gaussian filtering (see Eq.~\ref{eq:3DGF}), but the noised
+volume ${\mathbf Y}$ is slice-wise warped, to decrease the bluring at the
+structures detected by an 2D OF (Optical Flow) estimator:
 \begin{equation}
-  \hat{\mathbf{Y}}(\sigma; w, l) = \Big(\big(R_\text{Z}(\mathbf{Y}; w, l)*^{(\text{Z})}{\mathbf h}(\sigma)\big)*^{(\text{Y})}{\mathbf h}(\sigma)\Big)*^{(\text{X})}{\mathbf h}(\sigma),
+  \hat{\mathbf{Y}}(\tau; w, l) = \Big(\big(R_\text{Z}(\mathbf{Y}; w, l)*^{(\text{Z})}{\mathbf h}(\tau)\big)*^{(\text{Y})}{\mathbf h}(\tau)\Big)*^{(\text{X})}{\mathbf h}(\tau),
     \label{eq:SDPG}
 \end{equation}
 where
