@@ -6,8 +6,8 @@ import cv2
 #from . import kernels
 #from . import flow_estimation
 #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._1D.farneback_python import Estimator
-from motion_estimation._1D.project import project
+from motion_estimation._1D.farneback_python import OF_Estimation
+from motion_estimation._1D.project import Projection
 #from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
 from . import gaussian
@@ -18,7 +18,7 @@ from numpy.linalg import LinAlgError
 N_POLY = 17
 PYRAMID_LEVELS = 2
 WINDOW_LENGTH = 17
-NUM_ITERATIONS = 3
+NUM_ITERS = 3
 MODEL="constant"
 MU=0
 
@@ -28,16 +28,16 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  pyramid_levels=PYRAMID_LEVELS,
                  window_length=WINDOW_LENGTH,
                  N_poly=N_POLY,
-                 num_iterations=NUM_ITERATIONS,
+                 num_iters=NUM_ITERS,
                  model=MODEL,
                  mu=MU):
         super().__init__(logger)
-        self.estimator = Estimator(logger)
+        self.estimator = OF_Estimation(logger)
         self.singular_matrices_found = 0
         self.pyramid_levels = pyramid_levels
         self.window_length = window_length
         self.N_poly = N_poly
-        self.num_iterations = num_iterations
+        self.num_iters = num_iters
         self.model = model
         self.mu = mu
         for attr, value in vars(self).items():
@@ -45,7 +45,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
 
     def warp_line(self, line, flow):
         length = flow.shape[0]
-        warped_line = project(self.logger, signal=line, flow=np.squeeze(flow))
+        warped_line = Projection.remap(self.logger, signal=line, flow=np.squeeze(flow))
         return warped_line
 
     def get_flow(self, reference, target, flow):
@@ -56,7 +56,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                 target, reference,
                 N_poly=self.N_poly,
                 window_length=self.window_length,
-                num_iterations=self.num_iterations,
+                iterations=self.num_iters,
                 pyramid_levels=self.pyramid_levels,
                 flow=flow,
                 model=self.model,
@@ -155,7 +155,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             return A
         self.logger.debug(f"{np.average(np.abs(flow))}")
         #MVs = np.zeros_like(A)
-        projection = project(self.logger, signal=A, flow=np.squeeze(flow))
+        projection = Projectiont(self.logger, signal=A, flow=np.squeeze(flow))
         #print("A", A.shape, "projection", projection.shape)
         #print("A", np.sum(A)/len(A), "p", np.sum(projection)/len(projection))
         return projection
@@ -230,7 +230,7 @@ def filter_vertical(noisy_img, kernel, l=3, w=5, sigma=0.5):
                 w=w,
                 prev_flow=None,
                 sigma=sigma)
-            OF_compensated_slice = project(reference_slice, flow)
+            OF_compensated_slice = Projection.remap(reference_slice, flow)
             OF_compensated_line = OF_compensated_slice[(w + 1) >> 1, :]
             OF_compensated_line = np.roll(OF_compensated_line, -w2)
             horizontal_line += OF_compensated_line * kernel[i]
@@ -300,7 +300,7 @@ def filter_vertical_RGB(noisy_img, kernel, l=3, w=5, sigma=0.5):
                 w=w,
                 prev_flow=None,
                 sigma=sigma)
-            OF_compensated_slice = project(reference_slice, flow)
+            OF_compensated_slice = Projection.remap(reference_slice, flow)
             OF_compensated_line = OF_compensated_slice[(w + 1) >> 1, :, :]
             #OF_compensated_line = OF_compensated_slice[(w + 0) >> 1, :, :]
             OF_compensated_line = np.roll(a=OF_compensated_line, shift=-w2, axis=0)

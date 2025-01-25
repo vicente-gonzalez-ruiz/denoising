@@ -6,8 +6,8 @@ import cv2
 #from . import kernels
 #from . import flow_estimation
 #pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._2D.farneback_OpenCV import Estimator_in_CPU as Estimator
-from motion_estimation._2D.project import project
+from motion_estimation._2D.farneback_OpenCV import OF_Estimation
+from motion_estimation._2D.project import Projection
 #from color_transforms import YCoCg as YUV #pip install "pip install color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #import image_denoising
 from . import gaussian
@@ -28,7 +28,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  num_iterations=NUM_ITERATIONS,
                  flags=FLAGS):
         super().__init__(logger)
-        self.estimator = Estimator(logger)
+        self.estimator = OF_Estimation(logger)
         self.pyramid_levels = pyramid_levels
         self.window_side = window_side
         self.N_poly = N_poly
@@ -39,7 +39,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             self.logger.info(f"{attr}: {value}")
 
     def warp_slice(self, slice, flow):
-        warped_slice = project(
+        warped_slice = Projection(
             self.logger,
             image=slice,
             flow=flow,
