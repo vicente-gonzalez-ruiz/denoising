@@ -519,16 +519,16 @@ dimension.
 
 1D GD can be expressed by
 \begin{equation}
-  \tilde{\mathbf{X}}(\tau) = \hat{\mathbf{Y}}*\mathbf{h}(\tau),
+  \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
-$\hat{\mathbf{Y}}$ the noisy instance, and $*$ the convolution of
+$\hat{\mathbf{X}}$ the noisy instance, and $*$ the convolution of
 digital (in this case, 1D) signals.
 
 The coefficients of the Gaussian kernel
 \begin{equation}
-  \mathbf{h}(\tau) = \{\mathbf{h}_i(\tau)\} = \frac{1}{\sqrt{2\pi}\tau}e^{{-i}^2/(2\tau^2)},
+  \mathbf{h} = \{\mathbf{h}_i\} = \frac{1}{\sqrt{2\pi}\tau}e^{{-i}^2/(2\tau^2)},
   \label{eq:GK}
 \end{equation}
 defines a low-pass filter under the assumption that most of the energy
@@ -536,7 +536,7 @@ defines a low-pass filter under the assumption that most of the energy
 $\tau$ is a parameter that controls the length of the kernel and
 therefore, the cut-off frequency of GD (a higher $\tau$ results in a
 lower the cut-off frequency, and therefore, in a higher smoothing
-effect).
+effect). Notice that $\tau$ can be different for each dimension.
 
 As can be seen in Eq.~\ref{eq:GK} (all the kernel coefficients are
 positive), and computes weighted averages of neighbour signal
@@ -549,7 +549,7 @@ Multidimensional GD is separable, which means that we can apply the 1D
 filter to all the dimensions of the signal to compute a $N$D
 denoising. For the 3D case, we have that
 \begin{equation}
-  \tilde{\mathbf{X}}(\tau) = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}(\tau)\big)*^{(\text{Y})}{\mathbf h}(\tau)\Big)*^{(\text{X})}{\mathbf h}(\tau),
+  \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
     \label{eq:3DGF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
@@ -601,33 +601,32 @@ that we can use the SFRC metric (in the 2D case) and the SFSC (in the
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
 SDPG is based in 3D Gaussian filtering (see Eq.~\ref{eq:3DGF}), but the noised
-volume ${\mathbf Y}$ is slice-wise warped, to decrease the bluring at the
-structures detected by an 2D OF (Optical Flow) estimator:
+volume ${\mathbf Y}$ is slice-wise warped, to decrease the bluring of the
+structures detected by an 2D OF (Optical Flow) estimator, resulting that
 \begin{equation}
-  \hat{\mathbf{Y}}(\tau; w, l) = \Big(\big(R_\text{Z}(\mathbf{Y}; w, l)*^{(\text{Z})}{\mathbf h}(\tau)\big)*^{(\text{Y})}{\mathbf h}(\tau)\Big)*^{(\text{X})}{\mathbf h}(\tau),
+  \tilde{\mathbf{X}}  = R_\text{X}\Big(R_\text{Y}\big(R_\text{Z}(\hat{\mathbf{X}})*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
     \label{eq:SDPG}
 \end{equation}
 where
 \begin{equation*}
     \begin{array}{rclll}
-    R_\text{Z}(\mathbf{Y}; w, l) & = & \big\{ \{ \overset{z'\rightarrow z}{\mathbf d}({\mathbf Y}_{[z',:,:]}; w, l)~:~\overset{z'\rightarrow z}{\mathbf d}({\mathbf Y}_{[z',:,:]})\approx{\mathbf Y}_{[z,:,:]} & \\ & & \text{for}
+    R_\text{Z}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})~:~\overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})\approx\hat{\mathbf X}_{[z,:,:]} & \\ & & \text{for}
  ~z'=z-k,\cdots,z+k\} ~\text{for}~z=0,1,\cdots,N_\text{Z}-1\big\}, \\
-    R_\text{Y}(\mathbf{Y}; w, l) & = & \big\{ \{ \overset{y'\rightarrow y}{\mathbf d}({\mathbf Y}_{[:,y',:]}; w, l)~:~\overset{y'\rightarrow y}{\mathbf d}({\mathbf Y}_{[:,y',:]}; w, l)\approx{\mathbf Y}_{[:,y,:]} & \\ & & \text{for}
+    R_\text{Y}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]})~:~\overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]}\approx{\mathbf X}_{[:,y,:]} & \\ & & \text{for}
  ~y'=y-k,\cdots,y+k\} ~\text{for}~y=0,1,\cdots,N_\text{Y}-1\big\},~\text{and} \\
-    R_\text{X}(\mathbf{Y}; w, l) & = & \big\{ \{ \overset{x'\rightarrow x}{\mathbf d}({\mathbf Y}_{[:,:,x']}; w, l)~:~\overset{x'\rightarrow x}{\mathbf d}({\mathbf Y}_{[:,:,x']}; w, l)\approx{\mathbf Y}_{[:,:,x]} & \\ & & \text{for}
+    R_\text{X}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})~:~\overset{x'\rightarrow x}p({\mathbf X}_{[:,:,x']}\approx{\mathbf X}_{[:,:,x]} & \\ & & \text{for}
  ~x'=x-k,\cdots,x+k\} ~\text{for}~x=0,1,\cdots,N_\text{X}-1\big\}
     \end{array}
 \end{equation*}
-are the warped volumes. For example,
-$\overset{x'\rightarrow x}{\mathbf d}({\mathbf Y}_{[:,:,x']}; w, l)$
-represents the projection of the slice at coordinate $x'$ fulfilling
-that
-$\overset{x'\rightarrow x}{\mathbf d}({\mathbf Y}_{[:,:,x']}; w,
-l)\approx{\mathbf Y}_{[:,:,x]}$. Notice that, for each possible offset
-in ${\mathbf Z}$, ${\mathbf Y}$, and ${\mathbf X}$, a different set of
+are the slice-wise warped volumes. For example,
+$\overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})$ represents
+the projection of the slice at coordinate $x'$ fulfilling that
+$\overset{x'\rightarrow x}p({\hat{\mathbf X}})\approx{\hat{\mathbf
+  X}}_{[:,:,x]}$. Notice that, for each possible offset in
+${\mathbf Z}$, ${\mathbf Y}$, and ${\mathbf X}$, a different set of
 warped 2-D slices must be computed.
 
-As indicated in Eq.~\ref{eq:SDPG}, the estimator requires 2 new
+The OF estimator requires 2 new (compared with GD denoising)
 parameters:
 \begin{enumerate}
 \item $w$, the size of a 2D window used to analyze the 2D slices. If
