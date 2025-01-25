@@ -612,9 +612,9 @@ where
     \begin{array}{rclll}
     R_\text{Z}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})~:~\overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})\approx\hat{\mathbf X}_{[z,:,:]} & \\ & & \text{for}
  ~z'=z-k,\cdots,z+k\} ~\text{for}~z=0,1,\cdots,N_\text{Z}-1\big\}, \\
-    R_\text{Y}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]})~:~\overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]}\approx{\mathbf X}_{[:,y,:]} & \\ & & \text{for}
+    R_\text{Y}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]})~:~\overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]}\approx\hat{\mathbf X}_{[:,y,:]} & \\ & & \text{for}
  ~y'=y-k,\cdots,y+k\} ~\text{for}~y=0,1,\cdots,N_\text{Y}-1\big\},~\text{and} \\
-    R_\text{X}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})~:~\overset{x'\rightarrow x}p({\mathbf X}_{[:,:,x']}\approx{\mathbf X}_{[:,:,x]} & \\ & & \text{for}
+    R_\text{X}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})~:~\overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']}\approx\hat{\mathbf X}_{[:,:,x]} & \\ & & \text{for}
  ~x'=x-k,\cdots,x+k\} ~\text{for}~x=0,1,\cdots,N_\text{X}-1\big\}
     \end{array}
 \end{equation*}
@@ -624,12 +624,12 @@ the projection of the slice at coordinate $x'$ fulfilling that
 $\overset{x'\rightarrow x}p({\hat{\mathbf X}})\approx{\hat{\mathbf
   X}}_{[:,:,x]}$. Notice that, for each possible offset in
 ${\mathbf Z}$, ${\mathbf Y}$, and ${\mathbf X}$, a different set of
-warped 2-D slices must be computed.
+warped 2D slices must be computed.
 
-The OF estimator requires 2 new (compared with GD denoising)
+Compared with GD denoising, the OF estimator requires 2 new
 parameters:
 \begin{enumerate}
-\item $w$, the size of a 2D window used to analyze the 2D slices. If
+\item $w$, the size of a 2D window used to analyze the slices. If
   $w$ is large, the estimator is less sensitive to the noise but also
   the small structures are ignored. Therefore, higher $w$ values
   increases blurring.
