@@ -29,22 +29,30 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  flags=FLAGS):
         super().__init__(logger)
         self.estimator = OF_Estimation(logger)
+        self.projector = Projection(logger)
         self.pyramid_levels = pyramid_levels
         self.window_side = window_side
         self.N_poly = N_poly
         self.sigma_poly = (N_poly - 1)/4
         self.num_iters = num_iters
         self.flags = flags
+        
         for attr, value in vars(self).items():
             self.logger.info(f"{attr}: {value}")
 
-    def warp_slice(self, slice, flow):
-        warped_slice = Projection(
-            self.logger,
-            image=slice,
+    def warp_slice(self, image, flow):
+        #warped_slice = Projection(
+        #    self.logger,
+        #    image=slice,
+        #    flow=flow,
+        #    interpolation_mode=cv2.INTER_LINEAR,
+        #    extension_mode=cv2.BORDER_REPLICATE)
+        warped_slice = self.projector.remap(
+            image=image,
             flow=flow,
             interpolation_mode=cv2.INTER_LINEAR,
-            extension_mode=cv2.BORDER_REPLICATE)
+            extension_mode=cv2.BORDER_REPLICATE
+        )
         return warped_slice
 
     def get_flow(
