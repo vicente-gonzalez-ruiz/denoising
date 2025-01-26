@@ -16,7 +16,7 @@ import logging # borrame
 N_POLY = 7
 PYRAMID_LEVELS = 2
 WINDOW_SIDE = 7
-NUM_ITERATIONS = 3
+NUM_ITERS = 3
 FLAGS = 0
 
 class Monochrome_Denoising(gaussian.Monochrome_Denoising):
@@ -25,7 +25,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
                  pyramid_levels=PYRAMID_LEVELS,
                  window_side=WINDOW_SIDE,
                  N_poly=N_POLY,
-                 num_iterations=NUM_ITERATIONS,
+                 num_iters=NUM_ITERS,
                  flags=FLAGS):
         super().__init__(logger)
         self.estimator = OF_Estimation(logger)
@@ -33,7 +33,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.window_side = window_side
         self.N_poly = N_poly
         self.sigma_poly = (N_poly - 1)/4
-        self.num_iterations = num_iterations
+        self.num_iters = num_iters
         self.flags = flags
         for attr, value in vars(self).items():
             self.logger.info(f"{attr}: {value}")
@@ -59,7 +59,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             pyr_scale=0.5,
             levels=self.pyramid_levels,
             winsize=self.window_side,
-            iterations=self.num_iterations,
+            iterations=self.num_iters,
             poly_n=7,
             poly_sigma=self.sigma_poly,
             flags=self.flags)
@@ -74,7 +74,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         flow=None,
         pyramid_levels=PYRAMID_LEVELS, # Number of pyramid layers
         window_side=WINDOW_SIDE, # Applicability window side
-        num_iterations=NUM_ITERATIONS, # Number of iterations at each pyramid level
+        num_iters=NUM_ITERS, # Number of iterations at each pyramid level
         N_poly=N_POLY, # Standard deviation of the Gaussian basis used in the polynomial expansion
         flags=cv2.OPTFLOW_USE_INITIAL_FLOW | cv2.OPTFLOW_FARNEBACK_GAUSSIAN):
         #flow = np.zeros(shape=(reference.size, 1), dtype=np.float32)
@@ -84,7 +84,7 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             flow=flow,
             pyramid_levels=pyramid_levels,
             window_side=window_side,
-            num_iterations=num_iterations,
+            num_iters=num_iters,
             N_poly=N_poly,
             flags=flags)
         return flow
