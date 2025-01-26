@@ -72,7 +72,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
             poly_sigma=self.sigma_poly,
             flags=self.flags)
         #flow[...] = 0.0
-        print(np.max(np.abs(flow)), end=' ')
+        if self.logger.getEffectiveLevel() <= logging.DEBUG:
+            print(np.max(np.abs(flow)), end=' ')
         return flow
 
     def __get_flow(
@@ -131,7 +132,8 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         N_rows = noisy_image.shape[0]
         N_cols = noisy_image.shape[1]
         for y in range(N_rows):
-            print(y, end=' ')
+            self.logger.info(f"row={y}")
+            #print(y, end=' ')
             horizontal_line = np.zeros(shape=(N_cols + self.window_side), dtype=np.float32)
             target_slice_Y = extended_Y[y + KL2:y + KL2 + self.window_side]
             #print("<", target_slice_Y.shape, ">")

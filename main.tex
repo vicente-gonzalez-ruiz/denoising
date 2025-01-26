@@ -565,7 +565,7 @@ dimension to provide anisotropic filtering.
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
@@ -574,10 +574,10 @@ dimension to provide anisotropic filtering.
     Gaussian denoising. On the bottom left it is shown the performance
     of GD for different levels of noise. On the right, the SFRC curves
     of the denoised image for different filter lengths. As can be seen
-    (bottom-right subfigure), for example, if $\sigma=30$ and
-    $\gamma=0.15$, the optimal $\tau^*\approx 1.5$, and for this
-    noise combination ($\sigma=30$, $\gamma=0.15$, see bottom-left
-    subfigure), $\mathrm{argmax}_\tau=0.75=\tau^*/2$.
+    in the bottom-left subfigure, for the noise level $(\sigma=30,
+    \gamma=0.15)$, the optimal $\tau^*=1.5$. In the bottom-right
+    subfigure it can be seen that for this noise level, the optimal
+    Gaussian kernel-lenght is $\tau^*/2=0.75$.
     \label{fig:GD_0MMPG}}
 \end{figure}
 
@@ -596,7 +596,8 @@ autocorrelation decreases again. For that $\tau^*$, which maximizes
 the area under the curve up to the frequency $\omega/4$, is
 when the PCC metric is also maximized (for $\tau^*/2$), which means
 that we can use the SFRC metric (in the 2D case) and the SFSC (in the
-3D case) to optimize the filtering parameters.
+3D case) to optimize the filtering parameters knowing only the noisy
+instance $\hat{\mathbf{X}}$.
 
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
