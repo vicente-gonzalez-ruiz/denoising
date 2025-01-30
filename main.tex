@@ -524,9 +524,20 @@ example of how zero-mean uniform noise is cancelled by averaging.
   
 \subsection{Gaussian Denoising (GD)}
 
-GD, also known by Gaussian smoothing filtering, works by convolving a
-separable Gaussian kernel with the signal samples in each space
-dimension.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{3D_GD}
+  \caption{Separable 3D Gaussian filtering implemented in 3D GD. The
+    gray planes contain the voxels that are filtered and the white
+    planes contain the voxels used by the 1D kernel when it is applied
+    to the voxels of the filtered plane. The kernel shown here
+    contains 3 coefficients. The volume is convolved sequentially
+    in-place, from left to right.\label{fig:3D_GD}}
+\end{figure}
+
+3D GD, also known by Gaussian smoothing filtering, works by convolving a
+separable 1D Gaussian kernel with the signal samples in each space
+dimension (see Fig.~\ref{fig:3D_GD}).
 
 1D GD can be expressed by
 \begin{equation}
@@ -561,11 +572,11 @@ filter to all the dimensions of the signal to compute a $N$D
 denoising. For the 3D case, we have that
 \begin{equation}
   \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
-    \label{eq:3DGF}
+    \label{eq:3D_GF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
 the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
-${\mathbf h}$. For simplicity, Eq.~\ref{eq:3DGF} defines isotropic
+${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GF} defines isotropic
 filtering, but the length of the kernel can be different at each
 dimension to provide anisotropic filtering.
 
@@ -611,11 +622,25 @@ that we can use the SFRC metric (in the 2D case) and the SFSC (in the
 3D case) to optimize the filtering parameters knowing only the noisy
 instance $\hat{\mathbf{X}}$.
 
-\subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
+\subsection{SPGD (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
-SDPG is based in 3D Gaussian filtering (see Eq.~\ref{eq:3DGF}), but
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{SPGD}
+  \caption{SPGD along the $\mathrm{Z}$-dimension. Five consecutive
+    images (or $\mathrm{XY}$-planes) are involved in the filtering of
+    the image $\hat{\mathbf{X}}_z$. Four displacements fields
+    (represented by arrows) determined by the OFE are used for the
+    alignment of the structures found in the images , , , and with
+    respect to those present in , hence producing OF-compensated
+    images. The Gaussian filtering along the -dimension (dotted line)
+    is then applied to the OF-compensated images..\label{fig:SPGD}}
+\end{figure}
+
+
+SPGD is based in 3D Gaussian filtering (see Eq.~\ref{eq:3D_GD}), but
 the noised volume $\hat{\mathbf{X}}$ is slice-wise 2D-warped, in the 3
-space dimensions (see the Figure~\ref{fig:SDPG}), resulting (compared
+space dimensions (see Fig.~\ref{fig:SPGG}), resulting (compared
 to GD) in a reduction of the bluring of the structures detected by an
 2D OF (Optical Flow) estimator. This idea can be expressed as
 \begin{equation}
