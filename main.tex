@@ -29,6 +29,25 @@
 
 \tableofcontents
 
+\section*{Definitions and notation}
+\begin{tabular}{ll}
+  $x$ & an integer or a real scalar (e.g., a pixel of a grayscale image) \\
+  $\mathbf{X}$ & a tensor with a given number of dimensions (e.g., an image) \\
+  $\mathbf{X}_i$ & the $i$-th element of the tensor $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
+  $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar by tensor multiplication) \\
+  $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (tensors addition) \\ 
+  $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (tensors multiplication) \\ 
+  $\mathcal{N}$ & Normal distribution \\ 
+  $\mathcal{P}$ & Poisson distribution \\
+  $\mathbf{X}\sim\mathcal{N}$ & The elements of the tensor $\mathbf{X}$ follows a normal distribution \\
+  $\mathbf{X}_{\mathcal{N}}$ & The same as $\mathbf{X}\sim\mathcal{N}$ \\
+  $\Pr(\mathbf{X}=x)$ & Probability that a $\mathbf{X}_i$ takes the value $x$ \\
+  $A(b)$ & $A$ depends on the parameter $b$ \\
+  $\mathcal{F}$ & The (forward) Fourier transform \\
+  $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
+  $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution)
+\end{tabular}
+
 \section{Common sources of noise in microscopy imaging}
 
 In microscopy, there are three main sources of noise: (1)
@@ -65,27 +84,27 @@ therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
 Eq.~\ref{eq:noise_expectation_2}). 
 \end{comment}
 
-\subsection{Zero-mean Additive White Gaussian (ZMAWG) noise}
-A noisy image $\hat{\mathbf X}$ corrupted by ZMAWG noise is modeled as
+\subsection{Zero-mean Additive White Gaussian (ZAWG) noise}
+A noisy tensor $\hat{\mathbf X}$ corrupted by ZAWG noise is modeled as
 \begin{equation}
   \hat{\mathbf X} = {\mathbf X} + {\mathbf N}_{{\mathcal N}(\sigma)},
   \label{eq:AWG_noise_model}  
 \end{equation}
-where $\mathbf{X}$ is the \emph{clean image} (without noise, ground
-truth usually unknown) with a $J$ pixels (or voxels in the 3D case),
-and ${\mathbf N}\in\mathbb{R}^J$ is a tensor of random samplesn,
-where, for the ZMAWG noise case,
-${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma)$ (alternatively
-${\mathbf N}_{{\mathcal N}(\sigma)}$), with PDF (probability density
+where $\mathbf{X}$ is the \emph{clean tensor} (without noise, ground
+truth usually unknown),
+and ${\mathbf N}$ is a tensor of random samples,
+where, for the ZAWG noise case,
+${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma)$, with PDF (probability density
 function)
 \begin{equation}
   \Pr({\mathbf N}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
 \end{equation}
 $x\in\mathbb{R}$ is continuous (in our context, the value of a
-pixel/voxel), and $\mu$ the mean and $\sigma$ represents the standard
-deviation of the noise. Notice that this model is signal-independent
-because nothing can said about ${\mathbf N}$ known $\hat{\mathbf X}$
-(except that both have the same shape).
+pixel/voxel), $\mu\in\mathbb{R}$ is the mean, and
+$\sigma\in\mathbb{R}$ represents the standard deviation of the
+noise. Notice that this is a signal-independent model because nothing
+can said about ${\mathbf N}$ known $\hat{\mathbf X}$ (except that both
+have the same shape).
 
 By definition, the spectrum of AWG noise is flat. Therefore, the
 performance of a pure low-pass filter denoiser will depend on the
@@ -127,7 +146,7 @@ spectrum of $\mathbf{X}$.
 
 \subsection{Mixed Poisson-Gaussian noise}
 A more realistic noise model in microscopy consists in a combination
-of both Poisson and ZMAWG noise, which is commonly called mixed
+of both Poisson and ZAWG noise, which is commonly called mixed
 Poisson-Gaussian (MPG) noise \cite{meiniel2018denoising}. In this
 case, we have that
 \begin{equation}
@@ -537,9 +556,7 @@ example of how zero-mean uniform noise is cancelled by averaging.
 
 3D GD, also known by Gaussian smoothing filtering, works by convolving a
 separable 1D Gaussian kernel with the signal samples in each space
-dimension (see Fig.~\ref{fig:3D_GD}).
-
-1D GD can be expressed by
+dimension (see Fig.~\ref{fig:3D_GD}). 1D GD can be expressed by
 \begin{equation}
   \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
   \label{eq:GF}
@@ -578,7 +595,7 @@ where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
 the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
 ${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GF} defines isotropic
 filtering, but the length of the kernel can be different at each
-dimension to provide anisotropic filtering.
+dimension to provide anisotropy.
 
 \begin{figure}
   \centering
