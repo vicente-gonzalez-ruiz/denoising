@@ -3,7 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage{graphicx}\graphicspath{{figs}{.}}
+\usepackage{graphicx}\graphicspath{{figs}{notebooks}{.}}
 % \usepackage[margin=1in]{geometry}
 \usepackage{comment}
 
@@ -65,26 +65,27 @@ therefore, $\overline{\mathbf N}={\mathbf 0}$ (see
 Eq.~\ref{eq:noise_expectation_2}). 
 \end{comment}
 
-\subsection{Additive white Gaussian (AWG) noise}
-A noisy image $\hat{\mathbf X}$ corrupted by AWG noise is modeled as
+\subsection{Zero-mean Additive White Gaussian (ZMAWG) noise}
+A noisy image $\hat{\mathbf X}$ corrupted by ZMAWG noise is modeled as
 \begin{equation}
-  \hat{\mathbf X} = {\mathbf X} + {\mathbf N},
+  \hat{\mathbf X} = {\mathbf X} + {\mathbf N}_{{\mathcal N}(\sigma)},
   \label{eq:AWG_noise_model}  
 \end{equation}
 where $\mathbf{X}$ is the \emph{clean image} (without noise, ground
-truth usually unknown) with a $J$ pixels (or voxels in
-the 3D case), and ${\mathbf N}\in\mathbb{R}^J$ is a tensor of random
-samples. In the case of AWG,
-${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma^2)$, with PDF (probability
-density function)
+truth usually unknown) with a $J$ pixels (or voxels in the 3D case),
+and ${\mathbf N}\in\mathbb{R}^J$ is a tensor of random samplesn,
+where, for the ZMAWG noise case,
+${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma)$ (alternatively
+${\mathbf N}_{{\mathcal N}(\sigma)}$), with PDF (probability density
+function)
 \begin{equation}
-  \Pr({\mathbf N}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} },
+  \Pr({\mathbf N}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
 \end{equation}
-$x\in\mathbb{R}$ continuous (in our context, the value of a
-pixel/voxel), representing $\mu$ the mean and $\sigma$ the standard
+$x\in\mathbb{R}$ is continuous (in our context, the value of a
+pixel/voxel), and $\mu$ the mean and $\sigma$ represents the standard
 deviation of the noise. Notice that this model is signal-independent
 because nothing can said about ${\mathbf N}$ known $\hat{\mathbf X}$
-(except that both have the same shape and size $J$).
+(except that both have the same shape).
 
 By definition, the spectrum of AWG noise is flat. Therefore, the
 performance of a pure low-pass filter denoiser will depend on the
@@ -101,7 +102,7 @@ which describes the probability of $k\in\mathbb{N}$ events ocurring
 within an observed interval (of time, for example), when, in average
 we have ${\mathbf \lambda}_j\in\mathbb{R}$ events in such interval.
 
-In this case, we model the noisy signal as
+In this case, we model the noisy as
 \begin{equation}
   \hat{{\mathbf X}}_j = \frac{{\mathbf X}_j^{k} e^{-{\mathbf X}_j}}{k!}.
 \end{equation}
@@ -110,16 +111,23 @@ As it can be seen, this is a signal-dependent model because the
 brighter parts of $\hat{\mathbf X}$ will have a higher mean value and
 a higher variance\footnote{The mean and variance of a Poisson law are
   both equal to $\lambda$.}, and therefore higher noise level (and
-viceversa) \cite{meiniel2018denoising}. When necessary, we will
-highlight this by writting ${\mathbf N}({\mathbf X})$.
+viceversa) \cite{meiniel2018denoising}. We will highlight this by
+computing
+\begin{equation}
+  \hat{\mathbf{X}} = \frac{\mathbf{N}(\mathbf{X})}{\gamma},~\mathbf{N}\sim\mathcal{P}(\lambda=\gamma\mathbf{X})
+\end{equation}
+or alternatively
+\begin{equation}
+  \hat{\mathbf{X}} = \mathbf{N}_{\mathcal{P}(\lambda=\gamma\mathbf{X})}/\gamma.
+\end{equation}
 
-Poisson noise is generated based on the intensity of the underlying
-signal and therefore, the frequency characteristics of Poisson noise
-resemble the spectrum of the clean signal.
+Poisson noise depends on the intensity of the clean signal $\mathbf{X}$ and
+therefore, the frequency characteristics of Poisson noise resemble the
+spectrum of $\mathbf{X}$.
 
 \subsection{Mixed Poisson-Gaussian noise}
 A more realistic noise model in microscopy consists in a combination
-of both Poisson and AWG noise, which is commonly called mixed
+of both Poisson and ZMAWG noise, which is commonly called mixed
 Poisson-Gaussian (MPG) noise \cite{meiniel2018denoising}. In this
 case, we have that
 \begin{equation}
@@ -128,10 +136,14 @@ case, we have that
 \end{equation}
 where
 \begin{equation}
-  \hat{\mathbf X} = {\mathbf N}_{\mathrm{Gaussian}} + \gamma{\mathbf N}_{\mathrm{Poisson}}({\mathbf X}).
+  \hat{\mathbf X} = (1-\alpha)(\mathbf{X} + {\mathbf N}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf N}_{\mathcal{P}(\lambda=\gamma\mathbf{X})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
-Therefore, MPG noise is signal-dependent and it's spectrum depends on the clean image $\mathbf{X}$.
+where $\alpha\in[0,~1]$ controls the presence of Poisson noise (notice
+that if $\sigma=0$ and $\alpha=0$, the Gaussian noise vanishes and
+$\hat{\mathbf{X}}=\mathbf{X}$).  Therefore, for $\alpha\neq 0$,
+$\hat{\mathbf{X}}$ is signal-dependent and it's spectrum depends on
+the clean image $\mathbf{X}$. By default, $\alpha=0.5$.
 
 % \subsection{Speckle noise}
 % Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
@@ -324,7 +336,7 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 %excluded.
 
 \subsection{Arithmetic mean of noisy instances}
-Using the arithmetic mean of noisy instances, defined by
+Using the arithmetic mean (average) of a number of noisy instances, defined by
 \begin{equation}
   \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I} := \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)},
   \label{eq:mean}
@@ -342,7 +354,6 @@ where $\mathbf{N}$ is the noise, and $\mathbb{E}$ the expectation. Notice that f
 \begin{comment}
 When physically possible, ${\mathbf X}$ can approximated by
 computing the arithmetic mean of $\hat{\mathbf X}^{(i)}$ instances
-
 
 \begin{equation}
   \lim_{I \to \infty} \mathbb{E}_I\left[\{\hat{\mathbf X}^{(i)}\}_{i=1}^I\right] := \lim_{I \to \infty} \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)} = {\mathbf X}.
@@ -379,7 +390,7 @@ ${\mathbf X}$, that we denote, in general, by $\tilde{\mathbf
   X}$.
 
 Finally, since $\tilde{\mathbf X}$ depends on the number $I$ of averaged
-noisy instances, we will use ${\mathbb{A}}_I$ to denote this operation.
+noisy instances, we will use $\tilde{\mathbf X}^{[I]}$ to denote this operation.
 Figure~\ref{fig:averaging_0MMPG} shows an example of how zero-mean MPG
 noise can be cancelled by averaging.
   
@@ -394,9 +405,9 @@ noise can be cancelled by averaging.
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how averaging
-    can be used to remove it. The clean image of Barb is shown on the
-    top left, and a noisy version on the top right. On to bottom, the
-    left image shows a denoised version after averaging, and on the right
+    can be used to remove it. The clean image is shown on the
+    top-left, and a noisy version on the top-right. On to bottom-left, the
+    image shows a denoised version after averaging, and on the bottm-right
     the graph shows the performance of the averaging process for different
     levels of noise.\label{fig:averaging_0MMPG}}
 \end{figure}
@@ -542,8 +553,8 @@ As can be seen in Eq.~\ref{eq:GK} (all the kernel coefficients are
 positive), and computes weighted averages of neighbour signal
 samples. This does not mach the calculus described in
 Eq.~\ref{eq:mean_with_bias}, but as an advantage, GD requires only a
-noisy instance. The result of GD is a smooth denoised signal
-$\tilde{\mathbf X}$.
+noisy instance. The result of GD is a smooth denoised version of
+$\hat{\mathbf X}$.
 
 Multidimensional GD is separable, which means that we can apply the 1D
 filter to all the dimensions of the signal to compute a $N$D
@@ -564,30 +575,31 @@ dimension to provide anisotropic filtering.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how Gaussian
     denoising (GD) can be used to reduce it. A noisy version of the
-    image is on the top left. On the right, a denoised version using
-    Gaussian denoising. On the bottom left it is shown the performance
-    of GD for different levels of noise. On the right, the SFRC curves
+    image is on the top-left. On the top-right, the SFRC curves
     of the denoised image for different filter lengths. As can be seen
-    in the bottom-left subfigure, for the noise level $(\sigma=30,
-    \gamma=0.15)$, the optimal $\tau^*=1.5$. In the bottom-right
-    subfigure it can be seen that for this noise level, the optimal
-    Gaussian kernel-lenght is $\tau^*/2=0.75$.
+    in the bottom-left subfigure, for the noise level
+    $(\sigma=30, \gamma=0.15)$, an optimal $\tau^*=1.0$ if
+    we consider that the area below the SFRC curve should be maximized.
+    On the bottm-left, it can be seen that for this noise level,
+    the optimal Gaussian kernel-lenght is $\tau^*/2=0.50$. The resulting
+    ``optimal'' filtered image (using GD) is shown on the bottom-right.
     \label{fig:GD_0MMPG}}
 \end{figure}
 
 Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a artificially
 noised image, for different levels of noise. As can be seen, the
 optimal value for the single parameter that GD requires (the length of
-the Gaussian kernels in each dimension) depends on the noise level, an
-information that is generally unknown in microscopy imaging.
+the Gaussian kernels in each dimension, represented by $\tau$ in
+$\mathrm{GD}_\tau$) depends on the noise level, an information that is
+generally unknown in microscopy imaging.
 
-For this reason, the autocorrelation in the Fourier domain has been
+For this reason, the self-correlation in the Fourier domain has been
 calculated by subbands of a filtered image, generating a number of
 SFRC curves, one for each different kernel length $\tau$. As can be
 seen, the autocorrelation increases when the noise level decreases due
@@ -601,9 +613,11 @@ instance $\hat{\mathbf{X}}$.
 
 \subsection{SDPG (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
 
-SDPG is based in 3D Gaussian filtering (see Eq.~\ref{eq:3DGF}), but the noised
-volume ${\mathbf Y}$ is slice-wise warped, to decrease the bluring of the
-structures detected by an 2D OF (Optical Flow) estimator, resulting that
+SDPG is based in 3D Gaussian filtering (see Eq.~\ref{eq:3DGF}), but
+the noised volume $\hat{\mathbf{X}}$ is slice-wise 2D-warped, in the 3
+space dimensions (see the Figure~\ref{fig:SDPG}), resulting (compared
+to GD) in a reduction of the bluring of the structures detected by an
+2D OF (Optical Flow) estimator. This idea can be expressed as
 \begin{equation}
   \tilde{\mathbf{X}}  = R_\text{X}\Big(R_\text{Y}\big(R_\text{Z}(\hat{\mathbf{X}})*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
     \label{eq:SDPG}
@@ -623,21 +637,57 @@ are the slice-wise warped volumes. For example,
 $\overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})$ represents
 the projection of the slice at coordinate $x'$ fulfilling that
 $\overset{x'\rightarrow x}p({\hat{\mathbf X}})\approx{\hat{\mathbf
-  X}}_{[:,:,x]}$. Notice that, for each possible offset in
+    X}}_{[:,:,x]}$. Notice that, for each possible offset in
 ${\mathbf Z}$, ${\mathbf Y}$, and ${\mathbf X}$, a different set of
 warped 2D slices must be computed.
 
 Compared with GD denoising, the OF estimator requires 2 new
 parameters:
 \begin{enumerate}
-\item $w$, the size of a 2D window used to analyze the slices. If
-  $w$ is large, the estimator is less sensitive to the noise but also
-  the small structures are ignored. Therefore, higher $w$ values
-  increases blurring.
+\item $w$, the size of a 2D window used to analyze the slices. If $w$
+  is large, the estimator is less sensitive to the noise but also the
+  small structures are ignored. Therefore, higher $w$ values increases
+  blurring.
 \item $l$, that controls the maximun displacements that the
   estimator can generate. Blurring increases with $l$.
 \end{enumerate}
 
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#OFGD_0MMPG_barb}{\includegraphics{OFGD_0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#OFGD_SFRC_0MMPG_barb}{\includegraphics{OFGD_SFRC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#OFGD_PCC_0MMPG_barb}{\includegraphics{OFGD_PCC_0MMPG_barb}}
+    \end{tabular}
+  }
+  \caption{Effect of zero-mean MPG noise in an image and how optical-flow Gaussian
+    denoising (OFGD) can be used to reduce it. On the top-left, the best
+    denoised version generated by GD. On the top-right, the best denoised version using
+    OFGD. On the bottom-left it is shown the performance
+    of OFGD for different levels of noise. On the bottom-right, the SFRC curves
+    of the denoised image for different filter lengths. As can be seen
+    in the bottom-left subfigure, for the noise level $(\sigma=30,
+    \gamma=0.15)$, the optimal $\tau^*=7.0$. In the bottom-right
+    subfigure it can be seen that for this noise level, the optimal
+    Gaussian kernel-lenght is $\tau^*/2=3.5$.
+    \label{fig:OFGD_0MMPG}}
+\end{figure}
+
+
+A set of experiments have been conducted to figure out:
+\begin{enumerate}
+\item The relationship between $\tau$, $l$, and $w$.
+\item Whether the self correlation in the Fourier domain of the
+  denoised image can estimate optimal values for these parameters.
+\end{enumerate}
+
+Fig.~\ref{fig:OFGD_0MMPG} shows the performance of OFGD in a artificially
+noised image, for different levels of noise. As can be seen, the
+optimal value for the single parameter that OFGD requires (the length of
+the Gaussian kernels in each dimension) depends on the noise level, an
+information that is generally unknown in microscopy imaging.
 
 % \section{AND}
 
