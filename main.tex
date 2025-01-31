@@ -31,18 +31,26 @@
 
 \section*{Definitions and notation}
 \begin{tabular}{ll}
-  $x$ & an integer or a real scalar (e.g., a pixel of a grayscale image) \\
-  $\mathbf{X}$ & a tensor with a given number of dimensions (e.g., an image) \\
-  $\mathbf{X}_i$ & the $i$-th element of the tensor $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
-  $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar by tensor multiplication) \\
-  $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (tensors addition) \\ 
-  $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (tensors multiplication) \\ 
-  $\mathcal{N}$ & Normal distribution \\ 
-  $\mathcal{P}$ & Poisson distribution \\
-  $\mathbf{X}\sim\mathcal{N}$ & The elements of the tensor $\mathbf{X}$ follows a normal distribution \\
+  $x$ & A scalar (e.g., a value of a pixel of a grayscale image) \\
+  $\mathbf{X}$ & A tensor (e.g., an image) \\
+  $\mathbf{X}_i$ & The $i$-th element of $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
+  $\hat{\mathbf{X}}^{(i)}$ & The $i$-th noisy instance of the signal $\mathbf{X}$ \\
+  $\tilde{\mathbf{X}}^{[I]}$ & The average of the noisy instances $\{\hat{\mathbf{X}}^{(i)}\}_{i=1}^I$ \\ 
+  $|\mathbf{X}|$ & The number of elements in $\mathbf{X}$ \\
+  $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
+  $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar multiplication) \\
+  $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (Hadamard addition) \\ 
+  $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (Hadamard product) \\ 
+  $\mathcal{N}$ & The normal distribution \\ 
+  $\mathcal{P}$ & The Poisson distribution \\
+  $\mathbf{X}\sim\mathcal{N}$ & The elements of $\mathbf{X}$ follows a normal distribution \\
   $\mathbf{X}_{\mathcal{N}}$ & The same as $\mathbf{X}\sim\mathcal{N}$ \\
   $\Pr(\mathbf{X}=x)$ & Probability that a $\mathbf{X}_i$ takes the value $x$ \\
-  $A(b)$ & $A$ depends on the parameter $b$ \\
+  $\Pr(\mathbf{X}=x, \mathbf{Y}=y)$ & $\Pr(\mathbf{X}=x)$ and $\Pr(\mathbf{Y}=y)$ (joint probability)  \\
+  $\mathrm{Su}(\mathbf{X})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{X}=x)>0\}$ (support of $\mathbf{X}$)\\
+  $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
+  $\mathbb{E}(\mathbf{X})$ & Expectation of $\mathbf{X}$ \\ 
+  $A(b)$ & $A$ depends on parameter $b$ \\
   $\mathcal{F}$ & The (forward) Fourier transform \\
   $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
   $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution)
@@ -85,7 +93,7 @@ Eq.~\ref{eq:noise_expectation_2}).
 \end{comment}
 
 \subsection{Zero-mean Additive White Gaussian (ZAWG) noise}
-A noisy tensor $\hat{\mathbf X}$ corrupted by ZAWG noise is modeled as
+A noisy tensor $\hat{\mathbf X}$ corrupted by ZAWG noise can be modeled as
 \begin{equation}
   \hat{\mathbf X} = {\mathbf X} + {\mathbf N}_{{\mathcal N}(\sigma)},
   \label{eq:AWG_noise_model}  
@@ -97,14 +105,17 @@ where, for the ZAWG noise case,
 ${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma)$, with PDF (probability density
 function)
 \begin{equation}
-  \Pr({\mathbf N}_j{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
+  \Pr({\mathbf N}{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
 \end{equation}
-$x\in\mathbb{R}$ is continuous (in our context, the value of a
-pixel/voxel), $\mu\in\mathbb{R}$ is the mean, and
-$\sigma\in\mathbb{R}$ represents the standard deviation of the
-noise. Notice that this is a signal-independent model because nothing
-can said about ${\mathbf N}$ known $\hat{\mathbf X}$ (except that both
-have the same shape).
+In theory, $x\in\mathbb{R}$ can be continuous, although in our
+context, is a signal sample and therefore, discrete,
+$\mu\in\mathbb{R}$ is the mean, and $\sigma\in\mathbb{R}$ represents
+the standard deviation of the noise. Notice that this is a
+signal-independent model because nothing can said about ${\mathbf N}$
+known $\hat{\mathbf X}$, except that
+\begin{equation}
+  \Pr(\mathbf{N}{=}n|\hat{\mathbf{X}}) = \Pr(\mathbf{N}{=}n).
+\end{equation}
 
 By definition, the spectrum of AWG noise is flat. Therefore, the
 performance of a pure low-pass filter denoiser will depend on the
@@ -129,19 +140,14 @@ In this case, we model the noisy as
 As it can be seen, this is a signal-dependent model because the
 brighter parts of $\hat{\mathbf X}$ will have a higher mean value and
 a higher variance\footnote{The mean and variance of a Poisson law are
-  both equal to $\lambda$.}, and therefore higher noise level (and
-viceversa) \cite{meiniel2018denoising}. We will highlight this by
-computing
+  both equal to $\lambda$.}, and therefore higher noise level
+\cite{meiniel2018denoising}. We will highlight this by computing
 \begin{equation}
-  \hat{\mathbf{X}} = \frac{\mathbf{N}(\mathbf{X})}{\gamma},~\mathbf{N}\sim\mathcal{P}(\lambda=\gamma\mathbf{X})
-\end{equation}
-or alternatively
-\begin{equation}
-  \hat{\mathbf{X}} = \mathbf{N}_{\mathcal{P}(\lambda=\gamma\mathbf{X})}/\gamma.
+  \hat{\mathbf{X}} = \frac{\mathbf{N}(\mathbf{X})}{\gamma},~\mathbf{N}\sim\mathcal{P}(\lambda=\gamma\mathbf{X}).
 \end{equation}
 
 Poisson noise depends on the intensity of the clean signal $\mathbf{X}$ and
-therefore, the frequency characteristics of Poisson noise resemble the
+therefore, the frequency characteristics of $\mathbf{N}$ resemble the
 spectrum of $\mathbf{X}$.
 
 \subsection{Mixed Poisson-Gaussian noise}
@@ -150,7 +156,7 @@ of both Poisson and ZAWG noise, which is commonly called mixed
 Poisson-Gaussian (MPG) noise \cite{meiniel2018denoising}. In this
 case, we have that
 \begin{equation}
-  \Pr({\mathbf N}_j{=}k) = \frac{e^{-\lambda_j}}{\sigma\sqrt{2\pi}}\sum_{p=0}^{\infty}\frac{\lambda_j^p}{p!} e^{-\frac{\gamma p - k}{2\sigma^2}},
+  \Pr({\mathbf N}{=}k) = \frac{e^{-\lambda_j}}{\sigma\sqrt{2\pi}}\sum_{p=0}^{\infty}\frac{\lambda_j^p}{p!} e^{-\frac{\gamma p - k}{2\sigma^2}},
   \label{eq:PN}
 \end{equation}
 where
@@ -161,8 +167,8 @@ where
 where $\alpha\in[0,~1]$ controls the presence of Poisson noise (notice
 that if $\sigma=0$ and $\alpha=0$, the Gaussian noise vanishes and
 $\hat{\mathbf{X}}=\mathbf{X}$).  Therefore, for $\alpha\neq 0$,
-$\hat{\mathbf{X}}$ is signal-dependent and it's spectrum depends on
-the clean image $\mathbf{X}$. By default, $\alpha=0.5$.
+${\mathbf{N}}$ is signal-dependent and it's spectrum depends on
+$\mathbf{X}$. By default, in our experiments, $\alpha=0.5$.
 
 % \subsection{Speckle noise}
 % Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
@@ -258,7 +264,7 @@ the clean image $\mathbf{X}$. By default, $\alpha=0.5$.
 
 Having two tensors $\mathbf{X}$ and $\mathbf{Y}$ of size $J$,
 \begin{equation}
-  \text{RMSE}(\mathbf{X},\mathbf{Y}) \triangleq \sqrt{\frac{1}{J}\sum_{i=1}^J(\mathbf{X}_i - \mathbf{Y}_i)^2}.
+  \text{RMSE}(\mathbf{X},\mathbf{Y}) = \sqrt{\frac{1}{J}\sum_{i=1}^J(\mathbf{X}_i - \mathbf{Y}_i)^2}.
 \end{equation}
 Notice that the RMSE expresses the distortion in the same units as the
 samples.
@@ -272,7 +278,7 @@ case, $0$ no similarity, and $1$ perfect similarity. The SSIM index is
 determined (splitting input images into $M$ non-overlapping blocks)
 with
 \begin{equation}
-  \text{SSIM}(\mathbf{X}, \mathbf{Y}) \triangleq \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
+  \text{SSIM}(\mathbf{X}, \mathbf{Y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
 where $\overline{\mathbf x}_j$ is the mean of the $j$-th block of
 $\mathbf{X}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
@@ -290,7 +296,7 @@ values below $0$ does not make sense.
 The PPC is given
 by
 \begin{equation}
-  \text{PPC}(\mathbf{X}, \mathbf{Y}) := \frac{\sum_j(\mathbf{X}_j - \overline{\mathbf{X}})(\mathbf{Y}_j - \overline{\mathbf{Y}})}{\sqrt{\sum_j (\mathbf{X}_j - \overline{\mathbf{X}})^2 \sum_j (\mathbf{Y}_j - \overline{\mathbf{Y}})^2}},
+  \text{PPC}(\mathbf{X}, \mathbf{Y}) = \frac{\sum_j(\mathbf{X}_j - \overline{\mathbf{X}})(\mathbf{Y}_j - \overline{\mathbf{Y}})}{\sqrt{\sum_j (\mathbf{X}_j - \overline{\mathbf{X}})^2 \sum_j (\mathbf{Y}_j - \overline{\mathbf{Y}})^2}},
 \end{equation}
 and measures the linear correlation between two tensors $\mathbf{X}$
 and $\mathbf{Y}$.  As happen with the SSIM, the output is in
@@ -321,7 +327,7 @@ reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
 
 A FSC value of the FSC curve is determined by~\cite{verbeke2024self}
 \begin{equation}
-\text{FSC}(\mathbf{X}, \mathbf{Y}; r) := \frac{\sum_{i \in S_r} (\mathcal{F}(\mathbf{X)}_i \mathcal{F}(\mathbf{Y)}_i^*)}{\sqrt{\sum_{i \in S_r} |\mathcal{F}(\mathbf{X})_i|^2 \sum_{i \in S_r} |\mathcal{F}(\mathbf{Y})_i|^2}},
+\text{FSC}(\mathbf{X}, \mathbf{Y}; r) = \frac{\sum_{i \in S_r} (\mathcal{F}(\mathbf{X)}_i \mathcal{F}(\mathbf{Y)}_i^*)}{\sqrt{\sum_{i \in S_r} |\mathcal{F}(\mathbf{X})_i|^2 \sum_{i \in S_r} |\mathcal{F}(\mathbf{Y})_i|^2}},
 \end{equation}
 where $i=(x, y, z)$ is a point (a coefficient in the Fourier domain)
 of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$,
@@ -355,17 +361,17 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 %excluded.
 
 \subsection{Arithmetic mean of noisy instances}
-Using the arithmetic mean (average) of a number of noisy instances, defined by
-\begin{equation}
-  \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I} := \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)},
-  \label{eq:mean}
-\end{equation}
-the clean instance can be found with
+Averaging a high enough number of noisy instances it is possible to obtain the clean signal with
 \begin{equation}
   {\mathbf X} = \lim_{I \to \infty} \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I}  - \mathbb{E}\left[\mathbf{N}\right],
   \label{eq:mean_with_bias}
 \end{equation}
-where $\mathbf{N}$ is the noise, and $\mathbb{E}$ the expectation. Notice that for MPG noise,
+where
+\begin{equation}
+  \overline{\{\hat{\mathbf X}^{(i)}\}_{i=1}^I} = \frac{1}{I} \sum_{i=1}^I \hat{\mathbf X}^{(i)}.
+  \label{eq:mean}
+\end{equation}
+Notice that for MPG noise,
 \begin{equation}
   \mathbb{E}\left[\mathbf{N}\right] = 0.
 \end{equation}
@@ -408,8 +414,9 @@ will be finite and we will be able only to obtain an approximation of
 ${\mathbf X}$, that we denote, in general, by $\tilde{\mathbf
   X}$.
 
-Finally, since $\tilde{\mathbf X}$ depends on the number $I$ of averaged
-noisy instances, we will use $\tilde{\mathbf X}^{[I]}$ to denote this operation.
+Finally, since $\tilde{\mathbf X}$ depends on the number $I$ of
+averaged noisy instances, we will use $\tilde{\mathbf X}^{[I]}$ to
+indicate the number of noisy instances averaged.
 Figure~\ref{fig:averaging_0MMPG} shows an example of how zero-mean MPG
 noise can be cancelled by averaging.
   
