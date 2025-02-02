@@ -6,6 +6,7 @@
 \usepackage{graphicx}\graphicspath{{figs}{notebooks}{.}}
 % \usepackage[margin=1in]{geometry}
 \usepackage{comment}
+\usepackage{color}
 
 \title{Denoising in (Electron?) Microscopy 3D Imaging}
 
@@ -596,11 +597,11 @@ filter to all the dimensions of the signal to compute a $N$D
 denoising. For the 3D case, we have that
 \begin{equation}
   \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
-    \label{eq:3D_GF}
+    \label{eq:3D_GD}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
 the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
-${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GF} defines isotropic
+${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GD} defines isotropic
 filtering, but the length of the kernel can be different at each
 dimension to provide anisotropy.
 
@@ -634,39 +635,52 @@ the Gaussian kernels in each dimension, represented by $\tau$ in
 $\mathrm{GD}_\tau$) depends on the noise level, an information that is
 generally unknown in microscopy imaging.
 
-For this reason, the self-correlation in the Fourier domain has been
+To see the relation between the filter parameter and the quality of
+the denoising, the self-correlation in the Fourier domain has been
 calculated by subbands of a filtered image, generating a number of
-SFRC curves, one for each different kernel length $\tau$. As can be
-seen, the autocorrelation increases when the noise level decreases due
-to increasing $\tau$, until it reaches a value for which the
-autocorrelation decreases again. For that $\tau^*$, which maximizes
-the area under the curve up to the frequency $\omega/4$, is
-when the PCC metric is also maximized (for $\tau^*/2$), which means
-that we can use the SFRC metric (in the 2D case) and the SFSC (in the
-3D case) to optimize the filtering parameters knowing only the noisy
-instance $\hat{\mathbf{X}}$.
+SFRC curves, one for each different kernel length $\tau$ (see Fig.
+\ref{fig:GD_0MMPG}). As can be seen, the autocorrelation increases
+when the noise level decreases due to increasing $\tau$, until it
+reaches a value for which the autocorrelation decreases
+again\footnote{Remember that the SFRC metric quantifies the
+  correlation between subsampled versions of the same input signal and
+  that, by definition, the MPG noise should be uncorrelated. For this
+  reason, if noise were only had at the input, we should obtain a flat
+  SFRC that approximates to zero. Therefore, the higher the area below
+  the SFRC curve, the higher the presence of signal.}. For that
+$\tau^*$, which maximizes the area under the curve up to the
+normalized frequency $\omega/4$, is when the PCC metric is also
+maximized (considering the original image resolution, i.e., without
+the subsampling required to compute the SFRC) for $\tau^*/2$, which
+means that we can use the SFRC metric (in the 2D case) and the SFSC
+(in the 3D case) to estimate the optimal filtering parameters knowing
+only the noisy instance $\hat{\mathbf{X}}$.
 
-\subsection{SPGD (Structure-Preserving Gaussian Denoising) \cite{gonzalez2023structure}}
+\subsection{SPGD (Structure-Preserving Gaussian Denoising)}
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{SPGD}
+  \includegraphics[width=\textwidth]{yes_OF_images}
   \caption{SPGD along the $\mathrm{Z}$-dimension. Five consecutive
     images (or $\mathrm{XY}$-planes) are involved in the filtering of
     the image $\hat{\mathbf{X}}_z$. Four displacements fields
-    (represented by arrows) determined by the OFE are used for the
-    alignment of the structures found in the images , , , and with
-    respect to those present in , hence producing OF-compensated
-    images. The Gaussian filtering along the -dimension (dotted line)
-    is then applied to the OF-compensated images..\label{fig:SPGD}}
+    (represented by arrows) determined by the OF estimator are used
+    for the alignment of the structures found in the images
+    $\hat{\mathbf{X}}_{z-2}, \hat{\mathbf{X}}_{z-1},
+    \hat{\mathbf{X}}_{z+1},$ and $\hat{\mathbf{X}}_{z+2}$ with respect
+    to those present in $\hat{\mathbf{X}}_{z-2}$, hence producing
+    OF-compensated images. The Gaussian filtering along the
+    $\text{Z}$-dimension (dotted line) is then applied to the
+    OF-compensated images.\label{fig:SPGD}}
 \end{figure}
 
 
 SPGD is based in 3D Gaussian filtering (see Eq.~\ref{eq:3D_GD}), but
-the noised volume $\hat{\mathbf{X}}$ is slice-wise 2D-warped, in the 3
-space dimensions (see Fig.~\ref{fig:SPGG}), resulting (compared
-to GD) in a reduction of the bluring of the structures detected by an
-2D OF (Optical Flow) estimator. This idea can be expressed as
+the noised volume $\hat{\mathbf{X}}$ is slice-wise 2D-warped (see
+Fig. \ref{fig:SPGD}), in the 3 space dimensions (see
+Fig. \ref{fig:3D_GD}), resulting (compared to GD) in a reduction of
+the bluring of the structures detected by a 2D OF (Optical Flow)
+estimator \cite{gonzalez2023structure}. This idea can be expressed as
 \begin{equation}
   \tilde{\mathbf{X}}  = R_\text{X}\Big(R_\text{Y}\big(R_\text{Z}(\hat{\mathbf{X}})*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
     \label{eq:SDPG}
@@ -687,7 +701,7 @@ $\overset{x'\rightarrow x}p(\hat{\mathbf X}_{[:,:,x']})$ represents
 the projection of the slice at coordinate $x'$ fulfilling that
 $\overset{x'\rightarrow x}p({\hat{\mathbf X}})\approx{\hat{\mathbf
     X}}_{[:,:,x]}$. Notice that, for each possible offset in
-${\mathbf Z}$, ${\mathbf Y}$, and ${\mathbf X}$, a different set of
+$\text{Z}$, $\text{Y}$, and $\text{X}$, a different set of
 warped 2D slices must be computed.
 
 Compared with GD denoising, the OF estimator requires 2 new
@@ -696,7 +710,8 @@ parameters:
 \item $w$, the size of a 2D window used to analyze the slices. If $w$
   is large, the estimator is less sensitive to the noise but also the
   small structures are ignored. Therefore, higher $w$ values increases
-  blurring.
+  blurring. {\color{red} Hay que ver si $w$ y N\_poly están
+    relacionados y ver si tiene sentido que sean diferentes}
 \item $l$, that controls the maximun displacements that the
   estimator can generate. Blurring increases with $l$.
 \end{enumerate}
