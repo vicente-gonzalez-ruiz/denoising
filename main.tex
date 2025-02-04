@@ -549,6 +549,13 @@ example of how zero-mean uniform noise is cancelled by averaging.
   \end{figure}
 \end{comment}
   
+
+%\section{Beltrami flow}
+
+%\section{Median filter}
+
+%\section{Bilateral filter}
+
 \subsection{Gaussian Denoising (GD)}
 
 \begin{figure}
@@ -562,7 +569,7 @@ example of how zero-mean uniform noise is cancelled by averaging.
     in-place, from left to right.\label{fig:3D_GD}}
 \end{figure}
 
-3D GD, also known by Gaussian smoothing filtering, works by convolving a
+3D GD, also known by 3D Gaussian filtering, works by convolving a
 separable 1D Gaussian kernel with the signal samples in each space
 dimension (see Fig.~\ref{fig:3D_GD}). 1D GD can be expressed by
 \begin{equation}
@@ -656,6 +663,10 @@ means that we can use the SFRC metric (in the 2D case) and the SFSC
 (in the 3D case) to estimate the optimal filtering parameters knowing
 only the noisy instance $\hat{\mathbf{X}}$.
 
+
+% \section{Anisotropic Non-linear Diffusion (AND)}
+
+
 \subsection{SPGD (Structure-Preserving Gaussian Denoising)}
 
 \begin{figure}
@@ -747,7 +758,11 @@ optimal value for the single parameter that SPGD requires (the length of
 the Gaussian kernels in each dimension) depends on the noise level, an
 information that is generally unknown in microscopy imaging.
 
-% \section{AND}
+%\subsection{NLM (Non Local Means)} 
+
+%\subsection{BM4D}
+
+
 
 % \section{N2V}
 % A. Krull, T.-O. Buchholz, and F. Jug, “Noise2void-learning denoising
@@ -788,10 +803,6 @@ volume ${\mathbf Y}$, N2N learns to infeer a denoised volume
 \end{equation}
 Obviously, better approximations to ${\mathbf Y}$ will be obtained
 having more noisy instances, after averaing all the denoised volumes.
-
-\subsection{NLM (Non Local Means)} 
-
-\subsection{BM4D}
 
 \subsection{2D-RSVD (2D Random Shuffing Volume Denoising}
 
