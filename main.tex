@@ -622,15 +622,15 @@ dimension to provide anisotropy.
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}}
     \end{tabular}
   }
-  \caption{Effect of zero-mean MPG noise in an image and how Gaussian
-    denoising (GD) can be used to reduce it. A noisy version of the
+  \caption{Effect of zero-mean MPG noise in an image and how GD
+    can be used to reduce it. A noisy version of the
     image is on the top-left. On the top-right, the SFRC curves
     of the denoised image for different filter lengths. As can be seen
-    in the top-right subfigure, for the noise level
-    $(\sigma=40, \gamma=0.15)$, an optimal $\tau^*=0.7$ if
-    we consider that the area below the SFRC curve should be maximized.
+    in this subfigure, for the noise level
+    $(\sigma=40, \gamma=0.15)$, an optimal $\tau=1.25$ should be used if
+    (considering that the area below the SFRC curve should be maximized).
     On the bottom-left, it can be seen that for this noise level,
-    the optimal Gaussian kernel-lenght is $\tau^*/2=1.4$. The resulting
+    the ``optimal'' Gaussian kernel-lenght is $\tau/2=0.625 \approx 0.7$. The resulting
     ``optimal'' filtered image (using GD) is shown on the bottom-right.
     \label{fig:GD_0MMPG}}
 \end{figure}
