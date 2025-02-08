@@ -558,27 +558,15 @@ example of how zero-mean uniform noise is cancelled by averaging.
 
 \subsection{Gaussian Denoising (GD)}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{3D_GD}
-  \caption{Separable 3D Gaussian filtering implemented in 3D GD. The
-    gray planes contain the voxels that are filtered and the white
-    planes contain the voxels used by the 1D kernel when it is applied
-    to the voxels of the filtered plane. The kernel shown here
-    contains 3 coefficients. The volume is convolved sequentially
-    in-place, from left to right.\label{fig:3D_GD}}
-\end{figure}
-
-3D GD, also known by 3D Gaussian filtering, works by convolving a
-separable 1D Gaussian kernel with the signal samples in each space
-dimension (see Fig.~\ref{fig:3D_GD}). 1D GD can be expressed by
+GD, also known by Gaussian filtering, works by convolving a 1D
+Gaussian kernel with the signal samples. 1D GD can be expressed by
 \begin{equation}
   \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
 $\hat{\mathbf{X}}$ the noisy instance, and $*$ the convolution of
-digital (in this case, 1D) signals.
+digital signals.
 
 The coefficients of the Gaussian kernel
 \begin{equation}
@@ -586,22 +574,32 @@ The coefficients of the Gaussian kernel
   \label{eq:GK}
 \end{equation}
 defines a low-pass filter under the assumption that most of the energy
-(and information) is concentrated in the low frequencies, where
-$\tau$ is a parameter that controls the length of the kernel and
-therefore, the cut-off frequency of GD (a higher $\tau$ results in a
-lower the cut-off frequency, and therefore, in a higher smoothing
-effect). Notice that $\tau$ can be different for each dimension.
+(signal information) is concentrated in the low frequencies. As can be
+seen, $\tau$ is a parameter that controls the length of the kernel and
+therefore, the cut-off frequency of the filter (a higher $\tau$
+results in a lower the cut-off frequency, i.e., in a higher smoothing
+effect in $\tilde{\mathbf{X}}$).
 
-As can be seen in Eq.~\ref{eq:GK} (all the kernel coefficients are
-positive), and computes weighted averages of neighbour signal
-samples. This does not mach the calculus described in
+As can be seen in Eq.~\ref{eq:GK}, all the kernel coefficients are
+positive and sum one, and therefore compute weighted averages of
+neighbour signal samples. This does not mach the calculus described in
 Eq.~\ref{eq:mean_with_bias}, but as an advantage, GD requires only a
-noisy instance. The result of GD is a smooth denoised version of
-$\hat{\mathbf X}$.
+noisy instance.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{3D_GD}
+  \caption{3D Gaussian filtering. The gray planes contain the voxels
+    that are filtered and the white planes contain the voxels used by
+    the 1D kernel when it is applied to the voxels of the filtered
+    plane. The kernel shown here contains 3 coefficients. The volume
+    is convolved sequentially in-place, from left to
+    right.\label{fig:3D_GD}}
+\end{figure}
 
 Multidimensional GD is separable, which means that we can apply the 1D
-filter to all the dimensions of the signal to compute a $N$D
-denoising. For the 3D case, we have that
+filter to the $N$ dimensions of the signal to compute a $N$D
+denoising. For the 3D case (see Fig.~\ref{fig:3D_GD}), we have that
 \begin{equation}
   \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
     \label{eq:3D_GD}
@@ -611,6 +609,32 @@ the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
 ${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GD} defines isotropic
 filtering, but the length of the kernel can be different at each
 dimension to provide anisotropy.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_PCC_0MMPG_lake}{\includegraphics{GD_PCC_0MMPG_lake}}
+    \end{tabular}
+  }
+  \caption{Optimal filter lengths for two different images. As can be seen, $\tau^*$ depends
+    on the image (and also on the noise level).\label{fig:optimal_tau_VS_image}}
+\end{figure}
+
+Fig.~\ref{fig:optimal_tau_VS_image} shows the performance of GD for two
+artificially noised images, for different levels of noise. As can be
+seen, the optimal value of the filter length, $\tau^*$ (which
+maximizes the PCC between $\mathbf{X}$ and $\tilde{\mathbf{X}}$),
+depends on the noise level and $\mathbf{X}$, informations that are
+generally unknown in microscopy imaging. Therefore, $\tau^*$ can be
+only estimated\footnote{Notice that, only knowing $\mathbf{X}$ it
+  would be possible to find $\tau^*$. Therefore, the furthest one can
+  go is to \emph{estimate} the optimal filtering
+  parameters}. depending on, for example, the (subjective) visual
+quality of $\tilde{\mathbf{X}}$.
 
 \begin{figure}
   \centering
@@ -635,33 +659,53 @@ dimension to provide anisotropy.
     \label{fig:GD_0MMPG}}
 \end{figure}
 
-Fig.~\ref{fig:GD_0MMPG} shows the performance of GD in a artificially
-noised image, for different levels of noise. As can be seen, the
-optimal value for the single parameter that GD requires (the length of
+
+A more objective procedure to estimate $\tau^*$ should be based on
+some quality metric, such as the self-correlation of
+$\hat{\mathbf{X}}$ in the Fourier domain.
+
+
+Another alternative can use some heuristic to estimate
+
+We propose a more automatic procedure to find $\tau^*$.
+by maximizing the ratio between the amount of noise and the amount of
+signal removed by the filter. To determine this, we can use the SFRC
+curve (see Sec.~\ref{sec:FSC}), in which each point represents the
+correlation between two\footnote{Actually, each point is the average
+  of two correlation coefficients, each one obtained after subsampling
+  the image in each dimension (by rows, and by columns).} rings of
+Fourier coefficients, extracted from two subsampled versions of
+$\tilde{\mathbf{X}}$.
+
+for the single parameter that GD requires (the length of
 the Gaussian kernels in each dimension, represented by $\tau$ in
 $\mathrm{GD}_\tau$) depends on the noise level, an information that is
 generally unknown in microscopy imaging.
 
-To see the relation between the filter parameter and the quality of
-the denoising, the self-correlation in the Fourier domain has been
-calculated by subbands of a filtered image, generating a number of
-SFRC curves, one for each different kernel length $\tau$ (see Fig.
-\ref{fig:GD_0MMPG}). As can be seen, the autocorrelation increases
-when the noise level decreases due to increasing $\tau$, until it
-reaches a value for which the autocorrelation decreases
-again\footnote{Remember that the SFRC metric quantifies the
-  correlation between subsampled versions of the same input signal and
-  that, by definition, the MPG noise should be uncorrelated. For this
-  reason, if noise were only had at the input, we should obtain a flat
-  SFRC that approximates to zero. Therefore, the higher the area below
-  the SFRC curve, the higher the presence of signal.}. For that
-$\tau^*$, which maximizes the area under the curve up to the
-normalized frequency $\omega/4$, is when the PCC metric is also
-maximized (considering the original image resolution, i.e., without
-the subsampling required to compute the SFRC) for $\tau^*/2$, which
-means that we can use the SFRC metric (in the 2D case) and the SFSC
-(in the 3D case) to estimate the optimal filtering parameters knowing
-only the noisy instance $\hat{\mathbf{X}}$.
+To estimate the relation between the filter length that should
+maximize the quality of the denoised signal, the SFRC (Self Fourier
+Ring Correlation, see Section~\ref{sec:FSC}) of several noisy
+instances of the same image (variying the level of noise) has been
+shown in the Fig.~\ref{fig:SFRC}.
+
+has been calculated by subbands of a filtered
+image, generating a number of SFRC curves, one for each different
+kernel length $\tau$ (see Fig.  \ref{fig:GD_0MMPG}). As can be seen,
+the autocorrelation increases when the noise level decreases due to
+increasing $\tau$, until it reaches a value for which the
+autocorrelation decreases again\footnote{Remember that the SFRC metric
+  quantifies the correlation between subsampled versions of the same
+  input signal and that, by definition, the MPG noise should be
+  uncorrelated. For this reason, if noise were only had at the input,
+  we should obtain a flat SFRC that approximates to zero. Therefore,
+  the higher the area below the SFRC curve, the higher the presence of
+  signal.}. For that $\tau^*$, which maximizes the area under the
+curve up to the normalized frequency $\omega/4$, is when the PCC
+metric is also maximized (considering the original image resolution,
+i.e., without the subsampling required to compute the SFRC) for
+$\tau^*/2$, which means that we can use the SFRC metric (in the 2D
+case) and the SFSC (in the 3D case) to estimate the optimal filtering
+parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
