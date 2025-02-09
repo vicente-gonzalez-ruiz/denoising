@@ -32,13 +32,14 @@
 
 \section*{Definitions and notation}
 \begin{tabular}{ll}
-  $x$ & A scalar (e.g., a value of a pixel of a grayscale image) \\
-  $\mathbf{X}$ & A tensor (e.g., an image) \\
+  $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
+  $\mathbf{X}$ & A tensor structure (e.g., an image) \\
   $\mathbf{X}_i$ & The $i$-th element of $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
   $\hat{\mathbf{X}}^{(i)}$ & The $i$-th noisy instance of the signal $\mathbf{X}$ \\
   $\tilde{\mathbf{X}}^{[I]}$ & The average of the noisy instances $\{\hat{\mathbf{X}}^{(i)}\}_{i=1}^I$ \\ 
-  $|\mathbf{X}|$ & The number of elements in $\mathbf{X}$ \\
-  $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
+  $\text{len}(\mathbf{X})$ & The number of elements in $\mathbf{X}$ \\
+  $\text{rank}(\mathbf{X})$ & The number of dimensions in $\mathbf{X}$ \\
+  %$|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
   $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar multiplication) \\
   $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (Hadamard addition) \\ 
   $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (Hadamard product) \\ 
@@ -616,7 +617,9 @@ dimension to provide anisotropy.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#lake}{\includegraphics{lake}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_0MMPG_lake}{\includegraphics{GD_0MMPG_lake}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_PCC_0MMPG_lake}{\includegraphics{GD_PCC_0MMPG_lake}}
     \end{tabular}
   }
