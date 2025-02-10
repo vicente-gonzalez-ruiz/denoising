@@ -624,20 +624,19 @@ dimension to provide anisotropy.
     \end{tabular}
   }
   \caption{Optimal filter lengths for two different images. As can be seen, $\tau^*$ depends
-    on the image (and also on the noise level).\label{fig:optimal_tau_VS_image}}
+    on the image (and also on the noise level). {\color{red} arreglar PSNRs y elegir tau optimo para ejemplo}\label{fig:tau_VS_image}}
 \end{figure}
 
-Fig.~\ref{fig:optimal_tau_VS_image} shows the performance of GD for two
+Fig.~\ref{fig:tau_VS_image} shows the performance of GD for two
 artificially noised images, for different levels of noise. As can be
 seen, the optimal value of the filter length, $\tau^*$ (which
 maximizes the PCC between $\mathbf{X}$ and $\tilde{\mathbf{X}}$),
-depends on the noise level and $\mathbf{X}$, informations that are
-generally unknown in microscopy imaging. Therefore, $\tau^*$ can be
-only estimated\footnote{Notice that, only knowing $\mathbf{X}$ it
-  would be possible to find $\tau^*$. Therefore, the furthest one can
-  go is to \emph{estimate} the optimal filtering
-  parameters}. depending on, for example, the (subjective) visual
-quality of $\tilde{\mathbf{X}}$.
+depends on the noise level and $\mathbf{X}$, information that in
+unavailable in microscopy imaging. Therefore, $\tau^*$ can be only
+estimated\footnote{Notice that, only knowing $\mathbf{X}$ it would be
+  possible to find $\tau^*$. Therefore, the furthest one can go is to
+  \emph{estimate} the optimal filtering parameters}. depending on, for
+example, the (subjective) visual quality of $\tilde{\mathbf{X}}$.
 
 \begin{figure}
   \centering
@@ -645,11 +644,34 @@ quality of $\tilde{\mathbf{X}}$.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_SFRC_0MMPG_barb}{\includegraphics{GD_SFRC_0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_SFRC_0MMPG_NL0_barb}{\includegraphics{GD_SFRC_0MMPG_NL20_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GD_SFRC_0MMPG_NL0_barb}{\includegraphics{GD_SFRC_0MMPG_NL60_barb}}
     \end{tabular}
-  }
-  \caption{Effect of zero-mean MPG noise in an image and how GD
+    }
+    \caption{SFRC curves for two different noisy instances of
+      $\mathbf{X}_1$ (Barb, see Fig.~\ref{fig:tau_VS_image}) with
+      different noise levels ($\sigma=20$ and $\sigma=60$), and after
+      having applied GD for several filter lengths. As can be seen, for $\sigma=20$, the ``optimal'' filter
+      length (that maximizes the area below the curve) is ..., and for
+      $\sigma=60$, the ``optimal'' filter length is ... Therefore, the
+      ``optimal'' filter length is (positively) correlated with the
+      noise level. Notice that $\tau$
+      has been discretized in steps of $0.25$.
+
+      (2) the
+      ``optimal'' filter length is (positively) correlated with the
+      noise level (for the noise level $\sigma=40$ and $\gamma=0.15$
+      the ``optimal'' $\tau=1.0$ and the noise level $\sigma=50$ and
+      $\gamma=0.15$ the ``optimal'' $\tau=1.25$). Notice that $\tau$
+      has been discretized in steps of $0.25$.
+
+
+      Relation between the SFRC curves and the filter length of
+      a Gaussian filter. $\hat{\mathbf{X}}_1$ is the the noise image
+      (Barb) shown in the Fig.~\ref{fig:tau_VS_image} (for $\sigma=40$
+      and $\gamma=0.15$). As can be seen, the area below the curve is
+      maximized for $\tau=1.0$
+
+      Effect of zero-mean MPG noise in an image and how GD
     can be used to reduce it. A noisy version of the
     image is on the top-left. On the top-right, the SFRC curves
     of the denoised image for different filter lengths. As can be seen
@@ -662,10 +684,20 @@ quality of $\tilde{\mathbf{X}}$.
     \label{fig:GD_0MMPG}}
 \end{figure}
 
-
 A more objective procedure to estimate $\tau^*$ should be based on
-some quality metric, such as the self-correlation of
-$\hat{\mathbf{X}}$ in the Fourier domain.
+some (objective) quality metric, such as the self-correlation in the
+Fourier domain. Fig.~\ref{fig:GD_0MMPG} shows SFRC curves for
+different filter lengths, and it has been also computed the normalized
+area below each curve, a metric that is (positively) correlated with
+$\tau^*$ (see Fig.~\ref{fig:tau_VS_image}). As can be seen that, $\tau^*$ can be estimated using the filter length that maximizes the area below the corresponding SFRC curve.
+
+
+because the
+higher the area, the higher also the PCC between the Fourier
+coefficients
+
+
+and it can be seen, the normalized area below the curve can be used to estimate
 
 
 Another alternative can use some heuristic to estimate
