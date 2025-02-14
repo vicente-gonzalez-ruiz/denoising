@@ -590,36 +590,40 @@ example of how zero-mean uniform noise is cancelled by averaging.
 \subsection{(Separable) Gaussian Denoising (GD)}
 %{{{
 
-In GD, a 1D Gaussian kernel is convolved with the signal samples:
+In GD, a 1D Gaussian kernel is convolved with the signal samples to
+obtain
 \begin{equation}
   \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
-$\hat{\mathbf{X}}$ the noisy instance, and $*$ represents the
-convolution of digital signals.
+$\hat{\mathbf{X}}$ the noisy instance, and $*$ the convolution of
+digital signals. As it can be seen, GD only requires a noisy instance.
 
-Assuming that most of the energy (signal information) is concentrated
+Assuming that most of the signal energy (information) is concentrated
 in the low frequencies, the coefficients of a Gaussian kernel define a
-low-pass filter (i.e., all must be positive values). The (digital)
-filter coefficients are sampled from
+low-pass\footnote{All positive coefficients.} filter. The coefficients
+are sampled from
 \begin{equation}
   \mathbf{h}(x;\tau) = \frac{1}{\sqrt{2\pi}\tau}e^{{-x}^2/(2\tau^2)},
   \label{eq:GK}
 \end{equation}
-where $x$ represents the signal domain and $\tau$ (known as the
-standard deviation) determines the width of the filter, considering a
-fixed sampling frequency (a higher $\tau$ results in a lower the
-cut-off frequency, i.e., in a higher smoothing effect in
-$\tilde{\mathbf{X}}$). More concretely, if we find $\mathcal{F}(h)=H$,
-that is
+where $x$ represents a distance\footnote{At least, in microscopy.} in
+the signal domain, and $\tau$ (known as the \emph{standard deviation}
+\footnote{Because the filter coefficients are also the values that a
+  discrete random variable takes from a normal distribution.})
+determines the bandwidth of the filter, considering a fixed sampling
+frequency (a higher $\tau$ results in a lower the cut-off frequency,
+i.e., in a higher smoothing effect in $\tilde{\mathbf{X}}$). More
+concretely, if $\mathcal{F}(h)=H$, that is
 \begin{equation}
   H(u) = e^{-\frac{u^2}{2\tau^{-2}}},
 \end{equation}
-it can be easely seen that if $\tau$ increases, the cut-off frequency
-provided by $H$ decreases, and viceversa. In our implementation, we have that
+it can be seen that if $\tau$ increases, the cut-off frequency
+provided by $H$ decreases, and viceversa. In our implementation, we
+have that
 \begin{equation}
-  \mathrm{size}(h) = 2\lceil k\tau\rceil + 1
+  \mathrm{len}(h) = 2\lceil k\tau\rceil + 1
 \end{equation}
 where $k=4$ provides enough accuracy in the
 convolutions.\footnote{Notice that if $k$ grows then the cut-off
@@ -658,32 +662,44 @@ anisotropy.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#lake}{\includegraphics{lake}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_0MMPG_lake}{\includegraphics{GD_0MMPG_lake}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_PCC_0MMPG_lake}{\includegraphics{GD_PCC_0MMPG_lake}}
     \end{tabular}
   }
-  \caption{Optimal filter lengths for two different images. As can be seen, $\tau^*$ depends
-    on the image (and also on the noise level). {\color{red} arreglar PSNRs y elegir tau optimo para ejemplo}\label{fig:tau_VS_image}}
+  \caption{Optimal filter lengths for two different images. As can be
+    seen, $\tau^*$ depends on the image (and also on the noise
+    level).\label{fig:tau_VS_image}}
 \end{figure}
 
-As can be seen in Eq.~\ref{eq:GK}, all the kernel coefficients are
-positive and sum one, and therefore compute weighted averages of
-neighbour signal samples. This does not mach the calculus described in
-Eq.~\ref{eq:mean_with_bias}, but as an advantage, GD requires only a
-noisy instance.
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#lake}{\includegraphics{lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_0MMPG_lake}{\includegraphics{GD_0MMPG_lake}}
+    \end{tabular}
+  }
+  \caption{Two examples of optimal GD filtering. On the top, the
+    original images. In the middle, the noisy instances. On the
+    bottom, the denoised images. {\color{red} arreglar PSNRs y elegir
+      tau optimo para ejemplo}\label{fig:GD_tau_optimal}}
+\end{figure}
 
 Fig.~\ref{fig:tau_VS_image} shows the performance of GD for two
-artificially noised images, for different levels of noise. As can be
-seen, the optimal value of the filter length, $\tau^*$ (which
-maximizes the PCC between $\mathbf{X}$ and $\tilde{\mathbf{X}}$),
-depends on the noise level and $\mathbf{X}$, information that in
-unavailable in microscopy imaging. Therefore, $\tau^*$ can be only
+artificially noised images, for different levels of noise ($\sigma$)
+and filter length ($\tau$). As can be seen, the optimal value of the
+filter length, $\tau^*$ (which maximizes the PCC between $\mathbf{X}$
+and $\tilde{\mathbf{X}}$), depends on the noise level and
+$\mathbf{X}$, information that is, in general, unavailable in
+microscopy imaging. Therefore, $\tau^*$ can be only
 estimated\footnote{Notice that, only knowing $\mathbf{X}$ it would be
   possible to find $\tau^*$. Therefore, the furthest one can go is to
   \emph{estimate} the optimal filtering parameters}. depending on, for
-example, the (subjective) visual quality of $\tilde{\mathbf{X}}$.
+example, the (subjective) visual quality of $\tilde{\mathbf{X}}$. An
+example of optimal denoising using GD has been show in
+Fig.~\ref{fig:GD_tau_optimal}.
 
 % \begin{figure}
 %   \centering
