@@ -694,12 +694,12 @@ filter length, $\tau^*$ (which maximizes the PCC between $\mathbf{X}$
 and $\tilde{\mathbf{X}}$), depends on the noise level and
 $\mathbf{X}$, information that is, in general, unavailable in
 microscopy imaging. Therefore, $\tau^*$ can be only
-estimated\footnote{Notice that, only knowing $\mathbf{X}$ it would be
-  possible to find $\tau^*$. Therefore, the furthest one can go is to
-  \emph{estimate} the optimal filtering parameters}. depending on, for
-example, the (subjective) visual quality of $\tilde{\mathbf{X}}$. An
-example of optimal denoising using GD has been show in
-Fig.~\ref{fig:GD_tau_optimal}.
+\emph{estimated}\footnote{Notice that, only knowing $\mathbf{X}$ it
+  would be possible to find $\tau^*$. Therefore, the furthest one can
+  go is to estimate the optimal filtering parameters}. depending on,
+for example, the (subjective) visual quality of
+$\tilde{\mathbf{X}}$. An example of optimal denoising using GD has
+been show in Fig.~\ref{fig:GD_tau_optimal}.
 
 % \begin{figure}
 %   \centering
@@ -746,6 +746,11 @@ Fig.~\ref{fig:GD_tau_optimal}.
 %     ``optimal'' filtered image (using GD) is shown on the bottom-right.
 %     \label{fig:GD_0MMPG}}
 % \end{figure}
+
+It is also possible to estimate $\tau^*$ using the self-correlation in
+the Fourier domain \cite{koho2019fourier}. The idea here is to
+determine the frequency $u^*$ for which, to the right of this
+frequency, the SNR decays under some given threshold. 
 
 A more objective procedure to estimate $\tau^*$ should be based on
 some (objective) quality metric, such as the self-correlation in the
