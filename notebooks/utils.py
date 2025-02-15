@@ -40,3 +40,7 @@ def generate_MPGN(X, std_dev=10.0, gamma=0.1, poisson_ratio=0.5):
     #Y = N_gaussian + X
     return Y
 
+def clip(X):
+    return np.clip(X, 0, 255)
+
+
