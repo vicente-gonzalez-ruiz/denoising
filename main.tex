@@ -457,8 +457,8 @@ noise can be cancelled by averaging.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#Display-Barb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#averaging_0MMPG_barb}{\includegraphics{averaging_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/averaging_denoising.ipynb\#PSNR_averaging_0MMPG_barb}{\includegraphics{PSNR_averaging_0MMPG_barb}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb\#barb}{\includegraphics{barb.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb\#barb_0MMPG}{\includegraphics{barb_0MMPG.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/averaging_denoising.ipynb\#barb_averaging}{\includegraphics{barb_averaging.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging_PSNR.ipynb\#barb_averaging_PSNR}{\includegraphics{barb_averaging_PSNR.pdf}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how averaging
@@ -470,6 +470,8 @@ noise can be cancelled by averaging.
 \end{figure}
 
 \begin{comment}
+%{{{
+
 Fig.~\ref{fig:0MAUN} shows an
 example of how zero-mean uniform noise is cancelled by averaging.
   
@@ -577,6 +579,8 @@ example of how zero-mean uniform noise is cancelled by averaging.
       and the right graph shows the performance of the averaging
       process for different levels of noise.\label{fig:Poisson}}
   \end{figure}
+
+%}}}
 \end{comment}
 
 %}}}
@@ -662,12 +666,10 @@ anisotropy.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_PCC_0MMPG_barb}{\includegraphics{GD_PCC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_PCC_0MMPG_lake}{\includegraphics{GD_PCC_0MMPG_lake}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GD_optimal_tau.ipynb\#barb_GD_optimal_tau}{\includegraphics{barb_GD_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GD_optimal_tau.ipynb\#lake_GD_optimal_tau}{\includegraphics{lake_GD_optimal_tau}}
     \end{tabular}
   }
-  \caption{Optimal filter lengths for two different images. As can be
-    seen, $\tau^*$ depends on the image (and also on the noise
-    level).\label{fig:tau_VS_image}}
+  \caption{Optimal $\tau$ in GD filtering.\label{fig:optimal_GD_tau}}
 \end{figure}
 
 \begin{figure}
