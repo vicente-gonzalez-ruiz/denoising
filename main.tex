@@ -458,7 +458,7 @@ noise can be cancelled by averaging.
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb\#barb}{\includegraphics{barb.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb\#barb_0MMPG}{\includegraphics{barb_0MMPG.pdf}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/averaging_denoising.ipynb\#barb_averaging}{\includegraphics{barb_averaging.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging_PSNR.ipynb\#barb_averaging_PSNR}{\includegraphics{barb_averaging_PSNR.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging.ipynb\#barb_averaging}{\includegraphics{barb_averaging.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging_PSNR.ipynb\#barb_averaging_PSNR}{\includegraphics{barb_averaging_PSNR.pdf}}
     \end{tabular}
   }
   \caption{Effect of zero-mean MPG noise in an image and how averaging
@@ -666,7 +666,7 @@ anisotropy.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GD_optimal_tau.ipynb\#barb_GD_optimal_tau}{\includegraphics{barb_GD_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GD_optimal_tau.ipynb\#lake_GD_optimal_tau}{\includegraphics{lake_GD_optimal_tau}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GD_optimal_tau.ipynb\#barb_GD_optimal_tau}{\includegraphics{barb_GD_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GD_optimal_tau.ipynb\#lake_GD_optimal_tau}{\includegraphics{lake_GD_optimal_tau.pdf}}
     \end{tabular}
   }
   \caption{Optimal $\tau$ in GD filtering.\label{fig:optimal_GD_tau}}
@@ -979,40 +979,46 @@ having more noisy instances, after averaing all the denoised volumes.
 %}}}
 
 \appendix
-\section{About separability in Gaussian filtering}
+\section{About separability in multidimensional Gaussian filtering}
 %{{{
 
 \label{ape:separable_VS_no_separable_GD}
-The Fourier representations of a separable 2D Gaussian filter
-(implemented as two 1D Gaussian filters applied sequentially in the
-horizontal and vertical directions) and a true 2D Gaussian filter
-(directly defined as a radially symmetric 2D Gaussian) are not exactly
-the same. Separability is implemented as
+A $D$-dimensional Gaussian filtering can be computed applying a 1D
+Gaussian filter along each of the $N$ dimensions. This reduces the
+computational complexity from $\mathcal{O}(N^D)$ to $D\mathcal{O}(N)$,
+where $N$ is the problem size. In the case of 2D Gaussian filtering,
+the kernel is defined by
 \begin{equation}
-  h_2(x,y) = h_1(x)h_1(y)
+  h(x,y) = \frac{1}{2\pi\tau^2}e^{-\frac{x^2+y^2}{2\tau^2}},
+  \label{eq:2DGF}
+\end{equation}
+where $\tau$ is the standard deviation. Since
+\begin{equation*}
+  e^{-\frac{x^2+y^2}{2\tau^2}} = e^{-\frac{x^2}{2\tau^2}}e^{-\frac{y^2}{2\tau^2}},
+\end{equation*}
+then
+\begin{equation}
+  h(x,y) = \Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}}\Big)\Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{y^2}{2\tau^2}}\Big) = f(x)g(y),
 \end{equation}
 where
 \begin{equation}
-  h_1(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}},
+  f(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}},
 \end{equation}
-where $\tau$ is the standard deviation, and equivalently for
-$h_1(y)$. The Fourier transform of $h_1$ is also a Gaussian
-\begin{equation}
-  H_1(u) = e^{-\frac{u^2}{2\tau^{-2}}}.
-\end{equation}
-Now, using the Covolution Theorem,
-\begin{equation}
-  H_2(u, v) = H_1(u)H_2(v) = e^{-\frac{u^2}{2\sigma^{-2}}} e^{-\frac{v^2}{2\sigma^{-2}}}.
-\end{equation}
+and equivalently for $g(y)$.
 
-A true 2D Gaussian is defined as
-\begin{equation}
-  h(x, y) = \frac{1}{2\pi\tau^2}e^{-\frac{x^2+y^2}{2\tau^2}},
-\end{equation}
-which in the Fourier domain becomes
-\begin{equation}
-  H(u, v) = 2^{-\frac{u^2+v^2}{2\tau^{-2}}}.
-\end{equation}
+Alternatively, in the Fourier domain
+\begin{equation*}
+  \begin{split}
+    H(u,v) & = \int_\infty^\infty\int_\infty^\infty h(x,y)e^{-2\pi j(ux+vy)}dxdy \\
+           & = \int_\infty^\infty\int_\infty^\infty f(x)g(y)e^{-2\pi j(ux)}e^{-2\pi j(vy)}dxdy \\
+           & = \int_\infty^\infty f(x)e^{-2\pi j(ux)} dx \int_\infty^\infty g(y) e^{-2\pi j(vy)} dy \\
+           & = F(u)G(v).
+  \end{split}
+\end{equation*}
+Therefore, the frequency response of a separable multidimensional
+filter can be found by multipliying the frequency responses in each
+dimension of the corresponding 1D filter. Notice that this is a
+general result, known as the separability theorem.
 
 %}}}
 
