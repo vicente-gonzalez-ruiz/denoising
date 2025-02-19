@@ -8,7 +8,7 @@
 \usepackage{comment}
 \usepackage{color}
 
-\title{Denoising in (Electron?) Microscopy 3D Imaging}
+\title{Denoising in Microscopy Imaging}
 
 \author{Vicente González-Ruiz and José Jesús Fernández Rodríguez}
 
@@ -42,7 +42,7 @@
   $\mathbf{X}_i$ & The $i$-th element of $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
   $\hat{\mathbf{X}}^{(i)}$ & The $i$-th noisy instance of the signal $\mathbf{X}$ \\
   $\tilde{\mathbf{X}}^{[I]}$ & The average of the noisy instances $\{\hat{\mathbf{X}}^{(i)}\}_{i=1}^I$ \\ 
-  $\text{len}(\mathbf{X})$ & The number of elements in $\mathbf{X}$ \\
+  $\text{size}(\mathbf{X})$ & The number of elements in $\mathbf{X}$ \\
   $\text{rank}(\mathbf{X})$ & The number of dimensions in $\mathbf{X}$ \\
   %$|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
   $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar multiplication) \\
@@ -57,10 +57,11 @@
   $\mathrm{Su}(\mathbf{X})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{X}=x)>0\}$ (support of $\mathbf{X}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
   $\mathbb{E}(\mathbf{X})$ & Expectation of $\mathbf{X}$ \\ 
-  $A(b)$ & $A$ depends on parameter $b$ \\
+  $A(b)$ & $A$ depends on (parameter) $b$ \\
   $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(x)=X$) \\
   $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
-  $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution)
+  $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution) \\
+  $A[b]$ & The sampled version of $A(b)$
 \end{tabular}
 %}}}
 
@@ -389,7 +390,7 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 %different versions of the clean signal. Averaging as such is therefore
 %excluded.
 
-\subsection{Arithmetic mean of noisy instances}
+\subsection{AMNI (Arithmetic Mean of Noisy Instances)}
 %{{{
 
 Averaging a high enough number of noisy instances it is possible to obtain the clean signal with
@@ -591,10 +592,10 @@ example of how zero-mean uniform noise is cancelled by averaging.
 
 %\section{Bilateral filter}
 
-\subsection{(Separable) Gaussian Denoising (GD)}
+\subsection{(Separable) GF (Gaussian Filtering)}
 %{{{
 
-In GD, a 1D Gaussian kernel is convolved with the signal samples to
+In GF, a 1D Gaussian kernel is convolved with the signal samples to
 obtain
 \begin{equation}
   \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
@@ -602,24 +603,26 @@ obtain
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal,
 $\hat{\mathbf{X}}$ the noisy instance, and $*$ the convolution of
-digital signals. As it can be seen, GD only requires a noisy instance.
+digital signals. As it can be seen, unlike AMNI, GF only requires a
+noisy instance.
 
-Assuming that most of the signal energy (information) is concentrated
-in the low frequencies, the coefficients of a Gaussian kernel define a
-low-pass\footnote{All positive coefficients.} filter. The coefficients
-are sampled from
+The coefficients of a Gaussian kernel define a low-pass\footnote{All
+  positive coefficients.} filter. They are sampled from
 \begin{equation}
   \mathbf{h}(x;\tau) = \frac{1}{\sqrt{2\pi}\tau}e^{{-x}^2/(2\tau^2)},
   \label{eq:GK}
 \end{equation}
-where $x$ represents a distance\footnote{At least, in microscopy.} in
+where $x$ represents a distance in
 the signal domain, and $\tau$ (known as the \emph{standard deviation}
-\footnote{Because the filter coefficients are also the values that a
+\footnote{Notice that the filter coefficients are also the values that a
   discrete random variable takes from a normal distribution.})
 determines the bandwidth of the filter, considering a fixed sampling
 frequency (a higher $\tau$ results in a lower the cut-off frequency,
-i.e., in a higher smoothing effect in $\tilde{\mathbf{X}}$). More
-concretely, if $\mathcal{F}(h)=H$, that is
+
+Assuming that most of the signal energy (information) is concentrated
+in the low frequencies, higher values of $\tau$ will produce a higher
+smoothing effect in $\tilde{\mathbf{X}}$). More concretely, if
+$\mathcal{F}(h)=H$, that is
 \begin{equation}
   H(u) = e^{-\frac{u^2}{2\tau^{-2}}},
 \end{equation}
@@ -627,7 +630,7 @@ it can be seen that if $\tau$ increases, the cut-off frequency
 provided by $H$ decreases, and viceversa. In our implementation, we
 have that
 \begin{equation}
-  \mathrm{len}(h) = 2\lceil k\tau\rceil + 1
+  \mathrm{size}(h) = 2\lceil k\tau\rceil + 1
 \end{equation}
 where $k=4$ provides enough accuracy in the
 convolutions.\footnote{Notice that if $k$ grows then the cut-off
@@ -635,28 +638,27 @@ convolutions.\footnote{Notice that if $k$ grows then the cut-off
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{3D_GD}
+  \includegraphics[width=0.8\textwidth]{3D_GF}
   \caption{3D Gaussian filtering. The gray planes contain the voxels
     that are filtered and the white planes contain the voxels used by
     the 1D kernel when it is applied to the voxels of the filtered
     plane. The kernel shown here contains 3 coefficients. The volume
     is convolved sequentially in-place, from left to
-    right.\label{fig:3D_GD}}
+    right.\label{fig:3D_GF}}
 \end{figure}
 
-Multidimensional GD can be computed as separable\footnote{Notice,
-  however, that the separable $N$D GD is not exactly the same than the
-  true $N$D GD. See Appendix~\ref{ape:separable_VS_no_separable_GD}.},
-which means that we can apply the 1D filter to the $N$ dimensions of
-the signal to compute a $N$D denoising. For the 3D case (see
-Fig.~\ref{fig:3D_GD}), we have that
+Multidimensional GF is separable (see
+Appendix~\ref{ape:separable_VS_no_separable_GF}), which means that we
+can apply the 1D filter to the $D$ dimensions of the signal to compute
+a $D$D denoising. For the 3D case (see Fig.~\ref{fig:3D_GF}), we have
+that
 \begin{equation}
   \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
-    \label{eq:3D_GD}
+    \label{eq:3D_GF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
 the dimension $d$ of the signal ${\mathbf s}$ and the 1D filter
-${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GD} defines isotropic
+${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GF} defines isotropic
 filtering, but $\tau$ can be different at each dimension to provide
 anisotropy.
 
@@ -669,7 +671,7 @@ anisotropy.
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GD_optimal_tau.ipynb\#barb_GD_optimal_tau}{\includegraphics{barb_GD_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GD_optimal_tau.ipynb\#lake_GD_optimal_tau}{\includegraphics{lake_GD_optimal_tau.pdf}}
     \end{tabular}
   }
-  \caption{Optimal $\tau$ in GD filtering.\label{fig:optimal_GD_tau}}
+  \caption{Optimal $\tau$ values in GF filtering.\label{fig:optimal_GF_tau}}
 \end{figure}
 
 \begin{figure}
@@ -680,28 +682,28 @@ anisotropy.
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/lake.ipynb}{\includegraphics{lake}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GD_0MMPG_barb}{\includegraphics{GD_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GD_0MMPG_lake}{\includegraphics{GD_0MMPG_lake}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GF_0MMPG_barb}{\includegraphics{GF_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GF_0MMPG_lake}{\includegraphics{GF_0MMPG_lake}}
     \end{tabular}
   }
-  \caption{Two examples of optimal GD filtering. On the top, the
+  \caption{Two examples of optimal denoising using GF. On the top, the
     original images. In the middle, the noisy instances. On the
     bottom, the denoised images. {\color{red} arreglar PSNRs y elegir
-      tau optimo para ejemplo}\label{fig:GD_tau_optimal}}
+      tau optimo para ejemplo}\label{fig:GF_tau_optimal}}
 \end{figure}
 
-Fig.~\ref{fig:tau_VS_image} shows the performance of GD for two
-artificially noised images, for different levels of noise ($\sigma$)
-and filter length ($\tau$). As can be seen, the optimal value of the
-filter length, $\tau^*$ (which maximizes the PCC between $\mathbf{X}$
-and $\tilde{\mathbf{X}}$), depends on the noise level and
+Fig.~\ref{fig:tau_VS_image} shows the denoising performance of GF for
+two artificially noised images, for different levels of noise
+($\sigma$) and filter length ($\tau$). As can be seen, the optimal
+value of the filter length, $\tau^*$ (which maximizes the PCC between
+$\mathbf{X}$ and $\tilde{\mathbf{X}}$), depends on the noise level and
 $\mathbf{X}$, information that is, in general, unavailable in
 microscopy imaging. Therefore, $\tau^*$ can be only
 \emph{estimated}\footnote{Notice that, only knowing $\mathbf{X}$ it
   would be possible to find $\tau^*$. Therefore, the furthest one can
   go is to estimate the optimal filtering parameters}. depending on,
 for example, the (subjective) visual quality of
-$\tilde{\mathbf{X}}$. An example of optimal denoising using GD has
-been show in Fig.~\ref{fig:GD_tau_optimal}.
+$\tilde{\mathbf{X}}$. An example of optimal denoising using GF has
+been show in Fig.~\ref{fig:GF_tau_optimal}.
 
 % \begin{figure}
 %   \centering
@@ -749,10 +751,14 @@ been show in Fig.~\ref{fig:GD_tau_optimal}.
 %     \label{fig:GD_0MMPG}}
 % \end{figure}
 
+{\color{red} ------ comienzo sin terminar ------ }
+
 It is also possible to estimate $\tau^*$ using the self-correlation in
-the Fourier domain \cite{koho2019fourier}. The idea here is to
-determine the frequency $u^*$ for which, to the right of this
-frequency, the SNR decays under some given threshold. 
+the Fourier domain \cite{koho2019fourier} {\color{red}Este sería un
+  buen punto para hablar de cómo estamos calculando la curva
+  SF{R|S}C}. The idea here is to determine the frequency $u^*$ for
+which, to the right of this frequency, the SNR decays under some given
+threshold.
 
 A more objective procedure to estimate $\tau^*$ should be based on
 some (objective) quality metric, such as the self-correlation in the
@@ -821,6 +827,8 @@ i.e., without the subsampling required to compute the SFRC) for
 $\tau^*/2$, which means that we can use the SFRC metric (in the 2D
 case) and the SFSC (in the 3D case) to estimate the optimal filtering
 parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
+
+{\color{red} ------ fin sin terminar ------ }
 
 %}}}
 
@@ -979,7 +987,7 @@ having more noisy instances, after averaing all the denoised volumes.
 %}}}
 
 \appendix
-\section{About separability in multidimensional Gaussian filtering}
+\section{About separability in multidimensional GF}
 %{{{
 
 \label{ape:separable_VS_no_separable_GD}
@@ -1022,6 +1030,25 @@ general result, known as the separability theorem.
 
 %}}}
 
+\section{Normalized cut-off frequency versus $\tau$ in GF}
+%{{{
+
+In those denoising algorithms where we can estimate the optimal
+filtering parameters ($\tau^*$ in the case of GF) considering the
+information of the signal in the frequency domain, a relation between
+$\tau$ and the cut-off frequency $\eta$ of the filter must be
+determined.
+
+must be The coefficients of a
+digital Gaussian filter can be generated with
+\begin{equation}
+  h[n] = \text{GF}_{\tau}(\delta[n]),
+\end{equation}
+where the function $\text{GF}(\cdot)$ represents a 1D GF, which in our
+case is
+\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian_filter1d()}. 
+
+%}}}
 
 \bibliographystyle{plain}
 \bibliography{signal_processing,microscopy,denoising,motion_estimation}
