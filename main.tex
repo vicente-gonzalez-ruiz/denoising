@@ -1030,23 +1030,93 @@ general result, known as the separability theorem.
 
 %}}}
 
+\section{Creation of the Gaussian kernels}
+%{{{
+
+The coefficients of a
+digital Gaussian filter can be generated with
+\begin{equation}
+  h[n] = \text{GF}_{\tau}(\delta[n]),
+\end{equation}
+where the function $\text{GF}(\cdot)$ represents a 1D GF, which in our
+case is the method
+\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian_filter1d()}.
+
+%}}}
+
+\section{Transfer function of a Gaussian kernel}
+%{{{
+
+The transfer function of a filter is the Fourier transform of the
+impulse response of the filter,
+\begin{equation}
+  H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx.
+\end{equation}
+Using the Fourier pair
+\begin{equation}
+  \mathcal{F}\{e^{-\frac{x^2}{2\tau^2}}\} = \tau\sqrt{2\pi}e^{-\frac{\tau^2x^2}{2}},
+\end{equation}
+we get that
+\begin{equation}
+  H(w) = e^{-\frac{\tau^2x^2}{2}}.
+\end{equation}
+
+%}}}
+
 \section{Normalized cut-off frequency versus $\tau$ in GF}
 %{{{
 
 In those denoising algorithms where we can estimate the optimal
 filtering parameters ($\tau^*$ in the case of GF) considering the
 information of the signal in the frequency domain, a relation between
-$\tau$ and the cut-off frequency $\eta$ of the filter must be
-determined.
+$\tau$ and the cut-off frequency $\eta$ of the filter is
+required. Such relation can be found after defining an attenuation
+threshold $\beta\in [0,1]$, and determining for which increasing value
+of $\eta$ the gain of the low-pass filter in the frequency domain is
+below $\beta$.
 
-must be The coefficients of a
-digital Gaussian filter can be generated with
+
+% }}}
+
+\section{Fourier transform pair of a Gaussian function}
+%{{{
+
+Let
 \begin{equation}
-  h[n] = \text{GF}_{\tau}(\delta[n]),
+  H(w) = \int_{-\infty}^{\infty}e^{-frac{x^2}{2\tau^2}}e^{-jwx}dx = \int_{-\infty}^{\infty}e^{-frac{x^2}{2\tau^2}-jwx}dx.
 \end{equation}
-where the function $\text{GF}(\cdot)$ represents a 1D GF, which in our
-case is
-\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian_filter1d()}. 
+Operating in the exponent
+\begin{equation*}
+  -frac{x^2}{2\tau^2}-jwx = -\frac{1}{2\tau^2}(x+2j\tau^2wx),
+\end{equation*}
+add and subtract $(j\tau^2w)^2$
+\begin{equation*}
+  = \frac{1}{2\tau^2}[(x+j\tau^2w)^2-(j\tau^2w)^2],
+\end{equation*}
+rewriting and operating
+\begin{equation*}
+  = -\frac{(x+j\tau^2w)^2}{2\tau^2} + \frac{\tau^2w^2}{2}.
+\end{equation*}
+Replacing the exponent,
+\begin{equation*}
+  H(w) = e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{-\frac{(x+j\tau^2w)^2}{2\tau^2}}dx.
+\end{equation*}
+Now define
+\begin{equation*}
+  u = x + j\tau^2w.
+\end{equation*}
+Therefore,
+\begin{equation*}
+  H(w) = e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du.
+\end{equation*}
+The remaining integral is a standard Gaussian integral,
+\begin{equation*}
+  \int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du = \tau\sqrt{2\pi}.
+\end{equation*}
+Finally,
+\begin{equation*}
+  H(w) = \tau\sqrt{2pi}e^{-\frac{\tau^2w^2}{2}}.
+\end{equation*}
 
 %}}}
 
