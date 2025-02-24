@@ -635,8 +635,8 @@ example of how zero-mean uniform noise is cancelled by averaging.
 \subsection{Gaussian Filtering (GF)}
 %{{{
 
-In GF denoising, a 1D Gaussian kernel $h$ is convolved with the noisy
-instance $\hat{\mathbf{X}}$ to obtain
+In GF denoising, a 1D Gaussian kernel $\mathbf{h}$ is convolved with
+the noisy instance $\hat{\mathbf{X}}$ to obtain
 \begin{equation}
   \tilde{\mathbf{X}} = \hat{\mathbf{X}}*\mathbf{h},
   \label{eq:GF}
@@ -645,11 +645,11 @@ where $\tilde{\mathbf{X}}$ represents the denoised signal, and $*$ the
 convolution of digital signals. As can be seen, unlike MNI, GF only
 requires a noisy instance.
 
-The coefficients of $h$ define a low-pass\footnote{We can distinguish
-  this because all are positive coefficients.} filter. They are
-sampled from
+The coefficients of $\mathbf{h}$ define a low-pass\footnote{We can
+  distinguish this because all are positive coefficients.}
+filter. They are sampled from
 \begin{equation}
-  \mathbf{h}(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{{x}^2}{(2\tau^2)}},
+  h(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{{x}^2}{(2\tau^2)}},
   \label{eq:GK}
 \end{equation}
 where $x$ represents a distance in
@@ -679,7 +679,7 @@ that
     \label{eq:3D_GF}
 \end{equation}
 where ${\mathbf s}*^{(d)}{\mathbf h}$ is the 1D convolution applied to
-the dimension $d$ of the signal ${\mathbf s}$ and the (1D) filter
+the dimension $d$ of the signal ${\mathbf s}$ and the (1D) kernel
 ${\mathbf h}$. For simplicity, Eq.~\ref{eq:3D_GF} defines isotropic
 filtering, but $\tau$ can be different at each dimension to provide
 anisotropy.
@@ -690,44 +690,43 @@ anisotropy.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/lake.ipynb}{\includegraphics{lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb}{\includegraphics{barb_0MMPG}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_0MMPG.ipynb}{\includegraphics{lake_0MMPG}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GF_optimal_tau.ipynb\#barb_GF_optimal_tau}{\includegraphics{barb_GF_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GF_optimal_tau.ipynb\#lake_GF_optimal_tau}{\includegraphics{lake_GF_optimal_tau.pdf}}
     \end{tabular}
   }
-  \caption{Optimal $\tau$ values in GF. {\color{red} Ojo, son iguales}\label{fig:optimal_GF_tau}}
+  \caption{Optimal $\tau$ values in GF.\label{fig:optimal_GF_tau}}
 \end{figure}
 
-As can be seen in Eqs.~\ref{eq:1D_GF} and \ref{eq:3D_GF}, the
-denoising result depends on $\tau$. An optimal value for $\tau$
-($\tau^*$) can be found if we know $\mathbf{X}$ (see
-Fig.~\ref{fig:optimal_GF_tau}). Unfortunately, $\mathbf{X}$ is usually
-unknown and we only can estimate $\tau^*$. Ideally, $\tau^*$ should
-increase the SNR as much as possible, considering also that: (1) GF
-attenuates the high frequencies, (2) the SFC of the noise is close to
-zero, and (3) that most of the energy (information) in the signals are
-concentrated in the low frequencies. Therefore, we should find a cut-off frequency
+As can be seen in Eq.~\ref{eq:GK}, the denoising result depends on
+$\tau$. An optimal value for $\tau$ ($\tau^*$) can be found if we know
+$\mathbf{X}$ (see Fig.~\ref{fig:optimal_GF_tau}). Unfortunately,
+$\mathbf{X}$ is usually unknown and we only can estimate
+$\tau^*$. Ideally, $\tau^*$ should increase the SNR as much as
+possible, considering also that: (1) GF attenuates the high
+frequencies, (2) the SFC of the noise is close to zero, and (3) that
+most of the energy (information) in the signals are concentrated in
+the low frequencies. Therefore, we should find a cut-off frequency
 \begin{equation}
   \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \beta\}
+  \label{eq:search_eta}
 \end{equation}
-that attenuates those high frequency components of
-$\hat{\mathbf{X}}$ where the SFC is smaller than a given threshold
-$\beta$.
-
-In the Appendix~\ref{ape:tau_VS_beta} it is shown how to find
-$\tau^*$, in the continuous case, known the cut-off frequency $\eta$
-and $\beta$. Concretelly, the relation between these variables is
+where $\eta^*$ is the cut-off frequency of the kernel, and $\beta$ the
+attenuation used in the the stop-band (see
+Appendix~\ref{ape:tau_VS_eta}). Once found $\eta^*$, we can use the
+corresponding $\tau^*$ to filter out those frequency components of
+$\hat{\mathbf{X}}$ with the lowest SNR. Concretelly, we use (see
+Appendix~\ref{ape:tau_VS_eta})
 \begin{equation}
-  \tau^* = \frac{\sqrt{-2\ln\beta}}{\eta^*}.
-  \label{eq:tau_VS_beta_eta}
+  \tau^* = \frac{0.141}{\eta^*},
+  \label{eq:tau_VS_eta_empirical}
 \end{equation}
+where we are supposing that $\beta=1/\sqrt{2}$ (see
+Appendix~\ref{ape:tau_VS_eta}).
 
-(habría que ver lo que ha dicho ChatGPT sobre el caso discreto
-)
-Unfortunately, for the discrete case, where we are working with
-normalized frequencies and the $\text{size}(h)$ is finite (see
-Appendix~\ref{ape:creation_GK}), Eq.~\ref{eq:tau_VS_beta_eta} is not
-exact because $\text{size}(h)$ has also an impact in how $\tau^*$
-should be found. As shown in Appendix~\ref{ape:creation_GK},
-$\text{size}(h)$ depends on the implementation
+Fig.~\ref{fig:GF_estimation} shows the result of using
+Eqs.~\ref{eq:search_eta} and \ref{eq:tau_VS_eta_empirical} for
+estimating $\tau^*$. As can be seen ...
 
 \begin{comment}
 %{{{
@@ -902,7 +901,6 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 %}}}
 \end{comment}
 
-
 %}}}
 
 
@@ -1063,13 +1061,15 @@ having more noisy instances, after averaing all the denoised volumes.
 \appendix
 
 \section{Fourier transform of a Gaussian function}
+\label{ape:FTGF}
 %{{{
 
-The Fourier transform of a continuous Gaussian function
-\begin{equation*}
+Let the Gaussian function defined by
+\begin{equation}
   h(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{{x}^2}{(2\tau^2)}},
-\end{equation*}
-(see Eq.~\ref{eq:GF}) is
+  \label{eq:gaussian_ape}
+\end{equation}
+(see Eq.~\ref{eq:GF}), the Fourier transform  is
 \begin{equation}
   H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx,
 \end{equation}
@@ -1119,34 +1119,36 @@ The remaining integral is a standard Gaussian integral,
   \int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du = \sqrt{2\pi}\tau.
 \end{equation*}
 Finally, we obtain that
-\begin{equation*}
-  H(w) = e^{-\frac{\tau^2w^2}{2}}.
-  \label{eq:TFGF}
-\end{equation*}
+\begin{equation}
+  H(w) = e^{-\frac{\tau^2w^2}{2}},
+  \label{eq:FTGF}
+\end{equation}
+that corresponds to the transfer function (i.e., the response of
+Eq.~\ref{eq:gaussian_ape} to the impulse signal) of the Gaussian.
 
 %}}}
 
 \section{Cut-off frequency of a Gaussian filter}
+\label{ape:tau_VS_eta}
 %{{{
-
-\label{ape:tau_VS_beta}
 
 Gaussian filters are low-pass filters. In a low-pass filter we can
 distinguish three subbands: (1) the pass-band, that is defined by
-those range of frequencies that are not attenuated, (2) the stop-band,
-where the frequencies are attenuated, and (3) the transition-band,
-defined by those frequencies that are not included in the previous
-subbands. Notice that only in an ideal filter, the size of the
-transition-band is zero. The cut-off frequency of a low-pass filter is
-defined by those frequency of the transition-band where the response
-(or gain) of the filter decreases by some given factor
-$\beta\in]0,1[$. In other words, if $H$ is the transfer function of
-the filter,
+those range of frequencies that are not attenuated significantly, (2)
+the stop-band, where the frequencies are attenuated (significantly),
+and (3) the transition-band, defined by those frequencies that are not
+included in the previous subbands. Notice that only in an ideal
+filter, the size of the transition-band is zero.
+
+The cut-off frequency of a low-pass filter is defined by those
+frequencies of the transition-band where the response (or gain) of the
+filter decreases by some given factor $\beta\in]0,1[$. In other words,
+if $H$ is the transfer function of the filter,
 \begin{equation}
   H(\eta) = \beta,
 \end{equation}
 where $\eta$ is the cut-off frequency. In the case of a Gaussian
-filter (see Eq.~\ref{eq:eq:TFGF}), we have that
+filter (see Eq.~\ref{eq:FTGF}), we have that
 \begin{equation*}
   H(\eta) = e^{-\frac{\tau^2\eta^2}{2}} = \beta.
 \end{equation*}
@@ -1162,7 +1164,7 @@ Solving for $\tau$
 
 Typically, $\beta=1/\sqrt{2}$ that is equivalent to attenuate the
 input signal in -3dB. Notice that at the frequency 0 (see
-Eq.~\ref{eq:TFGF}),
+Eq.~\ref{eq:FTGF}),
 \begin{equation*}
   H(0) = e^0=1.
 \end{equation*}
@@ -1177,7 +1179,7 @@ frequency. We can obtain the corresponding expresión for
 Using Eq.~\ref{eq:eta_freq} into Eq.~\ref{eq:tau_VS_eta}, we obtain
 \begin{equation}
   \hat{\tau} = \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}}.
-  \label{eq:tau_VS_eta}
+  \label{eq:tau_VS_eta_standard}
 \end{equation}
 Operating
 \begin{equation*}
@@ -1185,28 +1187,27 @@ Operating
 \end{equation*}
 and therefore,
 \begin{equation}
-  \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}}.
+  \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}},
   \label{eq:ideal_hat_tau}
 \end{equation}
-
-Unfortunately, this expresion is valid only for the continuous
-case. In the discrete case, where the Gaussian kernel is finite in
-length, we have that
+equation that is valid for continuous signals. In the discrete case,
+where the Gaussian kernel is finite in length, we have that
 \begin{equation}
   \mathrm{size}(\mathbf{h}) = 2\lceil k\tau\rceil + 1,
 \end{equation}
-i.e., the filter is truncated at $\pm k\tau$. This has two effects:
+i.e., the filter is truncated at $\pm k\tau$ coefficients. This has
+two effects:
 \begin{enumerate}
 \item If $k$ grows, $\hat{\eta}$ grows also (the coefficients of the
   filter require more points to be convoluted and therefore, the
   cut-off frequency increases). Therefore, $k$ should be small. 
-\item If $k$ is too small, the gain of the stop-band (that should be
-  zero) increases and show the lobes of the Sinc (in the Fourier
+\item But if $k$ is too small, the gain of the stop-band (that should be
+  zero) increases and show the lobes of the Sinc (in the frequency
   domain) generated by the convolution of the ideal frequency response
   of the Gaussian filter for the continous case, i.e. a ``perfect''
-  Gaussian (see Eq.~\ref{eq:ideal_hat_tau}), with the Fourier
+  Gaussian (see Eq.~\ref{eq:FTGF}), with the Fourier
   transform of the square function which mathematically model the
-  finite length of the kernel.
+  truncation in length of the kernel.
 \end{enumerate}
 Therefore, a better estimation of the standard deviation for the
 Gaussian kernel is
@@ -1214,21 +1215,29 @@ Gaussian kernel is
   \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
   \label{eq:ideal_hat_tau}
 \end{equation}
-For $k=4$, the attenuation of the stop-band is below $90\text{dB}$ and
-the leakage generated by the truncation remains low enough (see
-Fig.~\ref{fig:gaussian_leakage}). 
+For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
+(see Fig.~\ref{fig:gaussian_leakage}) and the leakage generated by the
+truncation remains low enough .
 
 \begin{figure}
   \centering
   \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/gaussian_leakage.ipynb\#Gaussian_leakage}{\includegraphics[width=0.8\textwidth]{gaussian_leakage}}
   \caption{Impact of $k$ in the frequency response of a Gaussian
-    kernel.\label{fig:gaussian_leakge}}
+    kernel.\label{fig:gaussian_leakage}}
 \end{figure}
 
 Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
 have computed the relation between $\hat{\tau}$ and $\hat{\eta}$ for
-$\beta=1\sqrt{2}$. The result has been plotted in the
-Fig.~\ref{fig:eta_vs_tau} and can be seen, $\hat{\tau}\propto 1/k$.
+$\beta=1/\sqrt{2}$, and the result has been plotted in the
+Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\hat{\tau}\propto 1/k$.
+
+\begin{figure}
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/eta_vs_tau.ipynb\#Eta_vs_tau}{\includegraphics[width=0.8\textwidth]{eta_vs_tau}}
+  \caption{Relation between $\hat\eta$ (the digital cut-off frequency
+    of a Gaussian kernel) and $\hat\tau$ (the standard deviation of
+    the kernel), for $\beta=1/\sqrt{2}$.\label{fig:eta_vs_tau}}
+\end{figure}
 
 \begin{comment}
 To convert to normalized frequency, we must divide by $f_s$, the
@@ -1262,10 +1271,7 @@ of $\eta$ the gain of the low-pass filter in the frequency domain is
 below $\beta$.
 \end{comment}
 
-
 %}}}
-
-
 
 \begin{comment}
 \section{Transfer function of a Gaussian filter}
