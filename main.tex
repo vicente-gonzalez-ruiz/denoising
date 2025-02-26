@@ -388,14 +388,57 @@ $\cdot^*$ denotes the complex conjugate of $\cdot$.
 
 Finally, notice that it is possible to compute the so called Self FC
 (SFC in general, SFSC for the 3D case and SFRC for the 2D one), using
-some technique to estimate two noisy instances $\mathbf{X}^{(1)}$ and
-$\mathbf{X}^{(2)}$. For example, in \cite{verbeke2024self} a odd/even
-splitting in 2D slices is proposed to compute the SFSC that resembles
-the FS*C in some specific cases, and that can easely extended to find
-the SFRC. In \cite{koho2019fourier} a chessboard-like splitting
-pattern is used to compute the SFRC. Random shuffling algorithms, such
-as the described in the Appendix~\ref{ape:random_shuffling_SFC}, can
-also be valid to compute the SFC.
+some technique to simulate the existence of (at least\footnote{When it
+  is possible to use more instances, the resulting curve is the mean
+  of all the curves.}) two instances\footnote{In real scenarios, where
+  it is possible to take two (or more) captures of the same view, the
+  only that distinguish the instances is the uncorrelated noise. It
+  the views were different, the uncorrelated noise is also present.},
+$\mathbf{X}^{(1)}$ and $\mathbf{X}^{(2)}$. For example, in
+\cite{verbeke2024self} a odd/even splitting in 2D slices is proposed
+to compute the SF*C that resembles the true F*C in some specific
+cases. In \cite{koho2019fourier} a chessboard-like splitting pattern
+is used to compute the SFRC.
+
+In this work we have also tested a different approach to generate the
+instances $\mathbf{X}^{(1)}$ and $\mathbf{X}^{(2)}$ running
+twice\footnote{One run per generated instance.} a \emph{structure
+  preserving random shuffling}
+($\mathrm{SPRS}(\mathbf{X},\sigma)=\tilde{\mathbf{X}}$) algorithm
+which consist (for the 2D case) in:
+\begin{enumerate}
+\item \textbf{Separable 2D random shuffling of the samples of
+    $\mathbf{X}$}: Let be two different pixels $\mathbf{X}_1$ and
+  $\mathbf{X}_2$ with coordinates $(x_1, y_1)$ and $(x_2, y_2)$. This
+  step performs the operation
+  \begin{equation}
+    \text{swap}_{xy}(\mathbf{X}_1,\mathbf{X}_2) = \{\text{swap}_x(\mathbf{X}_1,\mathbf{X}_2), \text{swap}_y(\mathbf{X}_1,\mathbf{X}_2)\},
+  \end{equation}
+  where
+  \begin{equation}
+    \text{swap}_x(\mathbf{X}_1,\mathbf{X}_2) = \text{swap}(x_1, x_2)\quad\text{if}~|x_1-x_2|<X,~X\sim\mathcal{N}(\sigma^2)
+  \end{equation}
+  and
+  \begin{equation}
+    \text{swap}_y(\mathbf{X}_1,\mathbf{X}_2) = \text{swap}(y_1, y_2)\quad\text{if}~|y_1-y_2|<X,~X\sim\mathcal{N}(\sigma^2),
+  \end{equation}
+  where $\text{swap}(a,b)$ performs
+  \begin{equation}
+    (a,b) \leftarrow (b,a).
+  \end{equation}
+  When these swapping are performed for all the pixels of
+  $\mathbf{X}$, this step generates a randomly shuffled image
+  $\hat{\mathbf{X}}$.
+
+\item \textbf{Projection of $\hat{\mathbf{X}}$ on $\mathbf{X}$}:
+  \begin{enumerate}
+  \item \textbf{Computation of a DOF field
+      $\overrightarrow{\mathbf{V}}$} to map $\hat{\mathbf{X}}$ on
+    $\mathbf{X}$ \cite{farneback2003two}.
+  \item \textbf{Project $\hat{\mathbf{X}}$ using
+      $\overrightarrow{\mathbf{V}}$}, resulting $\tilde{\mathbf{X}}$.
+  \end{enumerate}
+\end{enumerate}
 
 \begin{comment}
 %{{{
@@ -708,7 +751,7 @@ frequencies, (2) the SFC of the noise is close to zero, and (3) that
 most of the energy (information) in the signals are concentrated in
 the low frequencies. Therefore, we should find a cut-off frequency
 \begin{equation}
-  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \beta\}
+  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \beta\},
   \label{eq:search_eta}
 \end{equation}
 where $\eta^*$ is the cut-off frequency of the kernel, and $\beta$ the
@@ -1229,7 +1272,7 @@ truncation remains low enough .
 Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
 have computed the relation between $\hat{\tau}$ and $\hat{\eta}$ for
 $\beta=1/\sqrt{2}$, and the result has been plotted in the
-Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\hat{\tau}\propto 1/k$.
+Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\hat{\tau}\propto 1/\hat{\eta}$.
 
 \begin{figure}
   \centering
