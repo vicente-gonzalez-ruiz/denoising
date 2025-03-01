@@ -1,3 +1,7 @@
+###################
+# D E L E T E M E # 
+###################
+
 import numpy as np
 import scipy.ndimage
 
@@ -16,3 +20,4 @@ def get_gaussian_kernel(sigma=1):
 def gaussian_noise(shape, mean=0, sigma=20):
     noise = np.random.normal(mean, sigma, shape).reshape(shape)
     return noise
+

@@ -724,17 +724,24 @@ attenuation used in the the stop-band (see
 Appendix~\ref{ape:tau_VS_eta}). Once found $\eta^*$, we can use the
 corresponding $\tau^*$ to filter out those frequency components of
 $\hat{\mathbf{X}}$ with the lowest SNR. Concretelly, we use (see
-Appendix~\ref{ape:tau_VS_eta})
+Appendix~\ref{SFC_random_data})
 \begin{equation}
-  \tau^* = \frac{0.141}{\eta^*},
-  \label{eq:tau_VS_eta_empirical}
+  \tau^*_{\text{SPRS}} = \frac{0.141}{5(\eta^*-0.09)},
+  \label{eq:tau_VS_eta_empirical_SPRS}
 \end{equation}
+when we are using the SPRS algorithm to find the SFC curve, or
+\begin{equation}
+  \tau^*_{\text{EO}} = \frac{0.141}{3(\eta^*-0.01)},
+  \label{eq:tau_VS_eta_empirical_EO}
+\end{equation}
+if we are using the EO algorithm to find the SFC curve,
 where we are supposing that $\beta=1/\sqrt{2}$ (see
 Appendix~\ref{ape:tau_VS_eta}). 
 
 Fig.~\ref{fig:tau_GF_estimation} shows the result of using
-Eq.~\ref{eq:tau_VS_eta_empirical} for
-estimating $\tau^*$. As can be seen ..
+Eqs.~\ref{eq:tau_VS_eta_empirical_SPRS} and
+\ref{eq:tau_VS_eta_empirical_EO} for estimating $\tau^*$ for the two
+test images. As can be seen ..
 
 \begin{comment}
 %{{{
@@ -1348,10 +1355,15 @@ general result, known as the separability theorem.
 
 %}}}
 
-\section{Creation of digital Gaussian kernels}
+\section{Self Fourier correlation of random information}
+\label{ape:SFC_random_data}
 %{{{
 
-\label{ape:creation_GK}
+In order to know the dynamic range of frequencies that we can use to
+determine the cut-off frequency of a low-pass filter-based denoising
+technique, in the Fig.~\ref{fig:SFC_random_data} has been shown for
+both, the even/odd-splitting (EO) algorithm and the SPRS algorithm,
+the SFC curve of an image with random information.
 
 The coefficients of a
 digital Gaussian filter can be generated with
@@ -1435,6 +1447,63 @@ input image.
 
 %}}}
 
+\section{Chessboard splitting (CBS)}
+\label{ape:CBS}
+%{{{
+
+CBS can be used to generate (in the 2D case) two similar instances $\mathbf{X}^{(\cdot)}$
+of an image or volume $\mathbf{X}$. We denote this as
+\begin{equation}
+  \mathrm{CBS}(\mathbf{X})=\{\mathbf{X}^{(0)},\mathbf{X}^{(1)}\}
+\end{equation}
+where $\mathbf{X}$ is the image. Concretelly, the CBS algorithm which
+consist (for the 2D case) in:
+\begin{enumerate}
+\item \textbf{Copy on an zero image $\mathbf{X}^{(0)}$ the
+  ``black''-chessboard pixels of $\mathbf{X}$}: We define
+  \begin{equation}
+    b = (y, x)\quad\text{if}~y+x~\text{mod}~2=0.
+    \label{eq:black_pixels}
+  \end{equation}
+  Then
+  \begin{equation}
+    \mathbf{X}^{(0)}_b = \mathbf{X}_b.
+    \label{eq:copy_blacks}
+  \end{equation}
+\item \textbf{Copy on an zero image $\mathbf{X}^{(1)}$ the
+  ``white''-chessboard pixels of $\mathbf{X}$}: We define
+  \begin{equation}
+    w = (y, x)\quad\text{if}~y+x~\text{mod}~2=1.
+    \label{eq:white_pixels}
+  \end{equation}
+  Then
+  \begin{equation}
+    \mathbf{X}^{(0)}_w = \mathbf{X}_w.
+    \label{eq:copy_whites}
+  \end{equation}
+\end{enumerate}
+
+%}}}
+
+\section{Interpolated chessboard splitting (ICBS)}
+\label{ape:ICBS}
+%{{{
+
+ICBS is an extension of CBS (see Appendix~\ref{ape:CBS}) where the $w$
+pixels in Eq.~\ref{eq:copy_blacks} are interpolated using the $b$
+pixels (see Eq.~\ref{eq:black_pixels}), and viceversa. Therefore,
+\begin{equation}
+  \mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(0)},\mathbf{X}^{(1)}\},
+\end{equation}
+where $\mathbf{X}$ is the input image, and the output images are computed with
+
+
+\begin{enumerate}
+\item d
+\end{enumerate}
+
+
+%}}}
 
 \bibliographystyle{plain}
 \bibliography{signal_processing,microscopy,denoising,motion_estimation}
