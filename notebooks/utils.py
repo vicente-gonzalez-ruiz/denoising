@@ -10,6 +10,7 @@ def imshow(img):
 
 def add_0MWGN(X, std_dev=40):
     '''Zero-Mean White Gaussian Noise'''
+    print("Better use generate_0MWGN()")
     return X + np.random.normal(loc=0, scale=std_dev, size=X.shape).reshape(X.shape)
 
 def get_gaussian_kernel(sigma=1):
@@ -23,7 +24,23 @@ def get_gaussian_kernel(sigma=1):
         number_of_coeffs += 1
     return coeffs[1:-1]
 
-def generate_PN(X, gamma=0.1):
+def generate_0MWGN(rows=512, cols=512, mean=128.0, stddev=5.0):
+    """
+    Generates a 2D NumPy array with zero-mean white Gaussian noise.
+
+    Args:
+        rows: Number of rows in the array.
+        cols: Number of columns in the array.
+        mean: Mean (average) of the Gaussian distribution (default: 0.0).
+        stddev: Standard deviation of the Gaussian distribution (default: 1.0).
+
+    Returns:
+        A 2D NumPy array with Gaussian random noise.
+    """
+    noise = np.random.normal(loc=mean, scale=stddev, size=(rows, cols))
+    print(np.min(noise), np.max(noise))
+    return noise
+
     '''Poisson Noise'''
     return np.random.poisson(X * gamma) / gamma
 
