@@ -364,20 +364,21 @@ prepresents the normalized cross-correlation between two ``shells''
 (images). When the number of dimensions is not relevant, we will refer
 to this metric simply by FC (Fourier Correlation).
 
-An advantage of the FC over other similarity metrics such as the
-RMSE, the SSIM and the PPC is that FC values depend on the frequency,
-and this can be interesting in some scenarios, such as microscopy,
-where the resolution of the microscope is finite and known a priori
+An advantage of FC over other similarity metrics such as RMSE, SSIM or
+PPC is that FC values depend on the frequency, and this can be
+interesting in some scenarios, such as microscopy, where the
+resolution of the microscope is finite and known a priori
 \cite{nieuwenhuizen2013measuring}. Notice that, with this information,
 we can know whether the denoising is removing the high-frequency
 components of the clean signal, or on the contrary, basically
 noise.\footnote{When the SNR is very low, the Fourier coefficients of
-  the same ring/shell of two different noisy versions of the same signal
-  are uncorrelated and therefore, the corresponding curves values are
-  close to zero.}  For this reason, in some fields such as single
-particle electron cryo-microscopy (cryo-EM), the FC curve has become
-the universal resolution metric and is used to assess the quality of
-3D reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
+  the same ring/shell of two different noisy versions of the same
+  signal are uncorrelated and therefore, the corresponding curves
+  values should be close to zero.}  For this reason, in some fields
+such as single particle electron cryo-microscopy (cryo-EM), the FC
+curve has become the universal resolution metric and is used to assess
+the quality of 3D reconstructions
+\cite{rosenthal2003optimal,scheres2012prevention}.
 
 A FSC value of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
@@ -390,22 +391,39 @@ $\mathcal{F}(\cdot)$ is the Fourier transform of $\cdot$, and
 $\cdot^*$ denotes the complex conjugate of $\cdot$.
 
 Finally, notice that it is possible to compute the so called Self FC
-(SFC in general, SFSC for the 3D case and SFRC for the 2D one), using
-some technique to simulate the existence of (at least\footnote{When it
-  is possible to use more instances, the resulting curve is the mean
-  of all the curves.}) two instances\footnote{In real scenarios, where
-  it is possible to take two (or more) captures of the same view, the
-  only that distinguish the instances is the uncorrelated noise. It
+(SFC in general, specifically SFSC for the 3D case and SFRC for the 2D
+one), using some technique to simulate the existence of (at
+least\footnote{When it is possible to use more instances, the
+  resulting curve is the mean of all the curves.}) two
+instances\footnote{In real scenarios, where it is possible to take two
+  (or more) captures of the same view, the only that should
+  distinguish the instances is the uncorrelated noise. Notice that, if
   the views were different, the uncorrelated noise is also present.},
 $\mathbf{X}^{(1)}$ and $\mathbf{X}^{(2)}$. For example, in
-\cite{verbeke2024self} a odd/even splitting in 2D slices is proposed
-to compute the SF*C that resembles the true F*C in some specific
-cases. In \cite{koho2019fourier} a chessboard-like splitting pattern
-is used to compute the SFRC.
+\cite{verbeke2024self} a even/odd signal splitting (see
+Appendix~\ref{ape:EOS}) in 2D slices is proposed to compute the SFC
+that resembles the true FC in some specific cases. In
+\cite{koho2019fourier} a subsampled-chessboard splitting pattern (see
+Appendix~\ref{ape:SCBS}) is used to compute SFC curves that to
+assemble the true FC curves must be calibrated for some correlation
+threshold.
 
-In this work we have also tested a different approach to generate the
-instances, named structure preserving random shuffling (SPRS) and that
-has been described in the Appendix~\ref{ape:SPRS}.
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb\#barb}{\includegraphics{barb.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb\#barb_0MMPG}{\includegraphics{barb_0MMPG.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging.ipynb\#barb_averaging}{\includegraphics{barb_averaging.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging_PSNR.ipynb\#barb_averaging_PSNR}{\includegraphics{barb_averaging_PSNR.pdf}}
+    \end{tabular}
+  }
+  \caption{{\color{red} (Jose, aquí podríamos poner el FRC real (para poder comparar) si tuviésemos 2 imágenes diferentes del mismo especímen tomadas en idénticas condiciones)}.\label{fig:SFC_vs_splitting}}
+\end{figure}
+
+Fig.~\ref{fig:SFC_vs_splitting} show a comparison between
+SFC curves obtained using different techniques for generating the
+instances of a single input image.
 
 \begin{comment}
 %{{{
@@ -514,7 +532,7 @@ MPG noise.
   }
   \caption{Increase of the SNR as a function of the number of noisy
     instances used in MNI. The clean image is shown on the top-left,
-    and a noisy instance on the top-right. On to bottom-left, the
+    and a noisy instance on the top-right. On the bottom-left, the
     denoised NMI image, and on the bottom-right the progression of the
     SNR as a function of $I$ and the level of
     noise.\label{fig:MNI_0MMPG}}
@@ -1411,59 +1429,68 @@ that the filter is truncated at $\pm 4\tau$.
 
 In the 2D case, EOS generates
 \begin{equation}
-  \mathrm{EOS}(\mathbf{X})=\{\mathbf{X}^{(e)},\mathbf{X}^{(o)}\},
+  \mathrm{EOS}(\mathbf{X})=\{\mathbf{X}^{(\text{VE})}, \mathbf{X}^{(\text{VO})}, \mathbf{X}^{(\text{HE})}, \mathbf{X}^{(\text{HO})}\},
 \end{equation}
-where $\mathbf{X}$ is the input image, and
-$\{\mathbf{X}^{(e)},\mathbf{X}^{(o)}\}$ are the output images with
-$\text{rank}(\mathbf{X}^{(e)})=\text{rank}(\mathbf{X}^{(o)})=\{(\text{rank}(\mathbf{X})_0/2,
-\text{rank}(\mathbf{X})_1)\}$ are generated as
-\begin{equation}
-  \mathbf{X}^{(e)}_{(y,x)} = \mathbf{X}_{(2y,x)},
-\end{equation}
-and
-\begin{equation}
-  \mathbf{X}^{(o)}_{(y,x)} = \mathbf{X}_{(2y+1,x)}.
-\end{equation}
-
+where $\mathbf{X}$ is the input image, and $\{\mathbf{X}^{(\text{*})}$
+  are the output images, where $\text{VE}=\text{vertical-even}$,
+  $\text{VO}=\text{vertical-odd}$, $\text{HE}=\text{horizontal-even}$,
+  and $\text{HO}=\text{horizontal-odd}$. Concretely,
+  \begin{align}
+    \mathbf{X}^{(\text{VE})}_{(y,x)} & = \mathbf{X}_{(2y,x)}, \\
+    \mathbf{X}^{(\text{VO})}_{(y,x)} & = \mathbf{X}_{(2y+1,x)}, \\
+    \mathbf{X}^{(\text{HE})}_{(y,x)} & = \mathbf{X}_{(y,2x)},\\
+    \mathbf{X}^{(\text{VO})}_{(y,x)} & = \mathbf{X}_{(y,2x+1)}.
+  \end{align}
+  
 %}}}
 
 \section{Chessboard splitting (CBS)}
 \label{ape:CBS}
 %{{{
 
-CBS can be used to generate (in the 2D case) two similar instances $\mathbf{X}^{(\cdot)}$
-of an image or volume $\mathbf{X}$. We denote this as
+In the 2D case, chessboard splitting (CBS) generates two distinct
+instances
 \begin{equation}
-  \mathrm{CBS}(\mathbf{X})=\{\mathbf{X}^{(b)},\mathbf{X}^{(w)}\}
+  \mathrm{CBS}(\mathbf{X})=\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\},
 \end{equation}
-where $\mathbf{X}$ is the input image. Defining
+where $\mathbf{X}$ is the input image, and
+$\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}$ are the output
+images. Defining a chessboard mask function
 \begin{equation}
   M(y,x)=(y+x)~\text{mod}~2,
 \end{equation}
-the CBS algorithm which consist (for the 2D case) in:
+the CBS algorithm consists of:
 \begin{enumerate}
-\item \textbf{Copy on an zero image $\mathbf{X}^{(0)}$ the
-  ``black''-chessboard pixels of $\mathbf{X}$}: We define
+\item \textbf{Populate} $\mathbf{X}^{(\text{B})}$ \textbf{with
+    ``black'' chessboard pixels from $\mathbf{X}$:} In an initially
+  zero-image $\mathbf{X}^{(\text{B})}$, copy the ``black'' pixels from
+  $\mathbf{X}$ to $\mathbf{X}^{(\text{B})}$:
   \begin{equation}
-    \{b\} = \{(y, x), \text{where}~M(y, x)=0\}.
-    \label{eq:black_pixels}
-  \end{equation}
-  Then
-  \begin{equation}
-    \mathbf{X}^{(b)}_{\{b\}} = \mathbf{X}_{\{b\}}.
+    \mathbf{X}^{(\text{B})}_{\{b\}} = \mathbf{X}_{\{b\}},
     \label{eq:copy_blacks}
   \end{equation}
-\item \textbf{Copy on an zero image $\mathbf{X}^{(1)}$ the
-  ``white''-chessboard pixels of $\mathbf{X}$}: We define
+  where ``B'' indicates ``black'', and
   \begin{equation}
-    \{w\} = \{(y, x), \text{where}~M(y, x)=1\}.
-    \label{eq:white_pixels}
+    \{b\} = \{(y, x) \mid M(y, x)=0\}
+    \label{eq:black_pixels}
   \end{equation}
-  Then
+  are the ``black'' pixel coordinates.
+  
+\item \textbf{Populate} $\mathbf{X}^{(\text{W})}$ \textbf{with
+    ``white'' chessboard pixels from $\mathbf{X}$:} In an initially
+  zero-image $\mathbf{X}^{(\text{W})}$, copy the corresponding pixels
+  from $\mathbf{X}$ to $\mathbf{X}^{(\text{W})}$:
   \begin{equation}
-    \mathbf{X}^{(w)}_{\{w\}} = \mathbf{X}_{\{w\}}.
+    \mathbf{X}^{(\text{W})}_{\{w\}} = \mathbf{X}_{\{w\}},
     \label{eq:copy_whites}
   \end{equation}
+  where ``W'' indicates ``white'', and
+  \begin{equation}
+    \{w\} = \{(y, x) \mid M(y, x)=1\}
+    \label{eq:white_pixels}
+  \end{equation}
+  are the ``white'' pixel coordinates.
+  
 \end{enumerate}
 
 %}}}
@@ -1479,17 +1506,47 @@ in Eq.~\ref{eq:copy_blacks} are interpolated using the $\{b\}$
 viceversa. Therefore,
 \begin{equation}
   %\mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(b)},\mathbf{X}^{(w)}\},
-  \mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(b)},\mathbf{X}^{(w)}\}=\{\text{CBS}(\mathbf{X})_0 + \mathbf{X}^{(b')},\text{CBS}(\mathbf{X})_1 + \mathbf{X}^{(w')}\},
+  \mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}=\{\text{CBS}(\mathbf{X})_0 + \mathbf{X}^{(b')},\text{CBS}(\mathbf{X})_1 + \mathbf{X}^{(w')}\},
 \end{equation}
 where $\mathbf{X}$ is the input image, and the new output pixels of
-$\mathbf{X}^{(b)}$ and $\mathbf{X}^{(w)}$ are
+$\mathbf{X}^{(\text{B})}$ and $\mathbf{X}^{(\text{W})}$ are
 \begin{equation}
-  \mathbf{X}^{(b')}_{(y,x)\in\{w\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}),
+  \mathbf{X}^{(\text{B}')}_{(y,x)\in\{w\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}),
 \end{equation}
 and
 \begin{equation}
-  \mathbf{X}^{(w')}_{(y,x)\in\{b\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}).
+  \mathbf{X}^{(\text{W}')}_{(y,x)\in\{b\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}).
 \end{equation}
+
+%}}}
+
+\section{Subsampled chessboard splitting (SCBS)}
+\label{ape:CBS}
+%{{{
+
+SCBS \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
+into four distinct sub-images
+\begin{equation}
+  \mathrm{SCS}(\mathbf{X}) = \{\mathbf{X}^{(\text{OO})}, \mathbf{X}^{(\text{EE})}, \mathbf{X}^{(\text{OE})}, \mathbf{X}^{(\text{EO})} \},
+\end{equation}
+where
+\begin{align}
+  \mathbf{X}^{(\text{OO})} & = (\mathbf{X}_{\{o\},:})_{:,\{o\}}, \text{(pixels with odd row and odd column indices)} \\
+  \mathbf{X}^{(\text{EE})} & = (\mathbf{X}_{\{e\},:})_{:,\{e\}}, \text{(pixels with even row and even column indices)}\\
+  \mathbf{X}^{(\text{OE})} & = (\mathbf{X}_{\{o\},:})_{:,\{e\}}, \text{(pixels with even row and even column indices)}\\
+  \mathbf{X}^{(\text{OO})} & = (\mathbf{X}_{\{e\},:})_{:,\{o\}}, \text{(pixels with even row and odd column indices)}
+\end{align}
+where
+\begin{align}
+  \{o\} = \{i\mid M(i)=1\}, \\
+  \{e\} = \{i\mid M(i)=0\},
+\end{align}
+where
+\begin{equation}
+  M(i) = i~\text{mod}~2,
+\end{equation}
+and $\mathbf{X}_{i,:}$ denotes the $i$-th row of $\mathbf{X}$, and
+$\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
 
 %}}}
 
