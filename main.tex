@@ -38,7 +38,11 @@
   $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
   $\mathbf{X}$ & A tensor structure (e.g., an image) \\
   $\mathbf{X}_i$ & The $i$-th element of $\mathbf{X}=\{\mathbf{X}_i\}_{i=1}^N=\{\mathbf{X}_i\}$ \\
-  $\mathbf{X}_{\{i\}}$ & The $i$-th elements of $\mathbf{X}$ \\
+  $\{i\}$ & The set $i$ \\
+  $\mathbf{X}_{\{i\}}$ & The elements of $\mathbf{X}$ with indices $\{i\}$ \\
+  $\mathbf{X}_{y,:}$ & The $y$-th row of the image $\mathbf{X}$ \\
+  $\mathbf{X}_{:,x}$ & The $x$-th column of the image $\mathbf{X}$ \\
+  $\mathbf{X}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{X}$ \\
   $\hat{\mathbf{X}}^{(i)}$ & The $i$-th noisy instance of the signal $\mathbf{X}$ \\
   $\tilde{\mathbf{X}}^{[I]}$ & The mean of the noisy instances $\{\hat{\mathbf{X}}^{(i)}\}_{i=1}^I$ \\ 
   $\overline{\mathbf{X}}$ & The mean of the samples of $\mathbf{X}$ \\ 
@@ -62,7 +66,8 @@
   $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution) \\
   $A(b)$ & $A$ depends on (parameter) $b$ \\
   $A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
-  $A.b$ & The $b$ component of the data structure $A$
+  $A.b$ & The $b$ component of the data structure $A$ \\
+  $(A)b$ & First $A$, then $b$ 
 \end{tabular}
 
 %}}}
@@ -414,15 +419,14 @@ threshold.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb\#barb}{\includegraphics{barb.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb\#barb_0MMPG}{\includegraphics{barb_0MMPG.pdf}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging.ipynb\#barb_averaging}{\includegraphics{barb_averaging.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_averaging_PSNR.ipynb\#barb_averaging_PSNR}{\includegraphics{barb_averaging_PSNR.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_SFRC.ipynb}{\includegraphics{barb_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_SFRC.ipynb}{\includegraphics{lake_SFRC.pdf}}
     \end{tabular}
   }
   \caption{{\color{red} (Jose, aquí podríamos poner el FRC real (para poder comparar) si tuviésemos 2 imágenes diferentes del mismo especímen tomadas en idénticas condiciones)}.\label{fig:SFC_vs_splitting}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting} show a comparison between
-SFC curves obtained using different techniques for generating the
+SFRC curves obtained using different techniques for generating the
 instances of a single input image.
 
 \begin{comment}
@@ -744,6 +748,18 @@ attenuation used in the the stop-band (see
 Appendix~\ref{ape:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
 frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GF_estimation.ipynb}{\includegraphics{barb_GF_estimation.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GF_estimation.ipynb}{\includegraphics{lake_GF_estimation.pdf}}
+    \end{tabular}
+  }
+  \caption{Optimal VS estimated $\tau^*$ values.\label{fig:tau_GF_estimation}}
+\end{figure}
 
 In the Fig.~\ref{fig:tau_GF_estimation} there is a comparison between
 the true $\tau^*$ values and their estimations, using the EOS
