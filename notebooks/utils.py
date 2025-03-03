@@ -41,8 +41,8 @@ def generate_0MWGN(rows=512, cols=512, mean=128.0, stddev=5.0):
     print(np.min(noise), np.max(noise))
     return noise
 
-    '''Poisson Noise'''
-    return np.random.poisson(X * gamma) / gamma
+    #'''Poisson Noise'''
+    #return np.random.poisson(X * gamma) / gamma
 
 def generate_MPGN(X, std_dev=10.0, gamma=0.1, poisson_ratio=0.5):
     '''Mixel Poisson Gaussian Noise'''
