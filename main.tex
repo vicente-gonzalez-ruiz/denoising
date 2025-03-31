@@ -200,7 +200,57 @@ our experiments, $\alpha=0.5$.
 
 %}}}
 
-% \subsection{Speckle noise}
+% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
+% Practical Poissonian-Gaussian noise modeling and fitting for
+% single-image raw-data. IEEE Transactions on Image Pro-
+% cessing, 17(10):1737–1754, 2008.
+
+%\subsection{Noise estimation}
+%{{{
+
+% Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+% https://link.springer.com/chapter/10.1007/978-3-030-87231-1_33
+
+% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
+% Practical Poissonian-Gaussian noise modeling and fitting for
+% single-image raw-data. IEEE Transactions on Image Pro-
+% cessing, 17(10):1737–1754, 2008.
+
+%}}}
+
+%\subsection{Anscombe transform and gneralized Anscombe transformation (GAT)}
+%{{{
+
+% Using a nonlinear variance-stabilizing transformation (VST) to convert the
+% Poisson-Gaussian denoising problem into a Gaussian noise
+% removal problem. The VST is able to remove the signal-dependency of
+% the Poisson component, whose noise variance varies with
+% the expected pixel value, and results in a modified image
+% with signal-independent Gaussian noise only and a constant
+% (unitary) noise variance. Next, a Gaussian denoising algo-
+% rithm is applied to the transformed image. And finally, the
+% Gaussian-denoised data is transformed back via an inverse
+% VST algorithm, such as the exact unbiased inverse transfor-
+% mation [19], and the estimation of the noise-free image is
+% obtained.
+
+% https://arxiv.org/abs/2209.09825?utm_source=chatgpt.com
+% . Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+
+% [19] M. Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+
+% En "A Poisson-Gaussian Denoising Dataset with Real Fluorescence Microscopy
+% Images" hay una definición de la transformada (Eq. 4).
+
+%}}}
+
+%\subsection{Speckle noise}
 %{{{
 
 % Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
@@ -973,13 +1023,25 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 
 %}}}
 
-%\section{Beltrami flow}
+%  \section{Beltrami flow}
+% Parece que se usa en AND, pero no se bien cómo.
 
 %\section{Median filter}
 
 %\section{Bilateral filter}
 
+%\section{Wiener filter}
+
 % \section{Anisotropic Non-linear Diffusion (AND)}
+
+% \section{PURE-LET}
+%{{{
+
+% . Luisier, T. Blu, and M. Unser. Image denoising in mixed
+% PoissonGaussian noise. IEEE Transactions on Image Pro-
+% cessing, 20(3):696–708, 2011.
+
+%}}}
 
 \subsection{Structure-Preserving Gaussian Denoising (SPGD)}
 %{{{
@@ -1075,14 +1137,92 @@ information that is generally unknown in microscopy imaging.
 
 %}}}
 
-%\subsection{Non Local Means (NLM)} 
+%  \subsection{Non Local Means (NLM)}
+%{{{
 
-%\subsection{BM4D}
+% https://biomedical-engineering-online.biomedcentral.com/articles/10.1186/1475-925X-14-2
+% A. Buades, B. Coll, and J.-M. Morel. A non-local algorithm
+% for image denoising. In CVPR, 2005.
+
+%}}}
+
+% \subsection{BM3D/BM4D}
+%{{{
+
+% K. Dabov, A. Foi, V. Katkovnik, and K. Egiazarian. Image
+% denoising by sparse 3-D transform-domain collaborative
+% filtering. IEEE Transactions on Image Processing, 16(8):2080–2095, 2007.
+%https://pypi.org/project/bm4d/#files
+
+%}}}
+
+% \subsection{K-SVD}
+%{{{
+
+% M. Aharon, M. Elad, and A. Bruckstein. K-SVD: An algorithm for
+% designing overcomplete dictionaries for sparse
+% representation. IEEE Transactions on Signal Processing,
+% 54(11):4311–4322, 2006.
+
+%}}}
+
+% \subsection{EPLL}
+%{{{
+
+% D. Zoran and Y. Weiss. From learning models of natural
+% image patches to whole image restoration. In ICCV, 2011.
+
+%}}}
+
+% \subsection{WNNM}
+%{{{
+
+% S. Gu, L. Zhang, W. Zuo, and X. Feng. Weighted nuclear
+% norm minimization with application to image denoising. In
+% CVPR, 2014.
+
+%}}}
 
 % \section{N2V}
+%{{{
+
 % A. Krull, T.-O. Buchholz, and F. Jug, “Noise2void-learning denoising
 % from single noisy images,” in Proceedings of the IEEE/CVF conference
 % on computer vision and pattern recognition, 2019, pp. 2129–2137.
+
+%}}}
+
+%\subsection{Pixel2Pixel}
+%https://ieeexplore.ieee.org/abstract/document/10908805 
+
+%\subsection{DnCNN}
+% K. Zhang, W. Zuo, Y. Chen, D. Meng, and L. Zhang. Be-
+% yond a Gaussian denoiser: Residual learning of deep CNN
+% for image denoising. IEEE Transactions on Image Process-
+% ing, 26(7):3142–3155, 2017.
+
+% \subsection{FFDNet}
+% K. Zhang, W. Zuo, and L. Zhang. Ffdnet: Toward a fast
+% and flexible solution for CNN based image denoising. IEEE
+% Transactions on Image Processing, 2018.
+
+% \subsection{CBDNet}
+% S. Guo, Z. Yan, K. Zhang, W. Zuo, and L. Zhang. Toward
+% convolutional blind denoising of real photographs. In CVPR,
+% 2019.
+
+% \subsection{UDNet}
+% S. Lefkimmiatis. Universal denoising networks: A novel
+% cnn-based network architecture for image denoising. In
+% CVPR, 2018.
+
+% T. Pl¨otz and S. Roth. Neural nearest neighbors networks. In
+% NIPS, 2018.
+
+%\subsection{Noise2Noise}
+% . Lehtinen, J. Munkberg, J. Hasselgren, S. Laine, T. Kar-
+% ras, M. Aittala, and T. Aila. Noise2noise: Learning image
+% restoration without clean data. In ICML, 2018.
 
 \subsection{Cryo-CARE}
 %{{{
@@ -1131,6 +1271,7 @@ having more noisy instances, after averaing all the denoised volumes.
 %}}}
 
 \appendix
+%{{{
 
 \section{Fourier transform of a Gaussian function}
 \label{ape:FTGF}
@@ -1630,6 +1771,8 @@ In conclusion, by applying Gaussian-distributed local perturbations to
 pixel indices and a DOF projection, SPRS generates a local
 randomization (from a visual point of view) of the structures of the
 input image.
+
+%}}}
 
 %}}}
 
