@@ -470,10 +470,19 @@ threshold.
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH.ipynb}{\includegraphics{Confocal_FISH.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE.ipynb}{\includegraphics{TwoPhoton_MICE.pdf}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_SFRC.ipynb}{\includegraphics{barb_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_SFRC.ipynb}{\includegraphics{lake_SFRC.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_SFRC.ipynb}{\includegraphics{Confocal_FISH_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_SFRC.pdf}}
     \end{tabular}
   }
-  \caption{{\color{red} (Jose, aquí podríamos poner el FRC real (para poder comparar) si tuviésemos 2 imágenes diferentes del mismo especímen tomadas en idénticas condiciones)}.\label{fig:SFC_vs_splitting}}
+  \caption{SFRC (Self Fourier Ring Correlation) of two clean images
+    using different data-splitting/shuffling algoritms: EOS (Even-Odd
+    Splitting), CBS (ChessBoard Splitting), ICBS (Interpolated CBS),
+    SCBS (Subsampled CBS), SPRS1 (Structure Preserving Random
+    Shuffling computing the FSC(SPRS($\mathbf{X}^{(1)}$),
+    SPRS($\mathbf{X}^{(1)}$))), and SPRS2 (computing the
+    FSC($\mathbf{X}^{(1)}$, SPRS($\mathbf{X}^{(1)}$))). For the
+    purpose of comparison, it has also been show the FRC using two
+    true noisy instances of the images (FSC($\mathbf{X}^{(1)}$,
+    FSC($\mathbf{X}^{(2)}$))).\label{fig:SFC_vs_splitting}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting} show a comparison between SFRC curves
