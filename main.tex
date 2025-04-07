@@ -49,8 +49,10 @@
   $\overline{\mathbf{X}}$ & The mean of the samples of $\mathbf{X}$ \\ 
   $\mathbf{X}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{X}$ \\
   $\mathbf{X}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{X}$ \\
-  $\mathbf{X}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{X}.\mathsf{shape})$ Number of dimensions in $\mathbf{X}$ \\
-  %$|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
+  $\mathbf{X}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{X}.\mathsf{shape})$ (number of dimensions in $\mathbf{X})$ \\
+  $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(x)$ & $=\{1, 2, \cdots, x\}$ \\
+  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{X})$ & $=\{0\}_{i=1}^{\mathbf{X}.\mathsf{size}}$ \\
+  % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
   $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar multiplication) \\
   $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (Hadamard addition) \\ 
   $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (Hadamard product) \\ 
@@ -838,26 +840,26 @@ be different at each dimension to provide anisotropy.
 \vspace{-1ex}
 \begin{enumerate}
   \setlength{\itemsep}{0pt}
-\item [1.] $\tilde{\mathbf{X}}\leftarrow\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\hat{\mathbf{X}})$
-\item [2.] $\mathsf{for}~z~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[0]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Z~direction~*/}$
+\item [1.] $\tilde{\mathbf{X}}\leftarrow\mathsf{zeros\_like}(\hat{\mathbf{X}})$
+\item [2.] $\mathsf{for}~z~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[0]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Z~direction~*/}$
   \begin{enumerate}
   \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size})$:
     \begin{enumerate}
-    \item [1.] $\tilde{\mathbf{X}}[z,:,:]\leftarrow\tilde{\mathbf{X}}[z,:,:]+\hat{\mathbf{X}}{\mathbf{h}[k]}$
+    \item [1.] $\tilde{\mathbf{X}}_{z,:,:}\leftarrow\tilde{\mathbf{X}}_{z,:,:}+\hat{\mathbf{X}}_{z,:,:}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
-\item [3.] $\mathsf{for}~y~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[1]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Y~direction~*/}$
+\item [3.] $\mathsf{for}~y~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[1]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Y~direction~*/}$
   \begin{enumerate}
-  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{size}})$:
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size})$:
     \begin{enumerate}
-    \item [1.] $\tilde{\mathbf{X}}[:,y,:]\leftarrow\tilde{\mathbf{X}}[:,y,:]+\hat{\mathbf{X}}{\mathbf{h}[k]}$
+    \item [1.] $\tilde{\mathbf{X}}_{:,y,:}\leftarrow\tilde{\mathbf{X}}_{:,y,:}+\hat{\mathbf{X}}_{:,y,:}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
-\item [4.] $\mathsf{for}~x~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[2]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~X~direction~*/}$
+\item [4.] $\mathsf{for}~x~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[2]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~X~direction~*/}$
   \begin{enumerate}
-  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{size}})$:
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size})$:
     \begin{enumerate}
-    \item [1.] $\tilde{\mathbf{X}}[:,:,x]\leftarrow\tilde{\mathbf{X}}[:,:,x]+\hat{\mathbf{X}}{\mathbf{h}[k]}$
+    \item [1.] $\tilde{\mathbf{X}}_{:,:,x}\leftarrow\tilde{\mathbf{X}}_{:,:,x}+\hat{\mathbf{X}}_{:,:,x}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
 \end{enumerate}
@@ -1180,7 +1182,7 @@ be expressed as
 where
 \begin{equation*}
     \begin{array}{rclll}
-    R_\text{Z}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})~:~\overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})\approx\hat{\mathbf X}_{[z,:,:]} & \\ & & \text{for}
+    R_\text{Z}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{z'\rightarrow z}{\mathbf{d}}(\hat{\mathbf X}_{[z',:,:]})~:~\overset{z'\rightarrow z}p(\hat{\mathbf X}_{[z',:,:]})\approx\hat{\mathbf X}_{[z,:,:]} & \\ & & \text{for}
  ~z'=z-k,\cdots,z+k\} ~\text{for}~z=0,1,\cdots,N_\text{Z}-1\big\}, \\
     R_\text{Y}(\hat{\mathbf{X}}) & = & \big\{ \{ \overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]})~:~\overset{y'\rightarrow y}p(\hat{\mathbf X}_{[:,y',:]}\approx\hat{\mathbf X}_{[:,y,:]} & \\ & & \text{for}
  ~y'=y-k,\cdots,y+k\} ~\text{for}~y=0,1,\cdots,N_\text{Y}-1\big\},~\text{and} \\
@@ -1201,28 +1203,29 @@ slices must be computed.
 \vspace{-1ex}
 \begin{enumerate}
   \setlength{\itemsep}{0pt}
-\item [1.] $\tilde{\mathbf{X}}\leftarrow\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\hat{\mathbf{X}})$
-\item [2.] $\mathsf{for}~z~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[0]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Z~direction~*/}$
+\item [1.] $\tilde{\mathbf{X}}\leftarrow\mathsf{zeros\_like}(\hat{\mathbf{X}})$
+\item [2.] $\mathsf{for}~z~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[0]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Z~direction~*/}$
   \begin{enumerate}
-  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{size}})$:
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
     \begin{enumerate}
-    \item [1.] $\overset{z'\rightarrow z}{\mathbf d}\leftarrow\href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\tilde{\mathbf{X}}[\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{z+k,:,:}], \mathbf{I}[z,:,:])$
-    \item [2.] $R^\text{Z}(\mathbf{I})\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\tilde{\mathbf{X}}[z+k,:,:], \overset{z'\rightarrow z}{\mathbf d})$
-    \item [3.] $\tilde{\mathbf{X}}[z,:,:]\leftarrow\tilde{\mathbf{X}}[z,:,:]+R^\text{Z}{\mathbf{h}[k]}$
+    \item [1.] $R_\text{Z}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{z+k,:,:}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{z+k,:,:}, \hat{\mathbf{X}}_{z,:,:}))$  
+    \item [2.] $\tilde{\mathbf{X}}_{z,:,:}\leftarrow\tilde{\mathbf{X}}_{z,:,:}+R_\text{Z}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
-\item [3.] $\mathsf{for}~y~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[1]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Y~direction~*/}$
+\item [3.] $\mathsf{for}~y~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[1]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Y~direction~*/}$
   \begin{enumerate}
-  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{size}})$:
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
     \begin{enumerate}
-    \item [1.] $\tilde{\mathbf{X}}[:,y,:]\leftarrow\tilde{\mathbf{X}}[:,y,:]+\hat{\mathbf{X}}{\mathbf{h}[k]}$
+    \item [1.] $R_\text{Y}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{:,y+k,:}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{:,y+k,:}, \hat{\mathbf{X}}_{:,y,:}))$
+    \item [2.] $\tilde{\mathbf{X}}_{:y,:}\leftarrow\tilde{\mathbf{X}}_{:,y,:}+R_\text{Y}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
-\item [4.] $\mathsf{for}~x~\mathsf{in}~\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(\hat{\textbf{X}}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{shape}}[2]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~X~direction~*/}$
+\item [4.] $\mathsf{for}~x~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}[2]),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~X~direction~*/}$
   \begin{enumerate}
-  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{size}})$:
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
     \begin{enumerate}
-    \item [1.] $\tilde{\mathbf{X}}[:,:,x]\leftarrow\tilde{\mathbf{X}}[:,:,x]+\hat{\mathbf{X}}{\mathbf{h}[k]}$
+    \item [1.] $R_\text{X}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{:,:,x+k}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{:,:,x+k}, \hat{\mathbf{X}}_{:,:,x}))$
+    \item [2.] $\tilde{\mathbf{X}}_{:,:,x}\leftarrow\tilde{\mathbf{X}}_{:,:,x}+R_\text{X}{\mathbf{h}[k]}$
     \end{enumerate}
   \end{enumerate}
 \end{enumerate}
