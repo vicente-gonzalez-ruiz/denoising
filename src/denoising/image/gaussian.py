@@ -13,27 +13,25 @@ class Monochrome_Denoising:
         self.logger = logger
         self.window_size = 0 # Ojo, no sé si se va a usar
 
-    def __warp_line(self, line, flow):
-        return line
+    def filter(self, img, kernel):
+        #print("1")
+        #mean = img.mean()
+        #self.logger.info(f"mean={mean}")
+        #padded_img = cv2.resize(src=img, dsize=(img.shape[1] + kernel.size, img.shape[0] + kernel.size))
+        #padded_img[kernel.size//2:shape_of_img[0] + (kernel.size//2), kernel.size//2:shape_of_img[1] + (kernel.size//2)] = img
+        self.logger.info(f"filtering along Y")
+        filtered_img_Y = self.filter_Y(img, kernel[0])
+        self.logger.info(f"done")
+        self.logger.info(f"filtering along X")
+        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[1])
+        self.logger.info(f"done")
+        return filtered_img_YX
 
-    def __get_flow(self, reference, target, N_poly=0, window_length=0, num_iters=0, pyramid_levels=0, flow=None, model="", mu=0):
-        return flow
-
-    def filter_Y_line(self, img, padded_img, kernel, y):
-        tmp_line = np.zeros_like(img[y, :]).astype(np.float32)
-        for i in range((kernel.size//2) - 1, -1, -1):
-            tmp_line += padded_img[y + i, :] * kernel[i]
-        tmp_line += img[y, :] * kernel[kernel.size//2]
-        for i in range(kernel.size//2+1, kernel.size):
-            tmp_line += padded_img[y + i, :] * kernel[i]
-        return tmp_line
-
-    def filter_Y(self, img, kernel, mean):
+    def filter_Y(self, img, kernel):
         assert kernel.size % 2 != 0 # kernel.size must be odd
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
         #padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
-        #padded_img = cv2.resize(src=img, dsize=(shape_of_img[1] + self.window_size, shape_of_img[0] + kernel.size + self.window_size))
         padded_img = cv2.resize(src=img, dsize=(shape_of_img[1], shape_of_img[0] + kernel.size))
         padded_img[kernel.size//2:shape_of_img[0] + (kernel.size//2), :] = img
         Y_dim = img.shape[0]
@@ -41,7 +39,54 @@ class Monochrome_Denoising:
             filtered_img[y, :] = self.filter_Y_line(img, padded_img, kernel, y)
         return filtered_img
 
-    def __filter_Y(self, img, kernel, mean, l=0, w=0):
+    def filter_X(self, img, kernel):
+        assert kernel.size % 2 != 0 # kernel.size must be odd
+        filtered_img = np.zeros_like(img).astype(np.float32)
+        shape_of_img = np.shape(img)
+        #padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
+        padded_img = cv2.resize(img, (shape_of_img[1] + kernel.size, shape_of_img[0]))
+        padded_img[:, kernel.size//2:shape_of_img[1] + (kernel.size//2)] = img
+        X_dim = img.shape[1]
+        for x in range(X_dim):
+            filtered_img[:, x] = self.filter_X_line(img, padded_img, kernel, x)
+        return filtered_img
+
+    def filter_Y_line(self, img, padded_img, kernel, y):
+        tmp_line = np.zeros_like(img[y, :]).astype(np.float32)
+        #for i in range((kernel.size//2) - 1, 0, -1):
+        for i in range(kernel.size):
+            tmp_line += padded_img[y + i, :] * kernel[i]
+        '''
+        for i in range(0, kernel.size//2):
+            tmp_line += padded_img[y + i, :] * kernel[i]
+        tmp_line += img[y, :] * kernel[kernel.size//2]
+        for i in range(kernel.size//2+1, kernel.size):
+            tmp_line += padded_img[y + i, :] * kernel[i]
+        '''
+        return tmp_line
+
+    def filter_X_line(self, img, padded_img, kernel, x):
+        tmp_line = np.zeros_like(img[:, x]).astype(np.float32)
+        for i in range(kernel.size):
+            tmp_line += padded_img[:, x + i] * kernel[i]
+        '''
+        for i in range((kernel.size//2) - 1, -1, -1):
+            tmp_line += padded_img[:, x + i] * kernel[i]
+        tmp_line += img[:, x] * kernel[kernel.size//2]
+        for i in range(kernel.size//2+1, kernel.size):
+            tmp_line += padded_img[:, x + i] * kernel[i]
+        '''
+        return tmp_line
+
+class old:
+    
+    def unused__warp_line(self, line, flow):
+        return line
+
+    def unused__get_flow(self, reference, target, N_poly=0, window_length=0, num_iters=0, pyramid_levels=0, flow=None, model="", mu=0):
+        return flow
+
+    def unused__filter_Y(self, img, kernel, mean, l=0, w=0):
         assert kernel.size % 2 != 0 # kernel.size must be odd
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
@@ -68,28 +113,7 @@ class Monochrome_Denoising:
             filtered_img[y, :] = tmp_line
         return filtered_img
 
-    def filter_X_line(self, img, padded_img, kernel, x):
-        tmp_line = np.zeros_like(img[:, x]).astype(np.float32)
-        for i in range((kernel.size//2) - 1, -1, -1):
-            tmp_line += padded_img[:, x + i] * kernel[i]
-        tmp_line += img[:, x] * kernel[kernel.size//2]
-        for i in range(kernel.size//2+1, kernel.size):
-            tmp_line += padded_img[:, x + i] * kernel[i]
-        return tmp_line
-
-    def filter_X(self, img, kernel, mean):
-        assert kernel.size % 2 != 0 # kernel.size must be odd
-        filtered_img = np.zeros_like(img).astype(np.float32)
-        shape_of_img = np.shape(img)
-        #padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
-        padded_img = cv2.resize(img, (shape_of_img[1] + kernel.size, shape_of_img[0]))
-        padded_img[:, kernel.size//2:shape_of_img[1] + (kernel.size//2)] = img
-        X_dim = img.shape[1]
-        for x in range(X_dim):
-            filtered_img[:, x] = self.filter_X_line(img, padded_img, kernel, x)
-        return filtered_img
-
-    def _filter_X(self, img, kernel, mean, l=0, w=0):
+    def unused_filter_X(self, img, kernel, mean, l=0, w=0):
         assert kernel.size % 2 != 0 # kernel.size must be odd
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
@@ -116,17 +140,7 @@ class Monochrome_Denoising:
             filtered_img[:, x] = tmp_line
         return filtered_img
 
-    def filter(self, img, kernel):
-        #print("1")
-        mean = img.mean()
-        self.logger.info(f"mean={mean}")
-        filtered_img_Y = self.filter_Y(img, kernel[0], mean)
-        self.logger.info(f"filtered along Y")
-        filtered_img_YX = self.filter_X(filtered_img_Y, kernel[1], mean)
-        self.logger.info(f"filtered along X")
-        return filtered_img_YX
-
-    def _filter(self, noisy_img, kernel):
+    def unused_filter(self, noisy_img, kernel):
         #print("2")
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
