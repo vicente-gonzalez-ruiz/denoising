@@ -74,7 +74,8 @@
   $\Pr(\mathbf{X}=x, \mathbf{Y}=y)$ & $\Pr(\mathbf{X}=x)$ and $\Pr(\mathbf{Y}=y)$ (joint probability)  \\
   $\mathrm{Su}(\mathbf{X})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{X}=x)>0\}$ (support of $\mathbf{X}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
-  $\mathbb{E}(\mathbf{X})$ & Expectation of $\mathbf{X}$ \\ 
+  $\mathbb{E}(\mathbf{X})$ & Expectation of $\mathbf{X}$ \\
+  $||\mathbf{X}||_2$ & $L_2$ norm \\
   $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(x)=X$) \\
   $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
   $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution) \\
@@ -414,6 +415,7 @@ In the case of the RMSE, we have that
 \end{equation}
 Notice that the RMSE expresses the distortion in the same units as the
 input samples.
+
 %}}}
 
 \subsection{\href{https://en.wikipedia.org/wiki/Signal-to-noise_ratio}{SNR (Signal-to-Noise Ratio)}}
@@ -481,12 +483,12 @@ For example, for 8 bits/pixel images, $\text{Peak}=2^8-1=255$.
     (Multi-Scale SSIM)}}
 %{{{
 
-The SSIM try to model the human perception of the differences between
-two images $\mathbf{X}$ and $\mathbf{Y}$. The metric returns a real
-number between $[-1, 1]$, $-1$ representing the perfect dis-similarity
-case, $0$ no similarity, and $1$ perfect similarity. The SSIM index is
-determined (splitting the input images into $M$ non-overlapping blocks)
-with
+The SSIM \cite{wang2004image} try to model the human perception of the
+differences between two images $\mathbf{X}$ and $\mathbf{Y}$. The
+metric returns a real number between $[-1, 1]$, $-1$ representing the
+perfect dis-similarity case, $0$ no similarity, and $1$ perfect
+similarity. The SSIM index is determined (splitting the input images
+into $M$ non-overlapping blocks) with
 \begin{equation}
   \text{SSIM}(\mathbf{X}, \mathbf{Y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
@@ -502,21 +504,23 @@ of the local blocks is $7^D$, where $D$ is the number of signal
 dimensions. When evaulating, SSIM values below $0$ does not make
 sense.
 
-MS-SSIM is an extension of SSIM computed at multiple image scales. It
-is omre suitable to capture structural similarities across different
-levels of detail, which can be useful in microscopy where both fine
-and coarse features matter.
-
+MS-SSIM \cite{wang2003multiscale} is an extension of SSIM computed at
+multiple image scales. It is omre suitable to capture structural
+similarities across different levels of detail, which can be useful in
+microscopy where both fine and coarse features matter. It is defned as
 \begin{equation}
-  \text{MS-SSIM}(I, \hat{I}) = \left[ l_M(I, \hat{I}) \right]^{\alpha_M} \cdot \prod_{j=1}^{M} \left[ c_j(I, \hat{I}) \right]^{\beta_j} \cdot \left[ s_j(I, \hat{I}) \right]^{\gamma_j}
+  \text{MS-SSIM}(\mathbf{X}, \hat{\mathbf{Y}}) = \prod_{j=1}^{J} \left[ \frac{(2 \overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)} \right]^{\alpha_j} \left[ \frac{\sigma_j(\mathbf{X}, \hat{\mathbf{Y}})}{\sigma_j(\mathbf{X}) + \sigma_j(\hat{\mathbf{Y}}) + c_3} \right]^{\beta_j}
 \end{equation}
-where $M$ is the number of scales (resolution levels), and
-\begin{align}{l}
-  l(I, \hat{I}) = \frac{2 \mu_I \mu_{\hat{I}} + C_1}{\mu_I^2 + \mu_{\hat{I}}^2 + C_1},\\
-  c(I, \hat{I}) = \frac{2 \sigma_I \sigma_{\hat{I}} + C_2}{\sigma_I^2 + \sigma_{\hat{I}}^2 + C_2},\\
-  \text{and}\\
-  s(I, \hat{I}) = \frac{\sigma_{I\hat{I}} + C_3}{\sigma_I \sigma_{\hat{I}} + C_3}.
-\end{align}
+where $\mathbf{X}$, $\hat{\mathbf{Y}}$ are the original and denoised
+images, respectively, $\overline{\mathbf{x}}_j$,
+$\overline{\mathbf{y}}_j$ are the local means of the $j\text{-th}$
+block of $\mathbf{X}$, and $\hat{\mathbf{Y}}$, respectively,
+$\sigma_{\mathbf{x}_j \mathbf{y}_j}$ is the covariance between the
+blocks of $\mathbf{X}_j$ and $\hat{\mathbf{Y}}_j$,
+$\sigma_{\mathbf{x}_j}, \sigma_{\mathbf{y}_j}$ are the standard
+deviations of the blocks of $\mathbf{X}_j$ and $\hat{\mathbf{Y}}_j$,
+respectively, and $\alpha_j, \beta_j$ are the weights that control the
+importance of each term at the $j\text{-th}$ scale/block.
 
 
 %}}}
@@ -538,19 +542,56 @@ coincidence.
 %}}}
 
 \subsection{LPIPS (Learned Perceptual Image Patch Similarity)}
+%{{{
 
-    Deep learning-based metric.
+LPIPS \cit{zhang2018unreasonable} is a deep learning-based metric that
+uses a pretrained neural network (e.g., AlexNet and VGG) to assess
+perceptual similarity, providing a better correlation with the human
+perfection of the distortion. The idea is to use the feature maps
+(intermediate activations) from various layers of a pre-trained CNN to
+extract features from the input images. These feature maps capture
+important perceptual information, such as textures, edges, and
+high-level structures. Then, the similarity is computed in terms of
+feature differences between corresponding patches of the
+images. Concretelly,
+\begin{equation}
+  \text{LPIPS}(\mathbf{X}, \mathbf{Y}) = \sum_i=1^Lw_i||f_i(\mathbf{X}) - f_i(\mathbf{Y})||_2
+\end{equation}
+where $w_i$ is the weight (contribution) of the layer $i$ to the
+metric, $L$ is the number of layers used in the comparison,
+$f_i(\mathbf{X})$ are the weights of the feature map at layer $i$, and
+$||f_i(\mathbf{X}) - f_i(\mathbf{Y})||_2$ measures the distance
+between the features at that layer.
 
-    Uses a pretrained neural network (e.g., VGG) to assess perceptual similarity.
+LPIPS is trained using a large dataset of human judgments for image
+similarity, where human observers are asked to rate the perceptual
+similarity between pairs of images. The network is trained to find the
+$w_i$ which minimize the difference between predicted perceptual
+similarity and human ratings.
 
-    More advanced and better correlates with what humans see.
+$L_2$ norm is defined by
+\begin{equation}
+  ||\mathbf{X}||_2 = \sqrt{\sum_i\mathbf{X}_i^2}.
+\end{equation}
+Notice that the L2 norm and Mean Squared Error (MSE) are closely
+related concepts, because
+\begin{equation}
+  ||\mathbf{Y} - \mathbf{X}||_2^2 = J\cdot\text{MSE}(\mathbf{Y} - \mathbf{X}).
+\end{equation}
 
-    Not always standard in microscopy but gaining popularity in deep learning-based denoising.
+%}}}
 
 %}}}
 
 \section{Noise mesurement}
 %{{{
+
+Noise measurement (power, statistical model, spectrum shape, etc.) can
+be interesting to found the working parameters of a denoising
+algorithms. Unfortunately, we require at least two noisy instances of
+the clean signal to characterize the noise, circunstance that not
+always can be achieved because the samples are sensitive to the
+microscopy radiation.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{Fourier
     Shell Correlation (FSC)} and Fourier Ring Correlation (FRC)
@@ -2094,6 +2135,6 @@ input image.
 %}}}
 
 \bibliographystyle{plain}
-\bibliography{signal_processing,microscopy,denoising,motion_estimation}
+\bibliography{signal_processing,microscopy,denoising,motion_estimation,image_compression}
 
 \end{document}
