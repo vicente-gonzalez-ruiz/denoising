@@ -32,6 +32,7 @@ class Monochrome_Denoising:
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
         #padded_img = np.full(shape=(shape_of_img[0] + kernel.size, shape_of_img[1]), fill_value=mean)
+        # https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#resize
         padded_img = cv2.resize(src=img, dsize=(shape_of_img[1], shape_of_img[0] + kernel.size))
         padded_img[kernel.size//2:shape_of_img[0] + (kernel.size//2), :] = img
         Y_dim = img.shape[0]
@@ -44,6 +45,7 @@ class Monochrome_Denoising:
         filtered_img = np.zeros_like(img).astype(np.float32)
         shape_of_img = np.shape(img)
         #padded_img = np.full(shape=(shape_of_img[0], shape_of_img[1] + kernel.size), fill_value=mean)
+        # https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#resize
         padded_img = cv2.resize(img, (shape_of_img[1] + kernel.size, shape_of_img[0]))
         padded_img[:, kernel.size//2:shape_of_img[1] + (kernel.size//2)] = img
         X_dim = img.shape[1]
