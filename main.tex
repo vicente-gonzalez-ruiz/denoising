@@ -586,12 +586,19 @@ related concepts, because
 \section{Noise mesurement}
 %{{{
 
-Noise measurement (power, statistical model, spectrum shape, etc.) can
-be interesting to found the working parameters of a denoising
-algorithms. Unfortunately, we require at least two noisy instances of
-the clean signal to characterize the noise, circunstance that not
-always can be achieved because the samples are sensitive to the
-microscopy radiation.
+Characterization of noise (in terms of power, statistical model, and
+spectral profile) can provide valuable insights for determining the
+optimal operational parameters of denoising algorithms. However, this
+approach typically necessitates the availability of at least two
+independent noisy realizations of the underlying clean signal. This
+requirement often presents a significant challenge, particularly in
+contexts where samples are susceptible to degradation from microscope
+radiation, thereby limiting the feasibility of acquiring multiple such
+instances.
+
+Subsamping
+
+variance vs average?
 
 \subsection{\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{Fourier
     Shell Correlation (FSC)} and Fourier Ring Correlation (FRC)
