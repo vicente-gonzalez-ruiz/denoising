@@ -601,8 +601,8 @@ One way to simulate having two or more noisy instances of the same
 clean signal is to distribute the pixels/voxels across two or more
 images/volumes (see Appendices \ref{ape:EOS}, \ref{ape:CBS},
 \ref{ape:ICBS}, \ref{ape:SCBS}, and \ref{ape:SPRS}). Unfortunately,
-the splitting reduces the spatial resolution at which noise can be
-analyzed.
+the splitting reduces the spatial resolution at which the signal/noise
+parameters can be successfully estudied.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{Fourier
     Shell Correlation (FSC)} and Fourier Ring Correlation (FRC)
@@ -670,8 +670,8 @@ correlation threshold.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH.ipynb}{\includegraphics{Confocal_FISH.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE.ipynb}{\includegraphics{TwoPhoton_MICE.pdf}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_SFRC.ipynb}{\includegraphics{Confocal_FISH_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_SFRC.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_clean.ipynb}{\includegraphics{Confocal_FISH_clean.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_clean.ipynb}{\includegraphics{TwoPhoton_MICE_clean.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_clean_SFRC.ipynb}{\includegraphics{Confocal_FISH_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_clean_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_clean_SFRC.pdf}}
     \end{tabular}
   }
   \caption{SFRC (Self Fourier Ring Correlation) of two clean images
@@ -698,8 +698,8 @@ range of the FC curves should be [0, 1].
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_1.ipynb}{\includegraphics{Confocal_FISH_1.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_1.ipynb}{\includegraphics{TwoPhoton_MICE_1.pdf}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_1_SFRC.ipynb}{\includegraphics{Confocal_FISH_1_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_1_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_1_SFRC.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy_SFRC.ipynb}{\includegraphics{Confocal_FISH_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_noisy_SFRC.pdf}}
     \end{tabular}
   }
   \caption{SFRC (Self Fourier Ring Correlation) of two
