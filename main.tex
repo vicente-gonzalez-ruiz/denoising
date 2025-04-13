@@ -1045,6 +1045,7 @@ and the corresponding 2D version is implemented
 \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/src/denoising/image/gaussian.py}{here}.
 
 \begin{comment}
+%{{{
 
  This idea has been describen in Python pseudo-code in
 the Fig.~\ref{fig:3DGF_imple}.
@@ -1082,6 +1083,7 @@ the Fig.~\ref{fig:3DGF_imple}.
 \label{fig:3DGF_imple}
 \end{figure}
 
+%}}}
 \end{comment}
 
 \begin{figure}
@@ -1090,9 +1092,9 @@ the Fig.~\ref{fig:3DGF_imple}.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/lake.ipynb}{\includegraphics{lake}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb}{\includegraphics{barb_0MMPG}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_0MMPG.ipynb}{\includegraphics{lake_0MMPG}} \\
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GF_optimal_tau.ipynb\#barb_GF_optimal_tau}{\includegraphics{barb_GF_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GF_optimal_tau.ipynb\#lake_GF_optimal_tau}{\includegraphics{lake_GF_optimal_tau.pdf}}
+      %\href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/lake.ipynb}{\includegraphics{lake}} \\
+      %\href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_0MMPG.ipynb}{\includegraphics{barb_0MMPG}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_0MMPG.ipynb}{\includegraphics{lake_0MMPG}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_GF_optimal_tau.ipynb\#Confocal_FISH_GF_optimal_tau}{\includegraphics{Confocal_FISH_GF_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_GF_optimal_tau.ipynb\#TwoPhoton_MICE_GF_optimal_tau}{\includegraphics{TwoPhoton_MICE_GF_optimal_tau.pdf}}
     \end{tabular}
   }
   \caption{Optimal $\tau$ values in GF.\label{fig:optimal_GF_tau}}
@@ -1123,7 +1125,7 @@ frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb_GF_estimation.ipynb}{\includegraphics{barb_GF_estimation.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/lake_GF_estimation.ipynb}{\includegraphics{lake_GF_estimation.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_GF_estimation.ipynb}{\includegraphics{Confocal_FISH_GF_estimation.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_GF_estimation.ipynb}{\includegraphics{TwoPhoton_MICE_GF_estimation.pdf}}
     \end{tabular}
   }
   \caption{Optimal VS estimated $\tau^*$ values.\label{fig:tau_GF_estimation}}
@@ -1135,8 +1137,8 @@ technique (see Appendix~\ref{ape:EOS}) to compute the SFC curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
 (see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:gaussian_leakage})
 \begin{equation}
-  \tau^*_{\text{EOS}} = \frac{0.141}{2\eta^*},
-  \label{eq:tau_VS_eta_empirical_EOS}
+  \tau^*_{\text{SFC}} = \frac{0.141}{2\eta^*},
+  \label{eq:tau_VS_eta_empirical_SFC}
 \end{equation}
 (and not exactly the fitting expression obtanied in the
 Fig.~\ref{fig:gaussian_leakage}) because using signal splitting to
