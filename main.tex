@@ -776,13 +776,16 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 %different versions of the clean signal. Averaging as such is therefore
 %excluded.
 
-Microscopy images are characterized by a very low SNR and denoising
-algorithms are required to improve their posterior analysis. It is
-also common that there exist only one noisy version of the images,
-which increases the dificulty of evaluating the algorithms (we don't
-have a ground truth to compare with) and the selection the denoising
-parameters. The ideal denoiser should remove as much noise as
-possible while preserving edges, textures, and biological structures.
+Microscopy images are characterized by a low signal-to-noise ratio
+(SNR), requiring the use of denoising algorithms to facilitate
+subsequent analysis. A common challenge is the limited availability of
+only a single noisy realization of these images, which complicates
+both the evaluation of denoising algorithms (due to the absence of a
+ground truth for comparative assessment) and the selection of
+appropriate denoising parameters. An optimal denoiser should
+effectively attenuate noise while concurrently preserving crucial
+image features, including edges, textures, and underlying biological
+structures.
 
 \subsection{Mean of Noisy Instances (MNI)}
 %{{{
@@ -841,9 +844,9 @@ Notice that for MPG noise, Equations \ref{eq:mean_result} and
 
 As can be seen in Eq.~\ref{eq:mean_with_bias}, we are supposing an
 impossible scenario in which we have an infinite number of noisy
-instances. Logically, in practice, $I$ will be finite and we will be
-able only to obtain an approximation of ${\mathbf X}$, that we denote,
-in general, by $\tilde{\mathbf X}$.
+instances. Logically, in practice, the value $I$ will be finite and we
+will be able only to obtain an approximation of ${\mathbf X}$, that we
+denote, in general, by $\tilde{\mathbf X}$.
 
 Finally, notice that, since $\tilde{\mathbf X}$ depends on the number
 $I$ of noisy instances used to compute the mean, we will use the
@@ -1109,8 +1112,7 @@ find a cut-off frequency
   \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \beta\},
   \label{eq:search_eta}
 \end{equation}
-where $\eta^*$ is the cut-off frequency of the kernel, and $\beta$ the
-attenuation used in the stop-band (see
+where $\beta$ is the attenuation used in the stop-band (see
 Appendix~\ref{ape:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
 frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
@@ -1131,15 +1133,19 @@ In the Fig.~\ref{fig:tau_GF_estimation} there is a comparison between
 the true $\tau^*$ values and their estimations, using the EOS
 technique (see Appendix~\ref{ape:EOS}) to compute the SFC curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
+(see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:gaussian_leakage})
 \begin{equation}
   \tau^*_{\text{EOS}} = \frac{0.141}{2\eta^*},
   \label{eq:tau_VS_eta_empirical_EOS}
 \end{equation}
-because in this case, as can be seen in the figure, only the first
-half of the frequencies provide reliable information about the SFC. To
-determine $\eta^*$ we have supposed that when the correlation is
-smaller than $0.5$, the SNR is not high enough to keep visible the
-corresponding frequencies.
+(and not exactly the fitting expression obtanied in the
+Fig.~\ref{fig:gaussian_leakage}) because using signal splitting to
+compute the SFC, only the first half of the frequencies provide
+information. Notice that, to determine $\eta^*$ we have supposed that
+when the correlation is smaller than $1/\sqrt{2}$ (see
+Appendix~\ref{ape:tau_VS_eta}), %$0.5$,
+the SNR is not high enough to keep visible the corresponding
+frequencies.
 
 \begin{comment}
 %{{{
@@ -1749,9 +1755,8 @@ Eq.~\ref{eq:FTGF}),
   H(0) = e^0=1.
 \end{equation*}
 
-Eq.~\ref{eq:tau_VS_eta} is only suitable if we are using angular
-frequency. We can obtain the corresponding expresión for
-``standard'' frequency, knowing that
+Eq.~\ref{eq:tau_VS_eta} uses angular frequency. We can obtain the
+corresponding expresión for ``standard'' frequency, knowing that
 \begin{equation}
   \eta = 2\pi\hat{\eta}.
   \label{eq:eta_freq}
@@ -1774,22 +1779,18 @@ equation that is valid for continuous signals. In the discrete case,
 where the Gaussian kernel is finite in length, we have that
 \begin{equation}
   \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
+  \label{eq:kernel_length}
 \end{equation}
 i.e., the filter is truncated at $\pm k\tau$ coefficients. This has
-two effects:
+two effects (obviously, if $\hat{\tau}$ remains constant):
 \begin{enumerate}
-\item If $k$ grows, $\hat{\eta}$ grows also (the coefficients of the
-  filter require more points to be convoluted and therefore, the
-  cut-off frequency increases proportionaly). Therefore, $k$ should be
-  as small as possible to increase range of high-pass frequencies
-  attenuated by the Gaussian filter.
-\item But if $k$ is too small, the gain of the stop-band (that should
-  be zero) increases and shows the lobes of the Sinc function (in the
-  frequency domain) generated by the convolution of the ideal
-  frequency response of the Gaussian filter for the continous case,
-  i.e. a ``perfect'' Gaussian (see Eq.~\ref{eq:FTGF}), with the
-  Fourier transform of the square function which mathematically model
-  the truncation in length of the kernel.
+\item If $k$ is small, the attenuation of the stop-band increases (see
+  \ref{fig:gaussian_leakage}). Therefore, $k$ should be big enought to
+  avoid this problem.
+\item But if $k$ is to big, and we desire a $\hat{\eta}$ (the cut-off
+  frequency) high because the SNR is only low above $\hat{\eta}$, we
+  will perform a low of multiplications which results in values very
+  close to zero, increasing the computation time without showing
 \end{enumerate}
 Therefore, a better estimation of the standard deviation for the
 Gaussian kernel is
@@ -1797,16 +1798,23 @@ Gaussian kernel is
   \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
   \label{eq:ideal_hat_tau}
 \end{equation}
-For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
-(see Fig.~\ref{fig:gaussian_leakage}) and the leakage generated by the
-truncation remains low enough .
 
 \begin{figure}
   \centering
   \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/gaussian_leakage.ipynb\#Gaussian_leakage}{\includegraphics[width=0.8\textwidth]{gaussian_leakage}}
-  \caption{Impact of $k$ in the frequency response of a Gaussian
-    kernel.\label{fig:gaussian_leakage}}
+  \caption{Impact of $k$ in the frequency response of a digital
+    Gaussian kernel, when $k$ and $\hat{\tau}$ are related according
+    to Eq.~\ref{eq:kernel_length}). The lobes in the stop-band are
+    generated by the convolution of the ideal frequency response of a
+    ideal (continous) Gaussian filter (see Eq.~\ref{eq:FTGF}) with the
+    Fourier transform of the square function which mathematically
+    models the truncation in length of the
+    kernel. \label{fig:gaussian_leakage}}
 \end{figure}
+
+For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
+(see Fig.~\ref{fig:gaussian_leakage}) and the leakage generated by the
+truncation remains low enough.
 
 Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
 have computed the relation between $\hat{\tau}$ and $\hat{\eta}$ for
