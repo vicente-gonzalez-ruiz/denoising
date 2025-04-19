@@ -390,10 +390,10 @@ our experiments, $\alpha=0.5$.
 
 In microscopy image denoising, distortion metrics are used to quantify
 the difference between the original (clean or ground truth -- GT --)
-image and the denoised image. These metrics help assess how well the
-denoising algorithm preserved important image features while removing
-noise. Notice that if the GT image is not available, these metrics are
-not applicable.
+signal and the denoised signal. These metrics help assess how well the
+denoising algorithm preserved important signal features while removing
+noise. Notice that if the GT signal is not available, these metrics are
+not applicable, and that, in any case, we always should speak about \emph{estimations}, because the GT always (except if it is synthetic) contains some noise.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Mean_squared_error}{Mean square error (MSE)} and \href{https://en.wikipedia.org/wiki/Root_mean_square_deviation}{Root MSE (RMSE)}}
 %{{{
@@ -574,7 +574,7 @@ $L_2$ norm is defined by
 \begin{equation}
   ||\mathbf{X}||_2 = \sqrt{\sum_i\mathbf{X}_i^2}.
 \end{equation}
-Notice that the L2 norm and Mean Squared Error (MSE) are closely
+Notice that the L2 norm and the Mean Square Error (MSE) are closely
 related concepts, because
 \begin{equation}
   ||\mathbf{Y} - \mathbf{X}||_2^2 = J\cdot\text{MSE}(\mathbf{Y} - \mathbf{X}).
@@ -587,6 +587,17 @@ related concepts, because
 \section{Noise mesurement}
 %{{{
 
+The two metrics included in this section are distortion metrics that
+can help to determine resolution of the signal, for example, the
+maximum spatial resolution that a microscope can achieve. In
+microscopy, we usually speak about the \emph{resolving power}, which
+is the smallest distance $d$ between two points on a specimen that can
+still be distinguished as separate entities. The idea is, any
+frequency above $1/d$ will always be dominated by noise, and
+therefore, a low-pass filtering with a cut-off frequency of $1/d$
+should only remove noise. Notice that $d/2$ should be the sampling
+step size used to digitalize the signal.
+
 Characterization of noise (in terms of power, statistical model, and
 spectral profile, etc.) can provide valuable insights for determining
 the optimal operational parameters of denoising algorithms. However,
@@ -595,15 +606,25 @@ independent noisy realizations of the underlying clean signal. This
 requirement often presents a significant challenge, particularly in
 contexts where samples are susceptible to degradation from microscope
 radiation, thereby limiting the feasibility of acquiring multiple such
-instances. Notice that, by definition, the noise is uncorrelated
-between instances.
+instances.
 
-One way to simulate having two or more noisy instances of the same
-clean signal is to distribute the pixels/voxels across two or more
-images/volumes (see Appendices \ref{ape:EOS}, \ref{ape:CBS},
-\ref{ape:ICBS}, \ref{ape:SCBS}, and \ref{ape:SPRS}). Unfortunately,
-the splitting reduces the spatial resolution at which the signal/noise
-parameters can be successfully estudied.
+Noise can be additive or multiplicative. In the first case, noise is
+signal independent between samples of the same signal instance, and
+between samples of different instances, even if we consider the same
+sample index. In the second case, the power of the noise depends on
+the power of the signal, and therefore, if we can estimate the signal,
+we can estimate, for example, the local variance of the noise after
+supposing some statistical model. Notice, however, that in any case,
+we must known, at least two (inevitable noisy) instances of the clean
+signal.
+
+When this is not possible, one way to simulate having two or more
+noisy instances of the same clean signal is to distribute the
+pixels/voxels across two or more images/volumes (see Appendices
+\ref{ape:EOS}, \ref{ape:CBS}, \ref{ape:ICBS}, \ref{ape:SCBS}, and
+\ref{ape:SPRS}). Unfortunately, the splitting reduces the spatial
+resolution at which the signal/noise parameters can be successfully
+estudied.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{Fourier
     Shell Correlation (FSC)} and Fourier Ring Correlation (FRC)
@@ -768,6 +789,14 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 \end{comment}
 
 %}}}
+
+\subsection{Spectral SNR (SSNR)}
+\label{sec:SSNR}
+
+The SSNR can be estimated using the correlation in the Fourier domain between two (or more, in this case, using the mean SSNR) instances $\hat{\mathbf{X}}^{(1)}$ and $\hat{\mathbf{X}}^{(2)}$. For the 3D case (and only for two instances), we define \cite{verbeke2024self,unser1987new}
+\begin{equation}
+\text{SSNR}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; r) = \frac{\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; r)}{1-\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; r)}.
+\end{equation}
 
 %}}}
 
@@ -1003,7 +1032,7 @@ the noisy instance $\hat{\mathbf{X}}$ to obtain
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal, and $*$ the
 convolution of digital signals. As can be seen, unlike MNI, GF
-requires only an instance.
+requires only one instance.
 
 The coefficients of $\mathbf{h}$ define a low-pass\footnote{We can
   distinguish this because all are positive coefficients.}
@@ -1109,15 +1138,15 @@ found if we know $\mathbf{X}$ (see
 Fig.~\ref{fig:optimal_GF_tau}). Unfortunately, $\mathbf{X}$ is usually
 unknown and we only can estimate $\tau^*$. Ideally, $\tau^*$ should
 increase the SNR as much as possible, considering also that: (1) GF
-attenuates the high frequencies, (2) the SFC of the noise should be
-close to zero, and (3) that most of the energy (information) in the
-signals are concentrated in the low frequencies. Therefore, we should
-find a cut-off frequency
+attenuates the high frequencies, (2) the SFC of the noise is close to
+zero, and (3) that most of the energy (information) in the signals are
+concentrated in the low frequencies. Therefore, we should find a
+cut-off frequency
 \begin{equation}
-  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \beta\},
+  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \alpha\},
   \label{eq:search_eta}
 \end{equation}
-where $\beta$ is the attenuation used in the stop-band (see
+where $\alpha$ is the minimun correlation that should reach the SFC to consider that the corresponding ring/shell has a high enough SNR (see
 Appendix~\ref{ape:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
 frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
@@ -1140,17 +1169,23 @@ technique (see Appendix~\ref{ape:EOS}) to compute the SFC curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
 (see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:gaussian_leakage})
 \begin{equation}
-  \tau^*_{\text{SFC}} = \frac{0.141}{2\eta^*},
-  \label{eq:tau_VS_eta_empirical_SFC}
+  \tau^*_{\text{EOS}} = \frac{0.141}{2\eta^*},
+  \label{eq:tau_VS_eta_empirical_EOS}
 \end{equation}
-(and not exactly the fitting expression obtanied in the
+(and not exactly the fitting expression shown in the
 Fig.~\ref{fig:gaussian_leakage}) because using signal splitting to
 compute the SFC, only the first half of the frequencies provide
-information. Notice that, to determine $\eta^*$ we have supposed that
-when the correlation is smaller than $1/\sqrt{2}$ (see
-Appendix~\ref{ape:tau_VS_eta}), %$0.5$,
-the SNR is not high enough to keep visible the corresponding
-frequencies.
+information. Notice that, to determine $\eta^*$ (the estimated
+``optimal'' cut-off frequency of the Gaussian filter) we have assumed
+that an attenuation higher than $1/\sqrt{2}$ (see
+Appendix~\ref{ape:tau_VS_eta}) can be high enought to filter out the
+frequencies higher than $\eta^*$.
+
+%Since all denoising algorithms have a similar behavior (they tend to
+%eliminate high frequencies and preserve low ones), we will consider
+%Eq.~\ref{eq:tau_VS_eta_empirical_EOS} as generic and it will be used
+%to find the optimal value of the different operating parameters of the
+%denoising algorithms.
 
 \begin{comment}
 %{{{
@@ -1420,6 +1455,7 @@ each possible offset in $\text{Z}$, $\text{Y}$, and $\text{X}$, a
 different set of warped 2D slices must be computed.
 
 \begin{comment}
+%{{{
 
 \begin{figure}
 \noindent $\mathsf{3DSPGF}(\hat{\mathbf{X}}, \mathbf{h}, w)$: $\rightarrow\tilde{\mathbf{X}}$
@@ -1466,16 +1502,58 @@ the X direction) and computing the OF between these slices. Then, for
 each slice, we use only the line of the center to generate the
 OF-warped line.
 
+%}}}
 \end{comment}
 
 Compared with GF, the OF estimator requires some new parameters
-\cite{farneback2003two}, but among all of then $w$ (the size of the 2D
-window used by the OF estimator) has the highest impact on the
-performance of the filtering process: higher $w$ values increase the
-smootness of the OF fields and this tends to increase blurring, but
-also, at the same time, to decrease the noise. Therefore, it is
-expected that there is an optimal value for $w$ depending on the
-amount of noise and the content of the volume.
+\cite{farneback2003two} that can affect to the denoised volumes:
+\begin{enumerate}
+\item The \textbf{Averaging Window Size (AWS)} that controls the
+  blurring of the generated motion field, and therefore, the blurring
+  of the denoised volume. The larger the size, the greater the
+  smoothing. In the context of SPGD, we will denote this parameter by
+  $w$. This parameter can be considered independent from the rest of
+  parameters.
+\item The \textbf{Number of Pyramid Layers (NPL)} ($l$) which,
+  depending on the slices content, can increase the length of the
+  motion vectors. When the slices are very close in distance, $l=1$
+  should work fine. However, if the slices are far, $l$ should be
+  larger. Therefore, there is a dependency between $l$ and $\tau$
+  (which controls the length of the Gaussian kernel).
+\item The \textbf{Standard Deviation of the Gaussian that is used to
+    smooth the cube of voxels used in the Polynomial Expansion
+    coefficients (SDGPE)} ($s$) that determines the maximum spatial
+  frequency that will be captured by the polynomial expansion and
+  therefore, the minimum size of the recognized structures by the OF
+  estimator. This parameter should not affect to the selection of the
+  rest of them.
+\end{enumerate}
+These parameters will be determined using a similar procedure to the
+used to find Eq.~\ref{eq:tau_VS_eta_empirical_EOS}. We will analyze how the corresponding SPGD parameter affects to $\hat{\eta}$.
+
+The operation of the OF estimator also depends on other parameters
+that can have fixed values and that, apart from their impact on the
+computational requirements, are not susceptible to optimization (the
+larger they are, the better the results should be, but the longer the
+computation time is required):
+\begin{enumerate}
+\item The \textbf{Pyramid Scale (PS)} that determines the relative
+  shape size between pyramid levels. Assuming square layers, when
+  $\mathbf{PS}=0.5$, the side of the $i$-th layer is equal to half the
+  side of the $i-1$-th layer.
+\item The \textbf{Number Of Iterations (NOI)} that affects to the
+  accuracy of the found OF fields. The higher this parameter is, the
+  better the precision obtained, but the longer the computation time
+  (which depends on $l$). By default, we use $\mathbf{NOI}=3$.
+\item The \textbf{Size of the pixel Neighborhood used to find
+    Polynomial Expansion (SNPE)} that affects on the impact of $s$ in
+  the same way that $k$ influences on the frequency response of the
+  Gaussian filter. SNPE should be large enought to provide a good
+  stop-band attenuation, but keep in mind that SNPE can also affect to
+  the cut-off frequency. We set a fixed $\mathbf{SNPE}=4$.
+\end{enumerate}
+
+{\color{red} \hrule Voy por aquí \hrule}
 
 \begin{figure}
   \centering
@@ -1768,7 +1846,7 @@ corresponding expresión for ``standard'' frequency, knowing that
 \end{equation}
 Using Eq.~\ref{eq:eta_freq} into Eq.~\ref{eq:tau_VS_eta}, we obtain
 \begin{equation}
-  \hat{\tau} = \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}}.
+  \tau = \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}}.
   \label{eq:tau_VS_eta_standard}
 \end{equation}
 Operating
@@ -1787,7 +1865,7 @@ where the Gaussian kernel is finite in length, we have that
   \label{eq:kernel_length}
 \end{equation}
 i.e., the filter is truncated at $\pm k\tau$ coefficients. This has
-two effects (obviously, if $\hat{\tau}$ remains constant):
+two effects (obviously, if $\tau$ remains constant):
 \begin{enumerate}
 \item If $k$ is small, the attenuation of the stop-band decreases,
   i.e., the performance of the filter is worse (see
@@ -1801,7 +1879,7 @@ two effects (obviously, if $\hat{\tau}$ remains constant):
 Therefore, a better estimation of the standard deviation for the
 Gaussian kernel is
 \begin{equation}
-  \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
+  \tau = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
   \label{eq:ideal_hat_tau}
 \end{equation}
 
@@ -1809,7 +1887,7 @@ Gaussian kernel is
   \centering
   \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/gaussian_leakage.ipynb\#Gaussian_leakage}{\includegraphics[width=0.8\textwidth]{gaussian_leakage}}
   \caption{Impact of $k$ in the frequency response of a digital
-    Gaussian kernel, when $k$ and $\hat{\tau}$ are related according
+    Gaussian kernel, when $k$ and $\tau$ are related according
     to Eq.~\ref{eq:kernel_length}). The lobes in the stop-band are
     generated by the convolution of the ideal frequency response of a
     ideal (continous) Gaussian filter (see Eq.~\ref{eq:FTGF}) with the
@@ -1823,15 +1901,15 @@ For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
 truncation remains low enough.
 
 Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
-have computed the relation between $\hat{\tau}$ and $\hat{\eta}$ for
+have computed the relation between $\tau$ and $\hat{\eta}$ for
 $\beta=1/\sqrt{2}$, and the result has been plotted in the
-Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\hat{\tau}\propto 1/\hat{\eta}$.
+Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\tau\propto 1/\hat{\eta}$.
 
 \begin{figure}
   \centering
   \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/eta_vs_tau.ipynb\#Eta_vs_tau}{\includegraphics[width=0.8\textwidth]{eta_vs_tau}}
   \caption{Relation between $\hat\eta$ (the digital cut-off frequency
-    of a Gaussian kernel) and $\hat\tau$ (the standard deviation of
+    of a Gaussian kernel) and $\tau$ (the standard deviation of
     the kernel), for $\beta=1/\sqrt{2}$.\label{fig:eta_vs_tau}}
 \end{figure}
 
