@@ -1,11 +1,12 @@
-%\documentclass[draft]{article}
-\documentclass{article}
+%\documentclass{article}
+\documentclass[draft]{article}
+%\usepackage{graphicx}
+\usepackage[draft]{graphicx}
+\graphicspath{{figs}{notebooks}{.}}
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-%\usepackage[draft]{graphicx}\graphicspath{{figs}{notebooks}{.}}
-\usepackage{graphicx}\graphicspath{{figs}{notebooks}{.}}
 % \usepackage[margin=1in]{geometry}
 \usepackage{comment}
 \usepackage{color}
@@ -44,14 +45,14 @@
 
 \begin{tabular}{ll}
   $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
-  $\mathbf{x}$ & A tensor structure (e.g., an image) \\
-  $\mathbf{x}_{i}$ & The $i$-th element of $\mathbf{x}=\{\mathbf{x}_{i}\}_{i=0}^{N-1}=\{\mathbf{x}_{i}\}$ \\
+  $\mathbf{s}$ & A digital signal (e.g., an image) \\
+  $\mathbf{s}_{i}$ & The $i$-th element of $\mathbf{s}=\{\mathbf{s}_{i}\}_{i=0}^{N-1}=\{\mathbf{s}_{i}\}$ \\
   %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
   $\{i\}$ & The set $i$ \\
-  $\mathbf{x}_{\{i\}}$ & The elements of $\mathbf{x}$ with indices $\{i\}$ \\
-  $\mathbf{x}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{x}$ \\
-  $\mathbf{x}_{:,x}$ & The $x$-th column of the image $\mathbf{x}$ \\
-  $\mathbf{x}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{x}$ \\
+  $\mathbf{s}_{\{i\}}$ & The elements of $\mathbf{s}$ with indices $\{i\}$ \\
+  $\mathbf{s}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the 2D signal (image) $\mathbf{s}$ \\
+  $\mathbf{s}_{:,x}$ & The $x$-th column of the image $\mathbf{s}$ \\
+  $\mathbf{s}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{s}$ \\
   %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
   $\mathbf{x}^{(i)}$ & The $i$-th instance of the signal $\mathbf{x}$ \\
   $\hat{\mathbf{x}}$ & A noisy instance of $\mathbf{x}$ \\
@@ -79,6 +80,7 @@
   $f_s$ & Sampling frequency \\
   $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{x})=\mathbf{X}$) \\
   $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
+  $\cdot^*$ & the complex conjugate of $\cdot$ \\
   $\mathbf{x}*\mathbf{y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})\mathcal{F}(\mathbf{y}))=\mathcal{F}^{-1}(\mathbf{X}\mathbf{Y})$ (convolution) \\
   $A(b)$ & $A$ depends on (parameter) $b$ \\
   $A.b$ & The $b$ component of the data structure $A$ \\
@@ -516,18 +518,18 @@ For example, for 8 bits/pixel images, $\text{Peak}=2^8-1=255$.
 %{{{
 
 The SSIM \cite{wang2004image} try to model the human perception of the
-differences between two images $\mathbf{X}$ and $\mathbf{Y}$. The
-metric returns a real number between $[-1, 1]$, $-1$ representing the
-perfect dis-similarity case, $0$ no similarity, and $1$ perfect
-similarity. The SSIM index is determined (splitting the input images
-into $M$ non-overlapping blocks) with
+differences between two images (or volumes) $\mathbf{x}$ and
+$\mathbf{y}$. The metric returns a real number between $[-1, 1]$, $-1$
+representing the perfect dis-similarity case, $0$ no similarity, and
+$1$ perfect similarity. The SSIM index is determined (splitting the
+input images into $M$ non-overlapping blocks) with
 \begin{equation}
-  \text{SSIM}(\mathbf{X}, \mathbf{Y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
+  \text{SSIM}(\mathbf{x}, \mathbf{y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
 where $\overline{\mathbf x}_j$ is the mean of the $j$-th block of
-$\mathbf{X}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
-for $\mathbf{Y}$), $\sigma_{\mathbf{x}_j\mathbf{y}_j}$ is the
-covariance of both blocks, $c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two
+$\mathbf{x}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
+for $\mathbf{y}$), $\sigma_{\mathbf{x}_j\mathbf{y}_j}$ is the
+covariance (see Appendix \ref{sec:covariance}) of both blocks, $c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two
 variables used to stabilize the division with weak denominator, $L$ is
 the dynamic range of the samples, $k_1=0.01$, and $k_2=0.03$, and
 where the default
@@ -541,19 +543,18 @@ multiple image scales. It is omre suitable to capture structural
 similarities across different levels of detail, which can be useful in
 microscopy where both fine and coarse features matter. It is defned as
 \begin{equation}
-  \text{MS-SSIM}(\mathbf{X}, \hat{\mathbf{Y}}) = \prod_{j=1}^{J} \left[ \frac{(2 \overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)} \right]^{\alpha_j} \left[ \frac{\sigma_j(\mathbf{X}, \hat{\mathbf{Y}})}{\sigma_j(\mathbf{X}) + \sigma_j(\hat{\mathbf{Y}}) + c_3} \right]^{\beta_j}
+  \text{MS-SSIM}(\mathbf{x}, \hat{\mathbf{y}}) = \prod_{j=1}^{J} \left[ \frac{(2 \overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)} \right]^{\alpha_j} \left[ \frac{\sigma_j(\mathbf{x}, \hat{\mathbf{y}})}{\sigma_j(\mathbf{x}) + \sigma_j(\hat{\mathbf{y}}) + c_3} \right]^{\beta_j}
 \end{equation}
-where $\mathbf{X}$, $\hat{\mathbf{Y}}$ are the original and denoised
-images, respectively, $\overline{\mathbf{x}}_j$,
+where $\mathbf{x}$, $\mathbf{y}$ are the original and approximated
+images/volumes, respectively, $\overline{\mathbf{x}}_j$,
 $\overline{\mathbf{y}}_j$ are the local means of the $j\text{-th}$
-block of $\mathbf{X}$, and $\hat{\mathbf{Y}}$, respectively,
+block of $\mathbf{x}$, and $\hat{\mathbf{y}}$, respectively,
 $\sigma_{\mathbf{x}_j \mathbf{y}_j}$ is the covariance between the
-blocks of $\mathbf{X}_j$ and $\hat{\mathbf{Y}}_j$,
+blocks of $\mathbf{x}_j$ and $\hat{\mathbf{y}}_j$,
 $\sigma_{\mathbf{x}_j}, \sigma_{\mathbf{y}_j}$ are the standard
-deviations of the blocks of $\mathbf{X}_j$ and $\hat{\mathbf{Y}}_j$,
+deviations of the blocks of $\mathbf{x}_j$ and $\mathbf{y}_j$,
 respectively, and $\alpha_j, \beta_j$ are the weights that control the
 importance of each term at the $j\text{-th}$ scale/block.
-
 
 %}}}
 
@@ -563,10 +564,10 @@ importance of each term at the $j\text{-th}$ scale/block.
 The PPC is given
 by
 \begin{equation}
-  \text{PPC}(\mathbf{X}, \mathbf{Y}) = \frac{\sum_j(\mathbf{X}_j - \overline{\mathbf{X}})(\mathbf{Y}_j - \overline{\mathbf{Y}})}{\sqrt{\sum_j (\mathbf{X}_j - \overline{\mathbf{X}})^2 \sum_j (\mathbf{Y}_j - \overline{\mathbf{Y}})^2}},
+  \text{PPC}(\mathbf{x}, \mathbf{y}) = \frac{\sum_j(\mathbf{x}_j - \overline{\mathbf{x}})(\mathbf{y}_j - \overline{\mathbf{y}})}{\sqrt{\sum_j (\mathbf{x}_j - \overline{\mathbf{x}})^2 \sum_j (\mathbf{y}_j - \overline{\mathbf{y}})^2}},
 \end{equation}
-and measures the linear correlation between two tensors $\mathbf{X}$
-and $\mathbf{Y}$.  As happen with the SSIM, the output is in
+and measures the linear correlation between two signals $\mathbf{x}$
+and $\mathbf{y}$.  As happen with the SSIM, the output is in
 $[-1, -1]$, meaning $-1$ a perfect negative linear relationship
 between the input tensors, $0$ no linear relation, and $1$ a perfect
 coincidence.
@@ -587,29 +588,19 @@ high-level structures. Then, the similarity is computed in terms of
 feature differences between corresponding patches of the
 images. Concretelly,
 \begin{equation}
-  \text{LPIPS}(\mathbf{X}, \mathbf{Y}) = \sum_i=1^Lw_i||f_i(\mathbf{X}) - f_i(\mathbf{Y})||_2
+  \text{LPIPS}(\mathbf{x}, \mathbf{y}) = \sum_i=1^Lw_i||f_i(\mathbf{x}) - f_i(\mathbf{y})||_2
 \end{equation}
 where $w_i$ is the weight (contribution) of the layer $i$ to the
 metric, $L$ is the number of layers used in the comparison,
-$f_i(\mathbf{X})$ are the weights of the feature map at layer $i$, and
-$||f_i(\mathbf{X}) - f_i(\mathbf{Y})||_2$ measures the distance
-between the features at that layer.
+$f_i(\mathbf{x})$ are the weights of the feature map at layer $i$, and
+$||f_i(\mathbf{x}) - f_i(\mathbf{y})||_2$ measures the distance (see
+Appendix \ref{sec:L2_norm}) between the features at that layer.
 
 LPIPS is trained using a large dataset of human judgments for image
 similarity, where human observers are asked to rate the perceptual
 similarity between pairs of images. The network is trained to find the
 $w_i$ which minimize the difference between predicted perceptual
 similarity and human ratings.
-
-$L_2$ norm is defined by
-\begin{equation}
-  ||\mathbf{X}||_2 = \sqrt{\sum_i\mathbf{X}_i^2}.
-\end{equation}
-Notice that the L2 norm and the Mean Square Error (MSE) are closely
-related concepts, because
-\begin{equation}
-  ||\mathbf{Y} - \mathbf{X}||_2^2 = J\cdot\text{MSE}(\mathbf{Y} - \mathbf{X}).
-\end{equation}
 
 %}}}
 
@@ -641,8 +632,8 @@ model, and spectral profile, etc.) can provide valuable insights for
 determining the optimal operational parameters of denoising
 algorithms. However, this approach typically necessitates the
 availability of at least two independent noisy realizations of the
-underlying clean signal, $\hat{\mathbf{X}}^{(1)}$ and
-$\hat{\mathbf{X}}^{(2)}$.
+underlying clean signal, $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$.
 
 \begin{comment}
 Noise can be additive or multiplicative. In the first case, noise is
@@ -708,13 +699,10 @@ fields such as single particle electron cryo-microscopy (cryo-EM),
 A FSC value of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
 \begin{equation}
-\text{FSC}(\mathbf{X}, \mathbf{Y}; r) = \frac{\sum_{i \in S_r} (\mathcal{F}(\mathbf{X)}_i \mathcal{F}(\mathbf{Y)}_i^*)}{\sqrt{\sum_{i \in S_r} |\mathcal{F}(\mathbf{X})_i|^2 \sum_{i \in S_r} |\mathcal{F}(\mathbf{Y})_i|^2}},
+\text{FSC}(\mathbf{s}^{(1)}, \mathbf{x}^{(2)}; r) = \frac{\sum_{i \in S_r} (\mathbf{S}^{(1)}_i {\mathbf{S}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\mathbf{S})^{(1)}_i|^2 \sum_{i \in S_r} |\mathbf{S}^{(2)}_i|^2}},
 \end{equation}
-where $\mathbf{X}$ and $\mathbf{Y}$ are two volumes, $i=(x, y, z)$ is
-a point (a coefficient in the Fourier domain) of the surface of the
-sphere $S_r$ defined by $x^2+y^2+z^2=r^2$, $\mathcal{F}(\cdot)$ is the
-Fourier transform of $\cdot$, and $\cdot^*$ denotes the complex
-conjugate of $\cdot$.
+where $i=(x, y, z)$ is a point (a Fourier coefficient) of the surface
+of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$.
 
 \subsection{Self Fourier Correlation (SFC)}
 
@@ -2391,6 +2379,37 @@ R_{\mathbf{xx}}(l)=\mathcal{F}^{-1}\{S_{\mathbf{x}}(f)\}
 
 %}}}
 
+\section{Covariance}
+\label{sec:covariance}
+
+%{{{
+
+The covariance is a measure of how two random variables change
+together. In simpler terms, it tells us the direction of the linear
+relationship between two variables. The covariance between two
+discrete signals $x$ and $y$ is calculated as
+\begin{equation}
+  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
+\end{equation}
+
+%}}}
+
+\section{$L_2$ norm}
+\label{sec:L2_norm}
+
+% {{{
+
+$L_2$ norm is defined by
+\begin{equation}
+  ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
+\end{equation}
+Notice that the L2 norm and the Mean Square Error (MSE) are closely
+related concepts, because
+\begin{equation}
+  ||\mathbf{x} - \mathbf{y}||_2^2 = J\cdot\text{MSE}(\mathbf{x} - \mathbf{y}).
+\end{equation}
+
+%}}}
 
 %}}}
 
