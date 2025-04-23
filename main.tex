@@ -44,42 +44,42 @@
 
 \begin{tabular}{ll}
   $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
-  $\mathbf{X}$ & A tensor structure (e.g., an image) \\
-  $\mathbf{X}_{i}$ & The $i$-th element of $\mathbf{X}=\{\mathbf{X}_{i}\}_{i=0}^{N-1}=\{\mathbf{X}_{i}\}$ \\
+  $\mathbf{x}$ & A tensor structure (e.g., an image) \\
+  $\mathbf{x}_{i}$ & The $i$-th element of $\mathbf{x}=\{\mathbf{x}_{i}\}_{i=0}^{N-1}=\{\mathbf{x}_{i}\}$ \\
   %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
   $\{i\}$ & The set $i$ \\
-  $\mathbf{X}_{\{i\}}$ & The elements of $\mathbf{X}$ with indices $\{i\}$ \\
-  $\mathbf{X}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{X}$ \\
-  $\mathbf{X}_{:,x}$ & The $x$-th column of the image $\mathbf{X}$ \\
-  $\mathbf{X}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{X}$ \\
-  %$\mathbf{X}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{X}$ \\
-  $\mathbf{X}^{(i)}$ & The $i$-th instance of the signal $\mathbf{X}$ \\
-  $\hat{\mathbf{X}}$ & A noisy instance of $\mathbf{X}$ \\
-  $\tilde{\mathbf{X}}^{(I)}$ & Approximation of $\mathbf{X}$ using the mean of $\{\hat{\mathbf{X}}^{(i)}\}_{i=0}^{I-1}$ \\ 
-  $\overline{\mathbf{X}}$ & A scalar with mean of the samples of $\mathbf{X}$ \\ 
-  $\mathbf{X}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{X}$ \\
-  $\mathbf{X}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{X}$ \\
-  $\mathbf{X}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{X}.\mathsf{shape})$ (number of dimensions in $\mathbf{X})$ \\
+  $\mathbf{x}_{\{i\}}$ & The elements of $\mathbf{x}$ with indices $\{i\}$ \\
+  $\mathbf{x}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{x}$ \\
+  $\mathbf{x}_{:,x}$ & The $x$-th column of the image $\mathbf{x}$ \\
+  $\mathbf{x}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{x}$ \\
+  %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
+  $\mathbf{x}^{(i)}$ & The $i$-th instance of the signal $\mathbf{x}$ \\
+  $\hat{\mathbf{x}}$ & A noisy instance of $\mathbf{x}$ \\
+  $\tilde{\mathbf{x}}^{(I)}$ & Approximation to $\mathbf{x}$ using the mean of $\{\hat{\mathbf{x}}^{(i)}\}_{i=0}^{I-1}$ \\ 
+  $\overline{\mathbf{x}}$ & A scalar with mean of the samples of $\mathbf{x}$ \\ 
+  $\mathbf{x}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{x}$ \\
+  $\mathbf{x}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{x}$ \\
+  $\mathbf{x}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{x}.\mathsf{shape})$ (number of dimensions in $\mathbf{x})$ \\
   $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(x)$ & $=\{0, 1, \cdots, x-1\}$ \\
-  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{X})$ & $=\{0\}_{i=0}^{\mathbf{X}.\mathsf{size}-1}$ \\
+  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{x})$ & $=\{0\}_{i=0}^{\mathbf{x}.\mathsf{size}-1}$ \\
   % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
-  $\alpha\mathbf{X}$ & $=\{\alpha\mathbf{X}_i\}$ (scalar multiplication) \\
-  $\mathbf{X}+\mathbf{Y}$ & $=\{\mathbf{X}_i + \mathbf{Y}_i\}$ (Hadamard addition) \\ 
-  $\mathbf{X}\mathbf{Y}$ & $=\{\mathbf{X}_i\mathbf{Y}_i\}$ (Hadamard product) \\ 
+  $\alpha\mathbf{x}$ & $=\{\alpha\mathbf{x}_i\}$ (scalar multiplication) \\
+  $\mathbf{x}+\mathbf{y}$ & $=\{\mathbf{x}_i + \mathbf{y}_i\}$ (Hadamard addition) \\ 
+  $\mathbf{x}\mathbf{y}$ & $=\{\mathbf{x}_i\mathbf{y}_i\}$ (Hadamard product) \\ 
   $\mathcal{N}$ & The normal distribution \\ 
   $\mathcal{P}$ & The Poisson distribution \\
-  $\mathbf{X}\sim\mathcal{N}$ & The elements of $\mathbf{X}$ follows a normal distribution \\
-  $\mathbf{X}_{\mathcal{N}}$ & The same as $\mathbf{X}\sim\mathcal{N}$ \\
-  $\Pr(\mathbf{X}=x)$ & Probability that a $\mathbf{X}_i$ takes the value $x$ \\
-  $\Pr(\mathbf{X}=x, \mathbf{Y}=y)$ & $\Pr(\mathbf{X}=x)$ and $\Pr(\mathbf{Y}=y)$ (joint probability)  \\
-  $\mathrm{Su}(\mathbf{X})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{X}=x)>0\}$ (support of $\mathbf{X}$)\\
+  $\mathbf{x}\sim\mathcal{N}$ & The elements of $\mathbf{x}$ follows a normal distribution \\
+  $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
+  $\Pr(\mathbf{x}=x)$ & Probability that a $\mathbf{x}_i$ takes the value $x$ \\
+  $\Pr(\mathbf{x}=x, \mathbf{y}=y)$ & $\Pr(\mathbf{x}=x)$ and $\Pr(\mathbf{y}=y)$ (joint probability)  \\
+  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
-  $\mathbb{E}(\mathbf{X})$ & Expectation of $\mathbf{X}$ \\
-  $||\mathbf{X}||_2$ & $L_2$ norm \\
+  $\mathbb{E}(\mathbf{x})$ & Expectation of $\mathbf{x}$ \\
+  $||\mathbf{x}||_2$ & $L_2$ norm \\
   $f_s$ & Sampling frequency \\
-  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(x)=X$) \\
+  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{x})=\mathbf{X}$) \\
   $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
-  $\mathbf{X}*\mathbf{Y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{X})\mathcal{F}(\mathbf{Y}))$ (convolution) \\
+  $\mathbf{x}*\mathbf{y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})\mathcal{F}(\mathbf{y}))=\mathcal{F}^{-1}(\mathbf{X}\mathbf{Y})$ (convolution) \\
   $A(b)$ & $A$ depends on (parameter) $b$ \\
   $A.b$ & The $b$ component of the data structure $A$ \\
   $(A)b$ & First $A$, then $b$ 
@@ -156,33 +156,33 @@ Eq.~\ref{eq:noise_expectation_2}).
 \subsection{Zero-mean Additive White \href{https://en.wikipedia.org/wiki/Gaussian_noise}{Gaussian (ZAWG) noise}}
 %{{{
 
-A noisy signal $\hat{\mathbf X}$ corrupted by ZAWG noise can be modeled as
+A noisy signal $\hat{\mathbf s}$ corrupted by ZAWG noise can be modeled as
 \begin{equation}
-  \hat{\mathbf X} = {\mathbf X} + {\mathbf N}_{{\mathcal N}(\sigma)},
+  \hat{\mathbf s} = {\mathbf s} + {\mathbf n}_{{\mathcal N}(\sigma)},
   \label{eq:AWG_noise_model}  
 \end{equation}
-where $\mathbf{X}$ is the \emph{clean} signal (without noise, ground
+where $\mathbf{s}$ is the \emph{clean} signal (without noise, ground
 truth usually unknown),
-and ${\mathbf N}$ is a tensor of random samples,
+and ${\mathbf n}$ is a tensor of random samples,
 where, for the ZAWG noise case,
-${\mathbf N}\sim{\mathcal N}(\mu=0,\sigma)$, with PDF (probability density
+${\mathbf n}\sim{\mathcal N}(\mu=0,\sigma)$, with PDF (probability density
 function)
 \begin{equation}
-  \Pr({\mathbf N}{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
+  \Pr({\mathbf n}{=}x) = \frac 1 {\sigma\sqrt{2\pi}} e^{-\frac{x^2}{2\sigma^2} }.
 \end{equation}
 In theory, $x\in\mathbb{R}$ can be continuous, although in our
 context, $x$ is a signal sample and therefore, discrete,
 $\mu\in\mathbb{R}$ is the mean, and $\sigma\in\mathbb{R}$ represents
 the standard deviation of the noise. Notice that this is a
-signal-independent model because nothing can said about ${\mathbf N}$
-known $\hat{\mathbf X}$, except that
+signal-independent model because nothing can said about ${\mathbf n}$
+known $\hat{\mathbf s}$, except that
 \begin{equation}
-  \Pr(\mathbf{N}{=}n|\hat{\mathbf{X}}) = \Pr(\mathbf{N}{=}n).
+  \Pr(\mathbf{n}{=}n|\hat{\mathbf{s}}) = \Pr(\mathbf{n}{=}n).
 \end{equation}
 
 By definition, the spectrum of AWG noise is flat. Therefore, the
 performance of a pure low-pass filter denoiser will depend on the
-shape of the spectrum of $\mathbf{X}$.
+shape of the spectrum of $\mathbf{s}$.
 
 %}}}
 
@@ -194,22 +194,22 @@ Poisson noise
 to have a PMD (Probability Mass Distribution)\footnote{Also called
   discrete PDF.}
 \begin{equation}
-  \Pr({\mathbf N}{=}k) = \frac{\mathbf{\lambda}^ke^{-\mathbf{\lambda}}}{k!},
+  \Pr({\mathbf n}{=}k) = \frac{\mathbf{\lambda}^ke^{-\mathbf{\lambda}}}{k!},
   \label{eq:PN}
 \end{equation}
-which describes the probability of $k\in\mathbb{N}$ events ocurring
+which describes the probability of $k\in\mathbb{n}$ events ocurring
 within an observed interval (of time, for example), when, on average
 (arithmetic mean) we have ${\mathbf \lambda}\in\mathbb{R}$ events in
 such interval. Using
 \href{https://numpy.org/doc/stable/reference/random/generated/numpy.random.poisson.html#numpy-random-poisson}{\texttt{numpy.random.poisson}},
-which inputs $\mathbf{X}$, we can generate Poisson noise with
+which inputs $\mathbf{s}$, we can generate Poisson noise with
 \begin{equation}
-  \hat{\mathbf{X}} = \frac{\mathbf{N}(\mathbf{X})}{\gamma},~\mathbf{N}\sim\mathcal{P}(\lambda=\gamma\mathbf{X}),
+  \hat{\mathbf{s}} = \frac{\mathbf{n}(\mathbf{s})}{\gamma},~\mathbf{n}\sim\mathcal{P}(\lambda=\gamma\mathbf{s}),
 \end{equation}
 where $\gamma$ controls the standard deviation (the higher $\gamma$,
-the smaller the deviation from the $\mathbf{X}$ values). As can be
+the smaller the deviation from the $\mathbf{s}$ values). As can be
 seen, this is a signal-dependent model because the brighter parts of
-$\hat{\mathbf X}$ will have a higher mean and variance\footnote{The
+$\hat{\mathbf s}$ will have a higher mean and variance\footnote{The
   mean and variance of a Poisson law are both equal to $\lambda$.},
 and therefore a higher noise level \cite{meiniel2018denoising}.
 
@@ -223,19 +223,19 @@ of both Poisson and ZAWG noise, which is commonly called mixed
 Poisson-Gaussian noise \cite{meiniel2018denoising}. In this
 case, we have that
 \begin{equation}
-  \Pr({\mathbf N}{=}k) = \frac{e^{-\lambda}}{\sqrt{2\pi}\sigma}\sum_{p=0}^{\infty}\frac{\lambda^p}{p!} e^{-\frac{\gamma p - k}{2\sigma^2}},
+  \Pr({\mathbf n}{=}k) = \frac{e^{-\lambda}}{\sqrt{2\pi}\sigma}\sum_{p=0}^{\infty}\frac{\lambda^p}{p!} e^{-\frac{\gamma p - k}{2\sigma^2}},
   \label{eq:PN}
 \end{equation}
 and that
 \begin{equation}
-  \hat{\mathbf X} = (1-\alpha)(\mathbf{X} + {\mathbf N}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf N}_{\mathcal{P}(\lambda=\gamma\mathbf{X})}/\gamma,
+  \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf s}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
 where $\alpha\in[0,~1]$ controls the ratio of both types of
 noise. Therefore, for $\alpha > 0$,\footnote{If $\sigma=0$ and
   $\alpha=0$, both types of noise vanish and
-  $\hat{\mathbf{X}}=\mathbf{X}$.} the noise is signal-dependent and
-it's spectrum resembles the spectrum of $\mathbf{X}$. By default, in
+  $\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and
+it's spectrum resembles the spectrum of $\mathbf{x}$. By default, in
 our experiments, $\alpha=0.5$.
 
 %}}}
@@ -395,16 +395,19 @@ and identically distributed (i.i.d.) random variables will approximate
 a normal distribution with mean zero, regardless of the original
 distribution of the individual variables \cite{kendall1968advanced}
 (always that the variance is finite). This implies that, for a hight
-enought large sample size of noisy instances $\hat{\mathbf{X}}^{(i)}$,
+enought large sample size of noisy instances $\hat{\mathbf{s}}^{(i)}$,
 it holds that
 \begin{equation}
-  \hat{\mathbf{X}}^{(i)} = \mathbf{X} + \mathbf{N}^{(i)},
+  \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},
 \end{equation}
-where $\mathbf{X}$ is the clean signal.
+where $\mathbf{s}$ is the clean signal.
 
 Notice that the even if the noise is signal dependent, for a given
-sample $\hat{\mathbf{X}}^{(i)}_j$, the average (arithmetic mean) for
-all an infinite number of $i$ instances will become $\mathbf{X}_j$. Because this is imposible physically, our \emph{clean} signal in practice will be always a $\tilde{\mathbf{X}}^{(I)}$ which will depends on $I$.
+sample $\hat{\mathbf{s}}^{(i)}_j$, the average (arithmetic mean) for
+all an infinite number of $i$ instances will become
+$\mathbf{s}_j$. Because this is imposible physically, our \emph{clean}
+signal in practice will be always a $\tilde{\mathbf{s}}^{(I)}$ which
+will depends on $I$.
 
 %}}}
 
@@ -415,14 +418,14 @@ In microscopy image denoising, distortion metrics are used to quantify
 the difference between the original (clean or ground truth -- GT --)
 signal and the denoised signal. These metrics help assess how well the
 denoising algorithm preserved important signal features while removing
-noise. Notice however, that in practice the GT is never available, and
+noise. Notice however, that in practice the GT is rarely available, and
 we should always speak about \emph{estimations}.
 
 In all of the following distortion metrics definitions we will
-consider al ``clean'' (considered GT) signal $\mathbf{X}$ and an
-approximation $\mathbf{Y}$, both with $J$ samples, likely generated by
-some denoising algorithm. If $\mathbf{X}$ is not avaliable, these
-metrics are not applicable.
+consider al ``clean'' (considered GT) signal $\mathbf{s}$ and an
+approximation $\mathbf{s}$, both with $J$ samples, likely
+generated by some denoising algorithm. If $\mathbf{s}$ is not
+avaliable, these metrics are not applicable.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Mean_squared_error}{Mean square error (MSE)} and \href{https://en.wikipedia.org/wiki/Root_mean_square_deviation}{Root MSE (RMSE)}}
 %{{{
@@ -430,18 +433,16 @@ metrics are not applicable.
 The MSE is a statistical measure that quantifies the mean square
 difference between the values of corresponding samples in two digital
 signals with the same shape. The MSE is simple and fast to compute,
-but is very sensitive to shifts or misalignments.
-
-We define
+but is very sensitive to shifts or misalignments. We define
 \begin{equation}
-  \text{MSE}(\mathbf{X},\mathbf{Y}) = \frac{1}{J}\sum_i(\mathbf{X}_i - \mathbf{Y}_i)^2.
+  \text{MSE}(\mathbf{x},\mathbf{y}) = \frac{1}{J}\sum_i(\mathbf{x}_i - \mathbf{y}_i)^2.
   \label{eq:MSE}
 \end{equation}
 Notice that the MSE is always positive, being usually the lower MSE, the bettet.
 
 In the case of the RMSE, we have that
 \begin{equation}
-  \text{RMSE}(\mathbf{X},\mathbf{Y}) = \sqrt{\text{MSE}(\mathbf{X},\mathbf{Y})}.
+  \text{RMSE}(\mathbf{x},\mathbf{y}) = \sqrt{\text{MSE}(\mathbf{x},\mathbf{y})}.
   \label{eq:RMSE}
 \end{equation}
 Notice that the RMSE expresses the distortion in the same units as the
@@ -452,46 +453,46 @@ input samples.
 \subsection{\href{https://en.wikipedia.org/wiki/Signal-to-noise_ratio}{SNR (Signal-to-Noise Ratio)}}
 %{{{
 
-The SNR compares the energy of a desired signal (GT) $\mathbf{X}$ to
-the energy of \emph{background} noise $\mathbf{Y}-\mathbf{X}$. It is
+The SNR compares the energy of a desired signal (GT) $\mathbf{x}$ to
+the energy of \emph{background} noise $\mathbf{x}-\mathbf{y}$. It is
 defined as the ratio of average signal power
 (\href{https://en.wikipedia.org/wiki/Expected_value}{expectation} of
 the signal) to average noise power (expectation of the
 noise). Therefore,
 
 \begin{equation}
-  \text{SNR}(\mathbf{X},\mathbf{Y}) = \frac{\mathbb{E}(\mathbf{X})}{\mathbb{E}(\mathbf{Y} - \mathbf{X})},
+  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\mathbb{E}(\mathbf{x})}{\mathbb{E}(\mathbf{x} - \mathbf{y})},
   \label{eq:formal_SNR}
 \end{equation}
 where, in general, 
 \begin{equation}
-  \mathbb{E}(\mathbf{X}) = \sum_{i}\mathbf{X}_iP(\mathbf{X}_i).
+  \mathbb{E}(\mathbf{x}) = \sum_{i}\mathbf{x}_iP(\mathbf{x}_i).
   \label{eq:expectation}
 \end{equation}
 Notice that if the noise has zero mean, the expectation
 of the noise is also the variance of the noise.
 
-This is the \emph{formal} definition. However, because commonly in
+This is the formal definition. However, because commonly in
 practice the probabilities of the samples are unknown, we estimate the
 expectation as a simple mean over the available data. In this case,
 we estimate
 \begin{equation}
-  \text{SNR}(\mathbf{X},\mathbf{Y}) = \frac{\sum_{i=1}^J\mathbf{X}_i^2}{\sum_{i=1}^J(\mathbf{Y}_i - \mathbf{X}_i)^2}.
+  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\sum_{i=1}^J\mathbf{x}_i^2}{\sum_{i=1}^J(\mathbf{x}_i - \mathbf{y}_i)^2}.
   \label{eq:estimated_SNR}
 \end{equation}
 
 Finally, it is common to express the power (energy) in decibels (dB).
 \begin{equation}
-  \text{SNR}_{\text{dB}}(\mathbf{X},\mathbf{Y}) = 10\log_{10}\text{SNR}.
+  \text{SNR}_{\text{dB}}(\mathbf{x},\mathbf{y}) = 10\log_{10}\text{SNR}.
   \label{eq:estimated_SNR_in_dBs}
 \end{equation}
 
 A ratio higher than 1:1 (greater than 0 dB) indicates more signal than
 noise. Therefore, a high SNR means better quality (less noise).
 
-Having two images $\mathbf{X}$ and $\mathbf{Y}$ of size $J$,
-Notice that the RMSE expresses the distortion in the same units as the
-input samples (pixels/voxels).
+Notice that, having two images/volumes $\mathbf{x}$ and $\mathbf{y}$
+of size $J$, the RMSE expresses the distortion in the same units as
+the input samples (pixels/voxels).
 
 %}}}
 
@@ -755,7 +756,7 @@ that resembles the true FC in some specific cases. In
 Appendix~\ref{ape:SCBS}) is used to compute SFC curves. Notice that,
 to resemble the true FC curves, they must be calibrated for some
 correlation threshold.
-\end{document}
+\end{comment}
 
 \begin{figure}
   \centering
@@ -863,6 +864,13 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 
 \subsection{Spectral SNR (SSNR)}
 \label{sec:SSNR}
+
+The SNR in the frequency domain can be defined in terms of the
+auto-correlation of the signal $\mathbf{s}$ and the cross-correlation
+between the signal and the noise $\mathbf{n}$,
+\begin{equation}
+  \text{SNR}(f) = \frac{R_{\mathbf{ss}}}{R_{\mathbf{sn}}}.
+\end{equation}
 
 The SSNR can be estimated using the correlation in the Fourier domain
 between two (or more, in this case, using the mean SSNR) instances
@@ -2235,7 +2243,7 @@ where
   \mathbf{X}^{(\text{OO})} & = (\mathbf{X}_{\{o\},:})_{:,\{o\}}, \text{(pixels with odd row and odd column indices)} \\
   \mathbf{X}^{(\text{EE})} & = (\mathbf{X}_{\{e\},:})_{:,\{e\}}, \text{(pixels with even row and even column indices)}\\
   \mathbf{X}^{(\text{OE})} & = (\mathbf{X}_{\{o\},:})_{:,\{e\}}, \text{(pixels with odd row and even column indices)}\\
-  \mathbf{X}^{(\text{OO})} & = (\mathbf{X}_{\{e\},:})_{:,\{o\}}, \text{(pixels with odd row and odd column indices)}
+  \mathbf{X}^{(\text{EO})} & = (\mathbf{X}_{\{e\},:})_{:,\{o\}}, \text{(pixels with even row and odd column indices)}
 \end{align}
 where
 \begin{align}
@@ -2314,6 +2322,75 @@ randomization (from a visual point of view) of the structures of the
 input image.
 
 %}}}
+
+\section{Autocorrelation}
+\label{ape:autocorrelation}
+%{{{
+
+The autocorrelation of a digital signal measures the similarity
+between the signal and a time-delayed version of itself as a function
+of the time lag. Essentially, it quantifies the degree to which a
+signal is correlated with its past or future values. Mathematically,
+for a discrete-time signal $\mathbf{x}_n$ of finite length $N$, the
+autocorrelation function at a lag $l$ is defined as:
+\begin{equation}
+R_{\mathbf{xx}}(l)=\sum_{n=-\infty}^\infty{\mathbf{x}}_n \mathbf{x}^*_{n-l}
+\end{equation}
+where $l$ is the integer time lag, and $\mathbf{x}^* _{n-l}$ is the
+complex conjugate of the signal delayed by $l$ samples. If the signal
+is real-valued, then $\mathbf{x}^*_{n-l}=\mathbf{x}_{n-l}$.
+
+%}}}
+
+\section{Discrete Fourier Transform (DFT)}
+%{{{
+
+The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined by
+\begin{equation}
+  \mathbf{X}(e^{j2\pi f})=\sum_{n=-\infty}^{\infty}\mathbf{x}_ne^{-j2\pi fn},
+\end{equation}
+where $j=\sqrt{-1}$, and the inverse DFT by
+\begin{equation}
+  \mathbf{x}=\frac{1}{N}\sum_{n=-\infty}^{\infty}\mathbf{X}_ne^{j2\pi fn}.
+\end{equation}
+
+%}}}
+
+\section{Energy Spectral Density (ESD)}
+%{{{
+
+The ESD of a digital signal $\mathbf{x}$, $E_{\mathbf{x}}$ is defined
+as
+\begin{equation}
+  E_{\mathbf{x}}(f)=|\mathbf{X}(e^{j2\pi f})|^2=\mathbf{X}(e^{j2\pi f})\mathbf{X}^*(e^{j2\pi f}),
+\end{equation}
+where $f$ represents frequency, $\mathbf{X}(e^{j2\pi f})$ the DFT of
+$\mathbf{x}$, and $\mathbf{X}^*(e^{j2\pi f})$ is its complex
+conjugate.
+
+%}}}
+
+\section{Power Spectral Density (PSD)}
+%{{{
+
+The PSD of a wide-sense stationary discrete-time random processes
+$\mathbf{x}_n$, $S_{\mathbf{x}}(f)$, is the DFT of its autocorrelation
+function $R_{\mathbf{xx}}(l)$ (Wiener–Khinchin theorem\footnote{The
+  Wiener–Khinchin theorem (also known as the Wiener–Khintchine theorem
+  or the Wiener–Khinchin–Einstein theorem) states that the
+  autocorrelation function of a wide-sense-stationary random
+  process is the Fourier transform of its power spectral density
+  (PSD), and vice versa.}):
+\begin{equation}
+  S_{\mathbf{x}}(f)=\mathcal{F}\{R_{\mathbf{xx}}(l)\}=\sum_{l=-\infty}^{\infty}R_{\mathbf{xx}}(l)e^{-j2\pi fl}.
+\end{equation}
+Therefore, the autocorrelation function can be obtained by the inverse DFT of the PSD:  
+\begin{equation}
+R_{\mathbf{xx}}(l)=\mathcal{F}^{-1}\{S_{\mathbf{x}}(f)\}
+\end{equation}
+
+%}}}
+
 
 %}}}
 
