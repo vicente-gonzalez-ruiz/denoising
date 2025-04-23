@@ -54,32 +54,32 @@
   $\mathbf{s}_{:,x}$ & The $x$-th column of the image $\mathbf{s}$ \\
   $\mathbf{s}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{s}$ \\
   %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
-  $\mathbf{x}^{(i)}$ & The $i$-th instance of the signal $\mathbf{x}$ \\
-  $\hat{\mathbf{x}}$ & A noisy instance of $\mathbf{x}$ \\
-  $\tilde{\mathbf{x}}^{(I)}$ & Approximation to $\mathbf{x}$ using the mean of $\{\hat{\mathbf{x}}^{(i)}\}_{i=0}^{I-1}$ \\ 
-  $\overline{\mathbf{x}}$ & A scalar with mean of the samples of $\mathbf{x}$ \\ 
-  $\mathbf{x}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{x}$ \\
-  $\mathbf{x}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{x}$ \\
-  $\mathbf{x}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{x}.\mathsf{shape})$ (number of dimensions in $\mathbf{x})$ \\
-  $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(x)$ & $=\{0, 1, \cdots, x-1\}$ \\
-  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{x})$ & $=\{0\}_{i=0}^{\mathbf{x}.\mathsf{size}-1}$ \\
+  $\mathbf{s}^{()}$ & A instance of $\mathbf{s}$, possibly noisy \\
+  $\mathbf{s}^{(i)}$ & The $i$-th instance of the signal $\mathbf{s}$ \\
+  $\tilde{\mathbf{s}}^{(I)}$ & Approximation to $\mathbf{s}$ using $I$ instances \\ 
+  $\overline{\mathbf{s}}$ & A mean of the samples of $\mathbf{s}$ \\ 
+  $\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{s}$ \\
+  $\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{s}$ \\
+  $\mathbf{s}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{s}.\mathsf{shape})$ (dimensionality of $\mathbf{s})$ \\
+  $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(s)$ & $=\{0, 1, \cdots, s-1\}$ \\
+  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{s})$ & $=\{0\}_{i=0}^{\mathbf{s}.\mathsf{size}-1}$ \\
   % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
-  $\alpha\mathbf{x}$ & $=\{\alpha\mathbf{x}_i\}$ (scalar multiplication) \\
+  $\alpha\mathbf{s}$ & $=\{\alpha\mathbf{s}_i\}$ (scalar multiplication) \\
   $\mathbf{x}+\mathbf{y}$ & $=\{\mathbf{x}_i + \mathbf{y}_i\}$ (Hadamard addition) \\ 
   $\mathbf{x}\mathbf{y}$ & $=\{\mathbf{x}_i\mathbf{y}_i\}$ (Hadamard product) \\ 
   $\mathcal{N}$ & The normal distribution \\ 
   $\mathcal{P}$ & The Poisson distribution \\
-  $\mathbf{x}\sim\mathcal{N}$ & The elements of $\mathbf{x}$ follows a normal distribution \\
-  $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
-  $\Pr(\mathbf{x}=x)$ & Probability that a $\mathbf{x}_i$ takes the value $x$ \\
-  $\Pr(\mathbf{x}=x, \mathbf{y}=y)$ & $\Pr(\mathbf{x}=x)$ and $\Pr(\mathbf{y}=y)$ (joint probability)  \\
-  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
+  $\mathbf{s}\sim\mathcal{N}$ & The elements of $\mathbf{s}$ follows a normal distribution \\
+  $\mathbf{s}_{\mathcal{N}}$ & The same as $\mathbf{s}\sim\mathcal{N}$ \\
+  $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{s}_i$ takes the value $a$ \\
+  $\Pr(\mathbf{x}=a, \mathbf{y}=b)$ & $\Pr(\mathbf{x}=a)$ and $\Pr(\mathbf{y}=b)$ (joint probability)  \\
+  $\mathrm{Su}(\mathbf{s})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{s}=x)>0\}$ (support of $\mathbf{s}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
-  $\mathbb{E}(\mathbf{x})$ & Expectation of $\mathbf{x}$ \\
-  $||\mathbf{x}||_2$ & $L_2$ norm \\
+  $\mathbb{E}(\mathbf{s})$ & Expectation of $\mathbf{s}$ \\
+  $||\mathbf{s}||_2$ & $L_2$ norm of $\mathbf{s}$ \\
   $f_s$ & Sampling frequency \\
-  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{x})=\mathbf{X}$) \\
-  $\mathcal{F}^{-1}$ & The inverse Fourier transform \\
+  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{s})=\mathbf{S}$) \\
+  $\mathcal{F}^{-1}$ & The inverse Fourier transform ($\mathcal{F}^{-1}(\mathbf{S})=\mathbf{s}$) \\
   $\cdot^*$ & the complex conjugate of $\cdot$ \\
   $\mathbf{x}*\mathbf{y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})\mathcal{F}(\mathbf{y}))=\mathcal{F}^{-1}(\mathbf{X}\mathbf{Y})$ (convolution) \\
   $A(b)$ & $A$ depends on (parameter) $b$ \\
@@ -387,7 +387,7 @@ our experiments, $\alpha=0.5$.
 
 %}}}
 
-\section{Central limit theorem}
+\section{The central limit theorem}
 \label{sec:CLT}
 %{{{
 
@@ -632,8 +632,8 @@ model, and spectral profile, etc.) can provide valuable insights for
 determining the optimal operational parameters of denoising
 algorithms. However, this approach typically necessitates the
 availability of at least two independent noisy realizations of the
-underlying clean signal, $\hat{\mathbf{s}}^{(1)}$ and
-$\hat{\mathbf{s}}^{(2)}$.
+underlying clean signal, $\mathbf{s}^{(1)}$ and
+$\mathbf{s}^{(2)}$.
 
 \begin{comment}
 Noise can be additive or multiplicative. In the first case, noise is
@@ -699,7 +699,7 @@ fields such as single particle electron cryo-microscopy (cryo-EM),
 A FSC value of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
 \begin{equation}
-\text{FSC}(\mathbf{s}^{(1)}, \mathbf{x}^{(2)}; r) = \frac{\sum_{i \in S_r} (\mathbf{S}^{(1)}_i {\mathbf{S}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\mathbf{S})^{(1)}_i|^2 \sum_{i \in S_r} |\mathbf{S}^{(2)}_i|^2}},
+\text{FSC}(\mathbf{s}^{(1)}, \mathbf{s}^{(2)}; r) = \frac{\sum_{i \in S_r} \mathbf{S}^{(1)}_i {\mathbf{S}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\mathbf{S}^{(1)}_i|^2 \sum_{i \in S_r} |\mathbf{S}^{(2)}_i|^2}},
 \end{equation}
 where $i=(x, y, z)$ is a point (a Fourier coefficient) of the surface
 of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$.
@@ -711,8 +711,8 @@ signal not always is possible in practice.\footnote{Particularly in
   contexts where samples are susceptible to the degradation caused by
   the microscope radiation.} In this case, a workaround is to simlate
 such existence, by distributing the information of
-$\hat{\mathbf{X}}^{(1)}$ between two noisy (sub-)instances
-$\hat{\mathbf{X}}^{(1)}_1$ and $\hat{\mathbf{X}}^{(1)}_2$. For
+$\mathbf{s}^{()}$ between two noisy (sub-)instances
+$\hat{\mathbf{s}}^{(1)}$ and $\hat{\mathbf{s}}^{(2)}$. For
 example, in \cite{verbeke2024self} a even/odd signal splitting (see
 Appendix~\ref{ape:EOS}) in 2D slices is proposed to compute the
 SFC. In \cite{koho2019fourier} a subsampled-chessboard splitting
@@ -762,8 +762,8 @@ correlation threshold.
     data-splitting/shuffling algoritms: EOS (Even-Odd Splitting), CBS
     (ChessBoard Splitting), ICBS (Interpolated CBS), SCBS (Subsampled
     CBS), SPRS1 (Structure Preserving Random Shuffling computing the
-    FSC(SPRS($\mathbf{X}$), SPRS($\mathbf{X}$))), and SPRS2 (computing
-    the FSC($\mathbf{X}$, SPRS($\mathbf{X}$))). $f_s$ represents the
+    FSC(SPRS($\mathbf{s}$), SPRS($\mathbf{s}$))), and SPRS2 (computing
+    the FSC($\mathbf{s}$, SPRS($\mathbf{s}$))). $f_s$ represents the
     sampling frequency.\label{fig:SFC_vs_splitting_clean}}
 \end{figure}
 
@@ -784,24 +784,22 @@ range of the FC curves should be [0, 1].
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy_SFRC.ipynb}{\includegraphics{Confocal_FISH_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_noisy_SFRC.pdf}}
     \end{tabular}
   }
-  \caption{SFRC (Self Fourier Ring Correlation) of two
-    \emph{real-noisy} images \cite{zhang2019poisson} using different
-    data-splitting/shuffling algoritms: EOS (Even-Odd Splitting), CBS
-    (ChessBoard Splitting), ICBS (Interpolated CBS), SCBS (Subsampled
-    CBS), SPRS1 (Structure Preserving Random Shuffling computing the
-    FSC(SPRS($\hat{\mathbf{X}}^{(1)}$),
-    SPRS($\hat{\mathbf{X}}^{(1)}$))), and SPRS2 (computing the
-    FSC($\hat{\mathbf{X}}^{(1)}$,
-    SPRS($\hat{\mathbf{X}}^{(1)}$))). For the purpose of comparison,
-    it has also been show the FRC using another real-noisy instance
-    (FSC($\hat{\mathbf{X}}^{(1)}$, $\hat{\mathbf{X}}^{(2)}$)). $f_s$
-    represents the sampling
-    frequency.\label{fig:SFC_vs_splitting_noisy}}
+  \caption{SFRC (Self Fourier Ring Correlation) of two noisy images
+    \cite{zhang2019poisson} using different data-splitting/shuffling
+    algoritms: EOS (Even-Odd Splitting), CBS (ChessBoard Splitting),
+    ICBS (Interpolated CBS), SCBS (Subsampled CBS), SPRS1 (Structure
+    Preserving Random Shuffling computing the
+    FSC(SPRS($\mathbf{s}^{()}$), SPRS($\mathbf{s}^{()}))$), and SPRS2
+    (computing the FSC($\mathbf{s}^{()}$,
+    SPRS($\mathbf{s}^{()}$))). For the purpose of comparison, it has
+    also been show the FRC using another noisy instance of
+    $\mathbf{s}$ (FSC($\mathbf{s}^{(1)}$, $\mathbf{s}^{(2)}$)). $f_s$
+    is the sampling frequency.\label{fig:SFC_vs_splitting_noisy}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_noisy} shows a comparison between FRC
 and SFRC curves obtained using different techniques for generating the
-instances of a single input image.
+instances of a single input clean image.
 
 \begin{figure}
   \centering
@@ -814,17 +812,8 @@ instances of a single input image.
   }
   \caption{SFRC (Self Fourier Ring Correlation) of two MPG
     \emph{artificially-noisy} images using different
-    data-splitting/shuffling algoritms: EOS (Even-Odd Splitting), CBS
-    (ChessBoard Splitting), ICBS (Interpolated CBS), SCBS (Subsampled
-    CBS), SPRS1 (Structure Preserving Random Shuffling computing the
-    FSC(SPRS($\hat{\mathbf{X}}^{(1)}$),
-    SPRS($\hat{\mathbf{X}}^{(1)}$))), and SPRS2 (computing the
-    FSC($\hat{\mathbf{X}}^{(1)}$,
-    SPRS($\hat{\mathbf{X}}^{(1)}$))). For the purpose of comparison,
-    it has also been show the FRC using another artificial-noisy
-    instance (FSC($\hat{\mathbf{X}}^{(1)}$,
-    $\hat{\mathbf{X}}^{(2)}$)). $f_s$ represents the sampling
-    frequency.\label{fig:SFC_vs_splitting_artificial}}
+    data-splitting/shuffling algoritms. See
+    Fig.~\ref{fig:SFC_vs_splitting_noisy}.\label{fig:SFC_vs_splitting_artificial}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_artificial} shows a comparison
@@ -2397,7 +2386,7 @@ discrete signals $x$ and $y$ is calculated as
 \section{$L_2$ norm}
 \label{sec:L2_norm}
 
-% {{{
+%{{{
 
 $L_2$ norm is defined by
 \begin{equation}
