@@ -33,7 +33,17 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.pyramid_levels = pyramid_levels
         self.window_side = window_side
         self.N_poly = N_poly
-        self.sigma_poly = (N_poly - 1)/4
+        self.sigma_poly = (N_poly - 1)/4 # OJO, yo la pondría como un
+                                         # parámetro más (N_poly
+                                         # controla el número de
+                                         # coeficientes de la
+                                         # gaussiana, y sigma_poly el
+                                         # shape de la gaussiana. Son
+                                         # 2 cosas diferentes (un
+                                         # N_poly alto aumenta el
+                                         # cut-off frequency, pero
+                                         # además aumenta la
+                                         # atenuación en la pass-band.
         self.num_iters = num_iters
         self.flags = flags
         
