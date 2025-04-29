@@ -805,7 +805,7 @@ range of the FC curves should be [0, 1].
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy_SFRC.ipynb}{\includegraphics{Confocal_FISH_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy_SFRC.ipynb}{\includegraphics{Confocal_MICE_noisy_SFRC.pdf}}
     \end{tabular}
   }
-  \caption{SFRC (Self Fourier Ring Correlation) of noisy
+  \caption{SFRC (Self Fourier Ring Correlation) of three noisy
     images \cite{zhang2019poisson} using different
     data-splitting/shuffling algoritms (see
     Fig.~\ref{fig:SFC_vs_splitting_noisy}). For the purpose of
@@ -838,14 +838,32 @@ instances of a single input noisy image.
   \resizebox{1.0\textwidth}{!}{
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-    \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_artificial_SFRC.ipynb}{\includegraphics{Confocal_FISH_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_artificial_SFRC.pdf}}
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_artificial_SFRC.ipynb}{\includegraphics{Confocal_FISH_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_artificial_SFRC.ipynb}{\includegraphics{Confocal_MICE_artificial_SFRC.pdf}}
     \end{tabular}
   }
-  \caption{SFRC (Self Fourier Ring Correlation) of two MPG
+  \caption{SFRC (Self Fourier Ring Correlation) of three MPG
     \emph{artificially-noisy} images using different
     data-splitting/shuffling algoritms (see
-    Fig.~\ref{fig:SFC_vs_splitting_noisy}).\label{fig:SFC_vs_splitting_artificial}}
+    Fig.~\ref{fig:SFC_vs_splitting_noisy}). The parameters for SPRS
+    are the same than the obtained the (true-) noisy
+    images.\label{fig:SFC_vs_splitting_artificial}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_B_artificial_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_B_artificial_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_B_artificial_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{More SFRC curves of \emph{artificially-noisy} images. The
+    parameters for SPRS are the same than the obtained the (true-)
+    noisy images.\label{fig:more_artificial_SRFC}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_artificial} shows a comparison
