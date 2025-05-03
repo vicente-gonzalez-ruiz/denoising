@@ -560,9 +560,8 @@ importance of each term at the $j\text{-th}$ scale/block.
 
 \subsection{\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{Pearson Correlation Coefficient (PPC)}}
 %{{{
-
-The PPC is given
-by
+Essentially, correlation is the measure of how two or more variables
+are related to one another. The PPC is given by
 \begin{equation}
   \text{PPC}(\mathbf{x}, \mathbf{y}) = \frac{\sum_j(\mathbf{x}_j - \overline{\mathbf{x}})(\mathbf{y}_j - \overline{\mathbf{y}})}{\sqrt{\sum_j (\mathbf{x}_j - \overline{\mathbf{x}})^2 \sum_j (\mathbf{y}_j - \overline{\mathbf{y}})^2}},
 \end{equation}
@@ -771,7 +770,8 @@ correlation threshold.
     data-splitting/shuffling algoritms: EOS (Even-Odd Splitting), CBS
     (ChessBoard Splitting), ICBS (Interpolated CBS), and SCBS
     (Subsampled CBS), SPRS (Structure Preserving Random
-    Shuffling).\label{fig:SFC_vs_splitting_clean}}
+    Shuffling). SPRS curves have been computed using faded
+    margins. \label{fig:SFC_vs_splitting_clean}}
 \end{figure}
 
 \begin{figure}
@@ -785,7 +785,8 @@ correlation threshold.
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_R_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_R_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_G_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_G_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_B_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_B_clean_SFRC.pdf}}
     \end{tabular}
   }
-  \caption{More SFRC curves of clean images.\label{fig:more_clean_SRFC}}
+  \caption{More SFRC curves of clean images. SPRS curves have been
+    computed using faded margins.\label{fig:more_clean_SRFC}}
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_clean} shows a comparison between
@@ -2353,35 +2354,16 @@ input image.
 
 %}}}
 
-\section{Autocorrelation}
-\label{ape:autocorrelation}
-%{{{
-
-The autocorrelation of a digital signal measures the similarity
-between the signal and a time-delayed version of itself as a function
-of the time lag. Essentially, it quantifies the degree to which a
-signal is correlated with its past or future values. Mathematically,
-for a discrete-time signal $\mathbf{x}_n$ of finite length $N$, the
-autocorrelation function at a lag $l$ is defined as:
-\begin{equation}
-R_{\mathbf{xx}}(l)=\sum_{n=-\infty}^\infty{\mathbf{x}}_n \mathbf{x}^*_{n-l}
-\end{equation}
-where $l$ is the integer time lag, and $\mathbf{x}^* _{n-l}$ is the
-complex conjugate of the signal delayed by $l$ samples. If the signal
-is real-valued, then $\mathbf{x}^*_{n-l}=\mathbf{x}_{n-l}$.
-
-%}}}
-
 \section{Discrete Fourier Transform (DFT)}
 %{{{
 
-The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined by
+The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined as
 \begin{equation}
-  \mathbf{X}(e^{j2\pi f})=\sum_{n=-\infty}^{\infty}\mathbf{x}_ne^{-j2\pi fn},
+  \mathbf{X}_f=\sum_n\mathbf{x}_ne^{-2\pi jfn},
 \end{equation}
-where $j=\sqrt{-1}$, and the inverse DFT by
+where $j=\sqrt{-1}$, and $f$ denotes frequency. The inverse DFT is
 \begin{equation}
-  \mathbf{x}=\frac{1}{N}\sum_{n=-\infty}^{\infty}\mathbf{X}_ne^{j2\pi fn}.
+  \mathbf{x}_n=\frac{1}{N}\sum_f\mathbf{X}_fe^{2\pi jnf}.
 \end{equation}
 
 %}}}
@@ -2389,14 +2371,25 @@ where $j=\sqrt{-1}$, and the inverse DFT by
 \section{Energy Spectral Density (ESD)}
 %{{{
 
-The ESD of a digital signal $\mathbf{x}$, $E_{\mathbf{x}}$ is defined
-as
+The ESD of a signal describes the distribution of the
+energy\footnote{That obviously must be finite.} of the signal over
+their frequency components. For a discrete-time signal $\mathbf{x}$,
+the $\text{ESD}(\mathbf{x})$ is defined as
 \begin{equation}
-  E_{\mathbf{x}}(f)=|\mathbf{X}(e^{j2\pi f})|^2=\mathbf{X}(e^{j2\pi f})\mathbf{X}^*(e^{j2\pi f}),
+  \text{ESD}(\mathbf{x})=|\mathbf{X}|^2=\mathbf{X}\mathbf{X}^*,
 \end{equation}
-where $f$ represents frequency, $\mathbf{X}(e^{j2\pi f})$ the DFT of
-$\mathbf{x}$, and $\mathbf{X}^*(e^{j2\pi f})$ is its complex
-conjugate.
+where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
+complex conjugate.
+
+% }}}
+
+\section{Energy of a signal (Parseval's theorem)}
+%{{{
+
+The energy of a discrete-time signal is defined as
+\begin{equation}
+  E(\mathbf{x}) = \sum_n|x_n|^2.
+\end{equation}
 
 %}}}
 
@@ -2404,20 +2397,79 @@ conjugate.
 %{{{
 
 The PSD of a wide-sense stationary discrete-time random processes
-$\mathbf{x}_n$, $S_{\mathbf{x}}(f)$, is the DFT of its autocorrelation
-function $R_{\mathbf{xx}}(l)$ (Wiener–Khinchin theorem\footnote{The
-  Wiener–Khinchin theorem (also known as the Wiener–Khintchine theorem
-  or the Wiener–Khinchin–Einstein theorem) states that the
-  autocorrelation function of a wide-sense-stationary random
-  process is the Fourier transform of its power spectral density
-  (PSD), and vice versa.}):
+$\mathbf{x}$,
+$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
+$r(\mathbf{x},\mathbf{x})$:
 \begin{equation}
-  S_{\mathbf{x}}(f)=\mathcal{F}\{R_{\mathbf{xx}}(l)\}=\sum_{l=-\infty}^{\infty}R_{\mathbf{xx}}(l)e^{-j2\pi fl}.
+  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl},
 \end{equation}
-Therefore, the autocorrelation function can be obtained by the inverse DFT of the PSD:  
+and, the auto-correlation function can be obtained as the inverse DFT
+of the PSD (see the Wiener–Khinchin theorem, Appendix \ref{ape:WKT}):
 \begin{equation}
-R_{\mathbf{xx}}(l)=\mathcal{F}^{-1}\{S_{\mathbf{x}}(f)\}
+  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
 \end{equation}
+
+%}}}
+
+\section{Wiener-Khinching theorem}
+\label{ape:WKT}
+%{{{
+
+The Wiener-Khinching theorem (also known as the Wiener–Khintchine theorem
+  or the Wiener–Khinchin–Einstein theorem) states that the cross-correlation of two
+wide-sense stationary random processes is the inverse Fourier
+transform of the product of the power spectral tensity of one process
+and the conjugate of the power spectral density of the
+other. Similarly, the auto-correlation is the inverse Fourier
+transform of the power spectral density.
+
+%}}}
+
+\section{Cross-correlation}
+%{{{
+
+In the context of discrete-time signals, the cross-correlation
+measures the similarity between two signals $\mathbf{x}$ and
+$\mathbf{y}$ as a function of the time lag $l\in\mathcal{N}$ of one
+relative to the other. It is defined as
+\begin{equation}
+  {r(\mathbf{x},\mathbf{y})}_l=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
+\end{equation}
+where $\mathbf{y}^* _{n-l}$ is the complex conjugate of the signal
+delayed by $l$ samples. If the signal is real-valued, then
+$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. Notice that
+${r(\mathbf{x},\mathbf{y})}$ is a discrete-time signal with so many
+samples as diferent $l$ values are used.
+
+Cross-correlation can be normalized using
+\begin{equation}
+  \rho(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
+\end{equation}
+
+%}}}
+
+\section{Auto-correlation}
+\label{ape:auto-correlation}
+%{{{
+
+The auto-correlation of a digital signal is another digital signal that
+measures the similarity between the signal and a time-delayed version
+of itself as a function of the time lag. Essentially, it quantifies
+the degree to which a signal is correlated with its past or future
+values. Mathematically, for a discrete-time signal $\mathbf{x}$ of
+infinite length, the
+autocorrelation signal at a lag $l$ is defined as:
+\begin{equation}
+  {r(\mathbf{x},\mathbf{x})}_l=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
+\end{equation}
+where $l$ is the integer time lag.
+
+Normalized auto-correlation is defined as
+\begin{equation}
+  {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
+\end{equation}
+
+Auto-correlation can be computed as the inverser Fourier transform of the power spectral density.
 
 %}}}
 
