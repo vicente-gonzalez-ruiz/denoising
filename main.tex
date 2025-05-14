@@ -937,6 +937,14 @@ effectively attenuate noise while concurrently preserving crucial
 image features, including edges, textures, and underlying biological
 structures.
 
+In all the denoising techniques described here we will supose that
+both, the images and the noise can be modeled as \emph{stationary
+  random variables}. A stationary random variable can be described as
+a stochastic process whose statistical properties do not change. This
+means that the probability distribution of the process at any given
+set of time points is the same as the distribution at those same time
+points shifted by any constant amount in time or space.
+
 \subsection{Mean of Noisy Instances (MNI)}
 %{{{
 
@@ -1520,6 +1528,13 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 
 \subsection{Wiener Filtering (WF)}
 
+The Wiener filter is a linear filter designed to minimize the MSE
+between the denoised and true signal. It's optimal under the
+assumption that the signal and noise are both random processes with
+known power spectra, and that the noise is additive, and therefore,
+noise and signal are uncorrelated. Therefore, if $N$ ... 
+
+
 % \section{Anisotropic Non-linear Diffusion (AND)}
 
 % \section{PURE-LET}
@@ -1851,6 +1866,22 @@ having more noisy instances, after averaing all the denoised volumes.
 
 \appendix
 %{{{
+
+\section{Fourier transform}
+
+\section{Discrete Fourier Transform (DFT)}
+%{{{
+
+The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined as
+\begin{equation}
+  \mathbf{X}_f=\sum_n\mathbf{x}_ne^{-2\pi jfn} = \sum_n\mathbf{x}_ne^{-jwn},
+\end{equation}
+where $j=\sqrt{-1}$, and $f$ denotes frequency. The inverse DFT is
+\begin{equation}
+  \mathbf{x}_n=\frac{1}{N}\sum_f\mathbf{X}_fe^{2\pi jnf}.
+\end{equation}
+
+%}}}
 
 \section{Fourier transform of a Gaussian function}
 \label{ape:FTGF}
@@ -2361,20 +2392,6 @@ input image.
 
 %}}}
 
-\section{Discrete Fourier Transform (DFT)}
-%{{{
-
-The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined as
-\begin{equation}
-  \mathbf{X}_f=\sum_n\mathbf{x}_ne^{-2\pi jfn},
-\end{equation}
-where $j=\sqrt{-1}$, and $f$ denotes frequency. The inverse DFT is
-\begin{equation}
-  \mathbf{x}_n=\frac{1}{N}\sum_f\mathbf{X}_fe^{2\pi jnf}.
-\end{equation}
-
-%}}}
-
 \section{Energy Spectral Density (ESD)}
 %{{{
 
@@ -2422,13 +2439,18 @@ of the PSD (see the Wiener–Khinchin theorem, Appendix \ref{ape:WKT}):
 \label{ape:WKT}
 %{{{
 
-The Wiener-Khinching theorem (also known as the Wiener–Khintchine theorem
-  or the Wiener–Khinchin–Einstein theorem) states that the cross-correlation of two
-wide-sense stationary random processes is the inverse Fourier
-transform of the product of the power spectral tensity of one process
-and the conjugate of the power spectral density of the
+The Wiener-Khinching theorem (also known as the Wiener–Khintchine
+theorem or the Wiener–Khinchin–Einstein theorem) states that the
+cross-correlation of two wide-sense stationary random processes is the
+inverse Fourier transform of the product of the power spectral tensity
+of one process and the conjugate of the power spectral density of the
 other. Similarly, the auto-correlation is the inverse Fourier
 transform of the power spectral density.
+
+% https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
+\begin{equation}
+  S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
+\end{equation}
 
 %}}}
 
@@ -2476,7 +2498,8 @@ Normalized auto-correlation is defined as
   {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
 \end{equation}
 
-Auto-correlation can be computed as the inverser Fourier transform of the power spectral density.
+Auto-correlation can be computed as the inverse Fourier transform of
+the power spectral density.
 
 %}}}
 
