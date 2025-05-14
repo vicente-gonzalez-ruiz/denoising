@@ -1152,7 +1152,7 @@ the noisy instance $\hat{\mathbf{X}}$ to obtain
   \label{eq:GF}
 \end{equation}
 where $\tilde{\mathbf{X}}$ represents the denoised signal, and $*$ the
-convolution of digital signals. As can be seen, unlike MNI, GF
+convolution between digital signals. As can be seen, unlike MNI, GF
 requires only one instance.
 
 The coefficients of $\mathbf{h}$ define a low-pass\footnote{We can
@@ -1288,7 +1288,7 @@ In the Fig.~\ref{fig:tau_GF_estimation} there is a comparison between
 the true $\tau^*$ values and their estimations, using the EOS
 technique (see Appendix~\ref{ape:EOS}) to compute the SFC curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
-(see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:gaussian_leakage})
+(see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:eta_vs_tau})
 \begin{equation}
   \tau^*_{\text{EOS}} = \frac{0.141}{2\eta^*},
   \label{eq:tau_VS_eta_empirical_EOS}
@@ -1296,9 +1296,9 @@ Section~\ref{sec:fourier_correlation}). Specifically, we have used
 (and not exactly the fitting expression shown in the
 Fig.~\ref{fig:gaussian_leakage}) because using signal splitting to
 compute the SFC, only the first half of the frequencies provide
-information. Notice that, to determine $\eta^*$ (the estimated
-``optimal'' cut-off frequency of the Gaussian filter) we have assumed
-that an attenuation higher than $1/\sqrt{2}$ (see
+reliable information. Notice that, to determine $\eta^*$ (the
+estimated ``optimal'' cut-off frequency of the Gaussian filter) we
+have assumed that an attenuation higher than $1/\sqrt{2}$ (see
 Appendix~\ref{ape:tau_VS_eta}) can be high enought to filter out the
 frequencies higher than $\eta^*$.
 
