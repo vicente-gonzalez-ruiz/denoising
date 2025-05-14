@@ -52,7 +52,9 @@
 
 \begin{tabular}{ll}
   $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
-  $\mathbf{s}$ & A digital signal (e.g., an image) \\
+  $s(t)$ & A (continuous) signal as a function of time \\
+  $s[n]$ & A discrete signal (only) defined at instants of time $tn, n\in\mathcal{Z}, t>0$ \\
+  $\mathbf{s}$ & A digital (discrete and finite) signal (e.g., an image) \\
   $\mathbf{s}_{i}$ & The $i$-th element of $\mathbf{s}=\{\mathbf{s}_{i}\}_{i=0}^{N-1}=\{\mathbf{s}_{i}\}$ \\
   %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
   $\{i\}$ & The set $i$ \\
@@ -1529,10 +1531,29 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 \subsection{Wiener Filtering (WF)}
 
 The Wiener filter is a linear filter designed to minimize the MSE
-between the denoised and true signal. It's optimal under the
-assumption that the signal and noise are both random processes with
-known power spectra, and that the noise is additive, and therefore,
-noise and signal are uncorrelated. Therefore, if $N$ ... 
+between a filtered signal $\hat{\mathbf{x}}$ and true signal
+$\mathbf{x}$, which can be corrupted by some linear transformation
+(such as a blurring) and by noise. In the frequency domain this means
+that
+\begin{equation}
+  \hat{\mathbf{X}} = \mathbf{H}\mathbf{X}+\mathbf{N},
+  \label{eq:Weiner_degradation_model}
+\end{equation}
+where $\mathbf{H}$ if the DFT of the linear transformation, and
+$\mathbf{N}$ if the DFT of the noise. Notice that we have supposed
+that the noise is additive.
+
+Because in denoising we suppose also the $\mathbf{H}=1$,
+Eq.~\ref{eq:Weiner_degradation_model} becomes
+\begin{equation}
+  \hat{\mathbf{X}} = \mathbf{X}+\mathbf{N}.
+  \label{eq:Weiner_noise_model}
+\end{equation}
+
+The transfer function of the Weiner filter is
+\begin{equation}
+  W = \frac{\text{PSD}(x)}{\text{PSD}(x)+\text{PSD}(n)}
+\end{equation}
 
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
@@ -1868,18 +1889,45 @@ having more noisy instances, after averaing all the denoised volumes.
 %{{{
 
 \section{Fourier transform}
+The Fourier transform of a 1D continuous function $f(x)$ is
+\begin{equation}
+  F(w) = \int_{-\infty}^{\infty}f(x)e^{-jwx}dx
+\end{equation}
+and its inverse is
+\begin{equation}
+  f(x) = \int_{-\infty}^{\infty}F(w)e^{jxw}dw,
+\end{equation}
+where $w=2\pi f$ denotes angular frequency, $j=\sqrt{-1}$, and $f$ frequency.
+
+If the function is discrete (defined only in a set of points in the
+domain of the function, for example, time in the case of the sound),
+its Fourier transform (FTDF: Fourier Transform of a Discrete Function)
+is
+\begin{equation}
+  X(e^{jw}) = \sum_{n=-\infty}^{\infty}x[n]e^{-jwn}
+\end{equation}
+which is a continuous function of $w$, and its inverse is
+\begin{equation}
+  x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{jw})e^{jwn}dw.
+\end{equation}
+The FTDF is periodic with period $2\pi$.
 
 \section{Discrete Fourier Transform (DFT)}
 %{{{
 
-The DFT of a digital signal $\mathbf{x}$ of lenght $N$ is defined as
+The DFT of a digital signal $\mathbf{x}$ (discrete and finite) of
+lenght $N$ is defined as
 \begin{equation}
-  \mathbf{X}_f=\sum_n\mathbf{x}_ne^{-2\pi jfn} = \sum_n\mathbf{x}_ne^{-jwn},
+  \mathbf{X}_f=\sum_{n=0}^{N-1}\mathbf{x}_ne^{-2\pi jf\frac{n}{N}},\quad f=0,1,\cdots,N-1
 \end{equation}
-where $j=\sqrt{-1}$, and $f$ denotes frequency. The inverse DFT is
+where $f$ denotes (discrete) frequency bins. The inverse DFT is
 \begin{equation}
-  \mathbf{x}_n=\frac{1}{N}\sum_f\mathbf{X}_fe^{2\pi jnf}.
+  \mathbf{x}_n=\frac{1}{N}\sum_{f=0}^{N-1}\mathbf{X}_fe^{2\pi jn\frac{f}{N}}, \quad  n=0,1,\cdots,N-1.
 \end{equation}
+
+Notice that the DFT can be interpreted as sampling the FTDF at $N$
+evenly spaced points over $[-\pi, \pi)$. So, the DFT is a discrete
+approximation of the FTDF for finite-length signals.
 
 %}}}
 
@@ -2128,6 +2176,9 @@ we get that
 \section{About separability in multidimensional GF}
 \label{ape:GF_separability}
 %{{{
+
+A 2D function $f(x,y)$ is said to be separable if can be expressed as
+the product of 2 functions.
 
 A $D$-dimensional Gaussian filtering can be computed applying a 1D
 Gaussian filter along each of the $N$ dimensions. This reduces the
