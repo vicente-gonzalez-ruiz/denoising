@@ -10,7 +10,7 @@ all: $(OUTPUTS)
 # Rule to execute the notebook only if the output PNG is missing
 %.pdf: %.ipynb
 	#jupyter nbconvert --execute $<
-	jupyter nbconvert --to notebook --execute $< --output /tmp/$<
+	jupyter nbconvert --ExecutePreprocessor.enabled=False --to notebook --execute $< --output /tmp/$<
 info:
 	@echo "Notebooks:" $(NOTEBOOKS)
 	@echo "Outputs:" $(OUTPUTS)
