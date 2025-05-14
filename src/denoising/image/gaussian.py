@@ -6,7 +6,6 @@ import cv2
 #pip install "color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms"
 #from color_transforms import YCoCg as YUV
 
-
 class Monochrome_Denoising:
 
     def __init__(self, logger):
@@ -14,7 +13,6 @@ class Monochrome_Denoising:
         self.window_size = 0 # Ojo, no sé si se va a usar
 
     def filter(self, img, kernel):
-        #print("1")
         #mean = img.mean()
         #self.logger.info(f"mean={mean}")
         #padded_img = cv2.resize(src=img, dsize=(img.shape[1] + kernel.size, img.shape[0] + kernel.size))
@@ -206,7 +204,7 @@ class old:
         mean = np.average(noisy_img)
         #t0 = time.perf_counter()
         filtered_in_vertical = self.filter_vertical(noisy_img, kernel, mean)
-        print(filtered_in_vertical.dtype)
+        #print(filtered_in_vertical.dtype)
         #t1 = time.perf_counter()
         #print(t1 - t0)
         filtered_in_horizontal = self.filter_horizontal(noisy_img, kernel, mean)

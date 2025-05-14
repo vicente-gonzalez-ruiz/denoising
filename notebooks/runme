@@ -1,0 +1,4 @@
+ln -sf ../../self_fourier_shell_correlation/src/self_fourier_shell_correlation/
+ln -sf ../../shuffling/src/shuffling/ .
+ln -s ../../motion_estimation/src/motion_estimation/ .
+ln -s ../src/denoising/ .
