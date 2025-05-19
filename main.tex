@@ -1900,10 +1900,12 @@ having more noisy instances, after averaing all the denoised volumes.
 %}}}
 
 \appendix
+%{{{
 
 \section{Signal sampling}
+%{{{
 
-A signal sample is created using
+A signal sample $\mathbf{s}_n$ is created from the signal $s(t)$ using
 \begin{equation}
   \mathbf{s}_n = s(t)\delta(t-nT),
 \end{equation}
@@ -1920,14 +1922,23 @@ where
 \begin{equation}
 \int_{-\infty}^{\infty} \delta(t) \, dt = 1.
 \end{equation}
-  
 
-%{{{
+An impulse has the so-called sifting
+property with respect to integration,
+\begin{equation}
+\int_{-\infty}^{\infty} s(t)\delta(t) \, dt = s(0),
+\end{equation}
+provided that $s(t)$ is continuous at $t=0$ \cite{Gonzalez1992digital}.
+
+%}}}
 
 \section{Fourier Transform (FT)}
+%{{{
+
 The Fourier Transform of a 1D continuous function $f(x)$ is
 \begin{equation}
   F(w) = \int_{-\infty}^{\infty}f(x)e^{-jwx}dx
+  \label{eq:FT}
 \end{equation}
 and its inverse is
 \begin{equation}
@@ -1935,8 +1946,11 @@ and its inverse is
 \end{equation}
 where $w=2\pi f$ denotes angular frequency, $j=\sqrt{-1}$, and $f$ frequency.
 
+%}}}
 
 \section{Fourier Transform of a Discrete Function (FTDF)}
+%{{{
+
 If the function is discrete (defined only in a set of points in the
 domain of the function, for example, time in the case of the sound),
 its Fourier transform, also known as the Discrete Time Fourier
@@ -1950,6 +1964,8 @@ which is a continuous function of $w$, and its inverse is
 \end{equation}
 The FTDF is periodic with period $2\pi$.
 
+%}}}
+
 \section{Discrete Fourier Transform (DFT)}
 %{{{
 
@@ -1957,6 +1973,7 @@ The DFT of a digital signal $\mathbf{x}$ (discrete and finite) of
 lenght $N$ is defined as
 \begin{equation}
   \mathbf{X}_f=\sum_{n=0}^{N-1}\mathbf{x}_ne^{-2\pi jf\frac{n}{N}},\quad f=0,1,\cdots,N-1
+  \label{eq:DFT}
 \end{equation}
 where $f$ denotes (discrete) frequency bins. The inverse DFT is
 \begin{equation}
@@ -2296,6 +2313,236 @@ that the filter is truncated at $\pm 4\tau$.
 %}}}
 \end{comment}
 
+\section{Fourier spectrum}
+%{{{
+
+The Fourier transform of a signal $\mathbf{s}$ is a complex signal
+$\mathbf{S}$, even if $\mathbf{s}$ is real. By definition, the Fourier
+(or frequency) spectrum of $\mathbf{s}$ is the magnitude of
+$\mathbf{S}$, that is
+\begin{equation}
+  |\mathbf{S}| = \sqrt{(\text{Re}(\mathbf{S}))^2+(\text{Im}(\mathbf{S}))^2}.
+\end{equation}
+As a complex function, we can also find the \emph{phase angle}, \emph{argument} or
+\emph{phase spectrum} using
+\begin{equation}
+  \arg{\mathbf{S}} = \text{arctan}\frac{\text{Re}(\mathbf{S})}{\text{Im}(\mathbf{S})},
+\end{equation}
+where $\text{arctan}$ must be computed using a four-quadrant
+arctangent function.
+
+%}}}
+
+\section{Power spectrum}
+%{{{
+
+The power spectrum shows how much energy a signal has at different
+frequencies. Therefore, if $\mathbf{S}$ is the DFT of $\mathbf{s}$
+(with $N$ samples),
+\begin{equation}
+  \frac{1}{N}|S|^2
+\end{equation}
+is the power spectrum of $\mathbf{s}$.
+
+For real-valued digital signals, the spectrum is symmetric about
+$N/2$ (Nyquist frequency).
+
+%}}}
+
+\section{Energy Spectral Density (ESD)}
+%{{{
+
+The ESD of a signal describes the distribution of the
+energy\footnote{That obviously must be finite.} of the signal over
+their frequency components. For a discrete-time signal $\mathbf{x}$,
+the $\text{ESD}(\mathbf{x})$ is defined as
+\begin{equation}
+  \text{ESD}(\mathbf{x})=|\mathbf{X}|^2=\mathbf{X}\mathbf{X}^*,
+\end{equation}
+where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
+complex conjugate.
+
+%}}}
+
+\section{Energy of a signal (Parseval's theorem)}
+%{{{
+
+The energy of a discrete-time signal is defined as
+\begin{equation}
+  E(\mathbf{x}) = \sum_n|x_n|^2.
+\end{equation}
+
+%}}}
+
+\section{Power Spectral Density (PSD)}
+%{{{
+
+The PSD of a wide-sense stationary discrete-time random processes
+$\mathbf{x}$,
+$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
+$r(\mathbf{x},\mathbf{x})$:
+\begin{equation}
+  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl},
+\end{equation}
+and, the auto-correlation function can be obtained as the inverse DFT
+of the PSD (see the Wiener–Khinchin theorem, Appendix \ref{ape:WKT}):
+\begin{equation}
+  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
+\end{equation}
+
+%}}}
+
+\section{Wiener-Khinching theorem}
+\label{ape:WKT}
+%{{{
+
+The Wiener-Khinching theorem (also known as the Wiener–Khintchine
+theorem or the Wiener–Khinchin–Einstein theorem) states that the
+cross-correlation of two wide-sense stationary random processes is the
+inverse Fourier transform of the product of the power spectral tensity
+of one process and the conjugate of the power spectral density of the
+other. Similarly, the auto-correlation is the inverse Fourier
+transform of the power spectral density.
+
+% https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
+\begin{equation}
+  S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
+\end{equation}
+
+%}}}
+
+\section{Cross-correlation}
+%{{{
+
+In the context of discrete-time signals, the cross-correlation
+measures the similarity between two signals $\mathbf{x}$ and
+$\mathbf{y}$ as a function of the time lag $l\in\mathcal{N}$ of one
+relative to the other. It is defined as
+\begin{equation}
+  {r(\mathbf{x},\mathbf{y})}_l=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
+\end{equation}
+where $\mathbf{y}^* _{n-l}$ is the complex conjugate of the signal
+delayed by $l$ samples. If the signal is real-valued, then
+$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. Notice that
+${r(\mathbf{x},\mathbf{y})}$ is a discrete-time signal with so many
+samples as diferent $l$ values are used.
+
+Cross-correlation can be normalized using
+\begin{equation}
+  \rho(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
+\end{equation}
+
+%}}}
+
+\section{Auto-correlation}
+\label{ape:auto-correlation}
+%{{{
+
+The auto-correlation of a digital signal is another digital signal that
+measures the similarity between the signal and a time-delayed version
+of itself as a function of the time lag. Essentially, it quantifies
+the degree to which a signal is correlated with its past or future
+values. Mathematically, for a discrete-time signal $\mathbf{x}$ of
+infinite length, the
+autocorrelation signal at a lag $l$ is defined as:
+\begin{equation}
+  {r(\mathbf{x},\mathbf{x})}_l=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
+\end{equation}
+where $l$ is the integer time lag.
+
+Normalized auto-correlation is defined as
+\begin{equation}
+  {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
+\end{equation}
+
+Auto-correlation can be computed as the inverse Fourier transform of
+the power spectral density.
+
+% }}}
+
+\section{Multivariate data}
+Multivariate data refers to datasets that contain more than two
+variables for each observation. These variables represent different
+characteristics or measurements related to the observed phenomenon. In
+simpler terms, if you are collecting information about something and
+recording three or more different aspects for each item, you are
+dealing with multivariate data. Example: A study on students: You
+might collect data on their age, test scores in math, test scores in
+science, attendance rate, and extracurricular activities. Each student
+is an observation, and the five pieces of information are the multiple
+variables.
+
+\section{Variance}
+The variance of a random variable $X$ is a measurement of its
+dispersion. It is defined as the expected value of the squared
+deviation from the mean, i.e., 
+\begin{equation}
+  \operatorname{Var}(X) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
+\end{equation}
+
+\section{Covariance}
+\label{sec:covariance}
+%{{{
+
+The covariance is a measure of how two random variables change
+together. In simpler terms, it tells us the direction of the linear
+relationship between two variables. The covariance between two
+discrete signals $x$ and $y$ is calculated as
+\begin{equation}
+  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
+\end{equation}
+
+%}}}
+
+\section{Covariance matrix}
+Let's say you have a (multivariate) dataset with $n$ observations and
+$p$ variables, which can be represented as a matrix $X$ of size
+$n\i¡times p$. The covariance matrix, often denoted by $\Sigma$, will
+be a $p\times p$ matrix.
+
+The diagonal elements of $\sigma$ is the
+variance of the $i$-th variable:
+\begin{equation}
+  \text{Var}(X_i​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])^2].
+\end{equation}
+
+For the off-diagonal elements (he element at position $(i,j)$ (where $i\neq j$)
+represents the covariance between the $i$-th and the $j$-th
+variables:
+\begin{equation}
+  \text{Cov}(X_i​,X_j​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])(X_j​-\mathbb{E}[X_j​])]
+\end{equation}
+Covariance measures the degree to which two variables
+change together.
+
+\begin{equation}
+\Sigma = E\left[ (X - E[X])(X - E[X])^T \right] =
+\begin{pmatrix}
+Var(X_1) & Cov(X_1, X_2) & \cdots & Cov(X_1, X_p) \\
+Cov(X_2, X_1) & Var(X_2) & \cdots & Cov(X_2, X_p) \\
+\vdots & \vdots & \ddots & \vdots \\
+Cov(X_p, X_1) & Cov(X_p, X_2) & \cdots & Var(X_p)
+\end{pmatrix}
+\end{equation}
+
+\section{$L_2$ norm}
+\label{sec:L2_norm}
+%{{{
+
+$L_2$ norm is defined by
+\begin{equation}
+  ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
+\end{equation}
+Notice that the L2 norm and the Mean Square Error (MSE) are closely
+related concepts, because
+\begin{equation}
+  ||\mathbf{x} - \mathbf{y}||_2^2 = J\cdot\text{MSE}(\mathbf{x} - \mathbf{y}).
+\end{equation}
+
+%}}}
+
+%}}}
+
 \section{Even-Odd Splitting (EOS)}
 \label{ape:EOS}
 %{{{
@@ -2487,200 +2734,6 @@ In conclusion, by applying Gaussian-distributed local perturbations to
 pixel indices and a DOF projection, SPRS generates a local
 randomization (from a visual point of view) of the structures of the
 input image.
-
-%}}}
-
-\section{Energy Spectral Density (ESD)}
-%{{{
-
-The ESD of a signal describes the distribution of the
-energy\footnote{That obviously must be finite.} of the signal over
-their frequency components. For a discrete-time signal $\mathbf{x}$,
-the $\text{ESD}(\mathbf{x})$ is defined as
-\begin{equation}
-  \text{ESD}(\mathbf{x})=|\mathbf{X}|^2=\mathbf{X}\mathbf{X}^*,
-\end{equation}
-where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
-complex conjugate.
-
-% }}}
-
-\section{Energy of a signal (Parseval's theorem)}
-%{{{
-
-The energy of a discrete-time signal is defined as
-\begin{equation}
-  E(\mathbf{x}) = \sum_n|x_n|^2.
-\end{equation}
-
-%}}}
-
-\section{Power Spectral Density (PSD)}
-%{{{
-
-The PSD of a wide-sense stationary discrete-time random processes
-$\mathbf{x}$,
-$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
-$r(\mathbf{x},\mathbf{x})$:
-\begin{equation}
-  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl},
-\end{equation}
-and, the auto-correlation function can be obtained as the inverse DFT
-of the PSD (see the Wiener–Khinchin theorem, Appendix \ref{ape:WKT}):
-\begin{equation}
-  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
-\end{equation}
-
-%}}}
-
-\section{Wiener-Khinching theorem}
-\label{ape:WKT}
-%{{{
-
-The Wiener-Khinching theorem (also known as the Wiener–Khintchine
-theorem or the Wiener–Khinchin–Einstein theorem) states that the
-cross-correlation of two wide-sense stationary random processes is the
-inverse Fourier transform of the product of the power spectral tensity
-of one process and the conjugate of the power spectral density of the
-other. Similarly, the auto-correlation is the inverse Fourier
-transform of the power spectral density.
-
-% https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
-\begin{equation}
-  S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
-\end{equation}
-
-%}}}
-
-\section{Cross-correlation}
-%{{{
-
-In the context of discrete-time signals, the cross-correlation
-measures the similarity between two signals $\mathbf{x}$ and
-$\mathbf{y}$ as a function of the time lag $l\in\mathcal{N}$ of one
-relative to the other. It is defined as
-\begin{equation}
-  {r(\mathbf{x},\mathbf{y})}_l=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
-\end{equation}
-where $\mathbf{y}^* _{n-l}$ is the complex conjugate of the signal
-delayed by $l$ samples. If the signal is real-valued, then
-$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. Notice that
-${r(\mathbf{x},\mathbf{y})}$ is a discrete-time signal with so many
-samples as diferent $l$ values are used.
-
-Cross-correlation can be normalized using
-\begin{equation}
-  \rho(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
-\end{equation}
-
-%}}}
-
-\section{Auto-correlation}
-\label{ape:auto-correlation}
-%{{{
-
-The auto-correlation of a digital signal is another digital signal that
-measures the similarity between the signal and a time-delayed version
-of itself as a function of the time lag. Essentially, it quantifies
-the degree to which a signal is correlated with its past or future
-values. Mathematically, for a discrete-time signal $\mathbf{x}$ of
-infinite length, the
-autocorrelation signal at a lag $l$ is defined as:
-\begin{equation}
-  {r(\mathbf{x},\mathbf{x})}_l=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
-\end{equation}
-where $l$ is the integer time lag.
-
-Normalized auto-correlation is defined as
-\begin{equation}
-  {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
-\end{equation}
-
-Auto-correlation can be computed as the inverse Fourier transform of
-the power spectral density.
-
-% }}}
-
-\section{Multivariate data}
-Multivariate data refers to datasets that contain more than two
-variables for each observation. These variables represent different
-characteristics or measurements related to the observed phenomenon. In
-simpler terms, if you are collecting information about something and
-recording three or more different aspects for each item, you are
-dealing with multivariate data. Example: A study on students: You
-might collect data on their age, test scores in math, test scores in
-science, attendance rate, and extracurricular activities. Each student
-is an observation, and the five pieces of information are the multiple
-variables.
-
-\section{Variance}
-The variance of a random variable $X$ is a measurement of its
-dispersion. It is defined as the expected value of the squared
-deviation from the mean, i.e., 
-\begin{equation}
-  \operatorname{Var}(X) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
-\end{equation}
-
-\section{Covariance}
-\label{sec:covariance}
-%{{{
-
-The covariance is a measure of how two random variables change
-together. In simpler terms, it tells us the direction of the linear
-relationship between two variables. The covariance between two
-discrete signals $x$ and $y$ is calculated as
-\begin{equation}
-  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
-\end{equation}
-
-%}}}
-
-\section{Covariance matrix}
-Let's say you have a (multivariate) dataset with $n$ observations and
-$p$ variables, which can be represented as a matrix $X$ of size
-$n\i¡times p$. The covariance matrix, often denoted by $\Sigma$, will
-be a $p\times p$ matrix.
-
-The diagonal elements of $\sigma$ is the
-variance of the $i$-th variable:
-\begin{equation}
-  \text{Var}(X_i​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])^2].
-\end{equation}
-
-For the off-diagonal elements (he element at position $(i,j)$ (where $i\neq j$)
-represents the covariance between the $i$-th and the $j$-th
-variables:
-\begin{equation}
-  \text{Cov}(X_i​,X_j​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])(X_j​-\mathbb{E}[X_j​])]
-\end{equation}
-Covariance measures the degree to which two variables
-change together.
-
-\begin{equation}
-\Sigma = E\left[ (X - E[X])(X - E[X])^T \right] =
-\begin{pmatrix}
-Var(X_1) & Cov(X_1, X_2) & \cdots & Cov(X_1, X_p) \\
-Cov(X_2, X_1) & Var(X_2) & \cdots & Cov(X_2, X_p) \\
-\vdots & \vdots & \ddots & \vdots \\
-Cov(X_p, X_1) & Cov(X_p, X_2) & \cdots & Var(X_p)
-\end{pmatrix}
-\end{equation}
-
-\section{$L_2$ norm}
-\label{sec:L2_norm}
-%{{{
-
-$L_2$ norm is defined by
-\begin{equation}
-  ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
-\end{equation}
-Notice that the L2 norm and the Mean Square Error (MSE) are closely
-related concepts, because
-\begin{equation}
-  ||\mathbf{x} - \mathbf{y}||_2^2 = J\cdot\text{MSE}(\mathbf{x} - \mathbf{y}).
-\end{equation}
-
-%}}}
 
 %}}}
 
