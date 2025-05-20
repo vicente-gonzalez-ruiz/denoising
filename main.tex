@@ -1593,7 +1593,23 @@ Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$, $N$ is the
 length of the noisy signal, and $\sigma^2$ is an estimation of the
 variance of the noise.
 
-Notice that $\text{len}(\mathbf{h})=N$.
+Notice that $\text{len}(\mathbf{h})=N$, and that to compute the
+variances of the Fourier coefficients, we need at least two instances
+of $\hat{\mathbf{x}}$. Neither such a large value of $N$ (filters that
+are too large would not adapt to local features) nor only two
+instances of the noisy signal (the variance values would have very
+little statistical significance) are adequate in a real
+experiment. For this reason, the signal is processed by windows. For
+these reasons, the implementation offered in Scipy
+(\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}})
+requires two arguments:
+\begin{enumerate}
+\item A window size $w$, a parameter that should take into
+  consideration the details of the signal.
+\item A noise variance $\sigma$, which by default is
+  $\sigma=\mathbb{E}[\text{Var}(\hat{\mathbf{x}}_{\{i\}})]$, where
+  $\hat{\mathbf{x}}_{\{i\}}$ is the current window.
+\end{enumerate}
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
 
