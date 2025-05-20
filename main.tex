@@ -67,9 +67,9 @@
   $\mathbf{s}^{(i)}$ & The $i$-th instance of the signal $\mathbf{s}$ \\
   $\tilde{\mathbf{s}}^{(I)}$ & Approximation to $\mathbf{s}$ using $I$ instances \\ 
   $\overline{\mathbf{s}}$ & A mean of the samples of $\mathbf{s}$ \\ 
-  $\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ & Number of elements in $\mathbf{s}$ \\
-  $\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\mathsf{shape}}$ & Shape of $\mathbf{s}$ \\
-  $\mathbf{s}.\mathsf{rank}$ & $=\href{https://docs.python.org/3/library/functions.html#len}{\mathsf{len}}(\mathbf{s}.\mathsf{shape})$ (dimensionality of $\mathbf{s})$ \\
+  $\href{https://docs.python.org/3/library/functions.html#len}{\text{len}}(\mathbf{s})$ & $=\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ Number of elements in $\mathbf{s}$ \\
+  $\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\text{shape}}(\mathbf{s})$ & ($=\mathbf{s}.{\mathsf{shape}}$) Shape of $\mathbf{s}$ \\
+  $\text{rank}(\mathbf{s})$ & ($=\mathbf{s}.\mathsf{rank}=\text{len}(\mathbf{s}.\mathsf{shape})$) Dimensionality of $\mathbf{s}$ \\
   $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(s)$ & $=\{0, 1, \cdots, s-1\}$ \\
   $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{s})$ & $=\{0\}_{i=0}^{\mathbf{s}.\mathsf{size}-1}$ \\
   % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
@@ -1158,7 +1158,7 @@ example of how zero-mean uniform noise is cancelled by averaging.
 Gaussian noising is based on the use of low-pass
 (smoothing)\footnote{Because random noise typically consists of sharp
   transitions in intensity, an obvious application of smoothing is
-  noise reduction \cite{Gonzalez1992digital}.} Gaussian
+  noise reduction \cite{gonzalez1992digital}.} Gaussian
 filters. Unlike other digital filters, such as an ideal low-pass
 filter, a Gaussian low-pass filter does not generate ringing (the
 transfer function of a Gaussian filter is another Gaussian filter,
@@ -1204,7 +1204,7 @@ Appendix~\ref{ape:GF_separability}), which means that we can apply the
 1D filter to the $D$ dimensions of the signal to compute a $D$D
 denoising. De facto, Gaussian kernels are the only circularly
 symmetric kernels that are also separable
-\cite{Gonzalez1992digital}. For the 3D case (see
+\cite{gonzalez1992digital}. For the 3D case (see
 Fig.~\ref{fig:3D_GF}), we have that
 \begin{equation}
   \tilde{\mathbf{X}} = \Big(\big(\hat{\mathbf X}*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
@@ -1541,34 +1541,59 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 %\section{Bilateral filter}
 
 \subsection{Wiener Filtering (WF)}
+The Wiener filter \cite{wiener1942extrapolation} is an adaptive linear
+filter designed to minimize the MSE between the denoised signal
+$\tilde{\mathbf{x}}$ and clean signal $\mathbf{x}$, when this has been
+corrupted\footnote{A Wiener filter also considers that $\mathbf{x}$
+  can be affected, apart from the noise, by some linear transformation
+  (such as a blurring), but we will ingnore this.} by noise. For this
+reason, WF is also known by \emph{minimum MSE filtering} and also by
+\emph{least square error fitering}. When the filter is used only for
+removing noise, as it is our case, we will speak about Wiener
+Denoising (WD).
 
-The noise must be additive!
+To use WD, the next conditions must be satisfied:
+\begin{enumerate}
+\item The noise is not correlated with the original signal, i.e., the
+  noise is ZAWG.
+\item The mean of the noise is zero.
+\item Signal and noise are stationary random processes (their mean and
+  variance remains constant).
+\end{enumerate}
 
-The Wiener filter is a linear filter designed to minimize the MSE
-between a filtered signal $\hat{\mathbf{x}}$ and true signal
-$\mathbf{x}$, which can be corrupted by some linear transformation
-(such as a blurring) and by noise. In the frequency domain this means
-that
+Under these assumptions, WD minimizes the MSE between the output of
+the filter $\tilde{\mathbf{x}}$ (the filtered signal) and the
+(unknown) clean signal $\mathbf{x}$,
 \begin{equation}
-  \hat{\mathbf{X}} = \mathbf{H}\mathbf{X}+\mathbf{N},
-  \label{eq:Weiner_degradation_model}
+  \mathbb{E}[(\tilde{\mathbf{x}} - \mathbf{x})^2].
+  \label{eq:WD_objective}
 \end{equation}
-where $\mathbf{H}$ if the DFT of the linear transformation, and
-$\mathbf{N}$ if the DFT of the noise. Notice that we have supposed
-that the noise is additive.
-
-Because in denoising we suppose also the $\mathbf{H}=1$,
-Eq.~\ref{eq:Weiner_degradation_model} becomes
+Because $\mathbf{x}$ is seldom known, the WD uses the statistics of
+$\hat{\mathbf{x}}$ (the noisy signal) to approximate to
+Eq.~\ref{eq:WD_objective} (in other words, we can only estimate
+$\tilde{\mathbf{x}}$). It can be demostrated that such estimation can
+be found as
 \begin{equation}
-  \hat{\mathbf{X}} = \mathbf{X}+\mathbf{N}.
-  \label{eq:Weiner_noise_model}
+  \tilde{\mathbf{x}} = \text{DFT}^{-1}(\hat{\mathbf{X}}\mathbf{H}),
 \end{equation}
-
-The transfer function of the Weiner filter is
+where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
 \begin{equation}
-  W = \frac{\text{PSD}(x)}{\text{PSD}(x)+\text{PSD}(n)}
+  \mathbf{H} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{x}}) + \text{PSD}(\mathbf{n})}
+  \label{eq:WD_frequency_response}
 \end{equation}
+is the frequency response of the Wiener filter (its transfer
+function). In the signal domain, if the noise is ZAWG, the
+Eq.~\ref{eq:WD_frequency_response} becomes
+\begin{equation}
+  \mathbf{h}_k = \frac{\text{Var}(\hat{\mathbf{X}}_k)}{\text{Var}(\hat{\mathbf{X}}_k) + N\sigma^2},
+  \label{eq:WD_coeffs}
+\end{equation}
+where $\text{Var}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
+Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$, $N$ is the
+length of the noisy signal, and $\sigma^2$ is an estimation of the
+variance of the noise.
 
+Notice that $\text{len}(\mathbf{h})=N$.
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
 
@@ -1928,7 +1953,7 @@ property with respect to integration,
 \begin{equation}
 \int_{-\infty}^{\infty} s(t)\delta(t) \, dt = s(0),
 \end{equation}
-provided that $s(t)$ is continuous at $t=0$ \cite{Gonzalez1992digital}.
+provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
 
 %}}}
 
@@ -2503,14 +2528,14 @@ be a $p\times p$ matrix.
 The diagonal elements of $\sigma$ is the
 variance of the $i$-th variable:
 \begin{equation}
-  \text{Var}(X_i​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])^2].
+  \text{Var}(X_i)=\mathbb{E}[(X_i-\mathbb{E}[X_i])^2].
 \end{equation}
 
 For the off-diagonal elements (he element at position $(i,j)$ (where $i\neq j$)
 represents the covariance between the $i$-th and the $j$-th
 variables:
 \begin{equation}
-  \text{Cov}(X_i​,X_j​)=\mathbb{E}[(X_i​-\mathbb{E}[X_i​])(X_j​-\mathbb{E}[X_j​])]
+  \text{Cocv}(X_i,X_j)=\mathbb{E}[(X_i-\mathbb{E}[X_i])(X_j-\mathbb{E}[X_j])]
 \end{equation}
 Covariance measures the degree to which two variables
 change together.
