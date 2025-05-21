@@ -567,10 +567,12 @@ importance of each term at the $j\text{-th}$ scale/block.
 
 %}}}
 
-\subsection{\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{Pearson Correlation Coefficient (PPC)}}
+\subsection{Pearson Correlation Coefficient (PPC)}
 %{{{
 Essentially, correlation is the measure of how two or more variables
-are related to one another. The PPC is given by
+are related to one another. The
+\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{PPC}
+is given by
 \begin{equation}
   \text{PPC}(\mathbf{x}, \mathbf{y}) = \frac{\sum_j(\mathbf{x}_j - \overline{\mathbf{x}})(\mathbf{y}_j - \overline{\mathbf{y}})}{\sqrt{\sum_j (\mathbf{x}_j - \overline{\mathbf{x}})^2 \sum_j (\mathbf{y}_j - \overline{\mathbf{y}})^2}},
 \end{equation}
@@ -579,6 +581,33 @@ and $\mathbf{y}$.  As happen with the SSIM, the output is in
 $[-1, -1]$, meaning $-1$ a perfect negative linear relationship
 between the input tensors, $0$ no linear relation, and $1$ a perfect
 coincidence.
+
+Notice that the PCC can be found if we compute the cross-correlation
+only for the 0-displacement and the signals are normalized. Therefore,
+although the computation of the PCC has a computational complexity of
+$O(N)$, it is also possible to compute the cross-correlation in the
+Fourier domain (Wiener-Khinchin theorem, see Section~\ref{sec:WKT})
+with a complexity of $O(N\log N)$, using the following steps:
+\begin{enumerate}
+\item Take the FFT of $\mathbf{x}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{X} = \mathcal{F}(x).
+  \end{equation}
+\item Take the FFT of $\mathbf{y}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{Y} = \mathcal{F}(y).
+  \end{equation}
+\item Multiply (element-wise) $\mathbf{X}$ by the complex conjugate of
+  $\mathbf{Y}$ to get the CPSD (Cross-Power Spectral Density) ($O(N)$):
+  \begin{equation}
+    \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({r(\mathbf{x},\mathbf{y})})=\mathbf{X}\mathbf{Y}^*
+  \end{equation}
+\item Take the inverse FFT of the result to get the cross-correlation
+  function ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{PCC} = \mathcal{F}^{-1}(\text{CPSD}(\mathbf{x},\mathbf{y}))
+  \end{equation}
+\end{enumerate}
 
 %}}}
 
@@ -811,7 +840,7 @@ range of the FC curves should be [0, 1].
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{ccc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy_SFRC.ipynb}{\includegraphics{Confocal_MICE_noisy.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy.ipynb}{\includegraphics{Confocal_MICE_noisy.pdf}} \\
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy_SFRC.ipynb}{\includegraphics{Confocal_FISH_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy_SFRC.ipynb}{\includegraphics{Confocal_MICE_noisy_SFRC.pdf}}
     \end{tabular}
   }
@@ -1324,7 +1353,10 @@ have assumed that an attenuation higher than $1/\sqrt{2}$ (see
 Appendix~\ref{ape:tau_VS_eta}) can be high enought to filter out the
 frequencies higher than $\eta^*$.
 
-{\color{red} Podemos comparar diferentes algoritmos de denoising si usamos, para una determinada configuración de ruido, el filtrado óptimo (que es posible encontrar porque tenemos el GT). Nos va a salir una tabla con valores de PCC.}
+Appendix~\ref{ape:results} contains a table with the performance of
+the tested denoisers.
+
+%{\color{red} Podemos comparar diferentes algoritmos de denoising si usamos, para una determinada configuración de ruido, el filtrado óptimo (que es posible encontrar porque tenemos el GT). Nos va a salir una tabla con valores de PCC.}
 
 %Since all denoising algorithms have a similar behavior (they tend to
 %eliminate high frequencies and preserve low ones), we will consider
@@ -1549,10 +1581,10 @@ corrupted\footnote{A Wiener filter also considers that $\mathbf{x}$
   (such as a blurring), but we will ingnore this.} by noise. For this
 reason, WF is also known by \emph{minimum MSE filtering} and also by
 \emph{least square error fitering}. When the filter is used only for
-removing noise, as it is our case, we will speak about Wiener
-Denoising (WD).
+removing noise, as it is our case, we will speak about denoising using
+the WF.
 
-To use WD, the next conditions must be satisfied:
+To use WF, the next conditions must be satisfied:
 \begin{enumerate}
 \item The noise is not correlated with the original signal, i.e., the
   noise is ZAWG.
@@ -1561,16 +1593,16 @@ To use WD, the next conditions must be satisfied:
   variance remains constant).
 \end{enumerate}
 
-Under these assumptions, WD minimizes the MSE between the output of
+Under these assumptions, WF minimizes the MSE between the output of
 the filter $\tilde{\mathbf{x}}$ (the filtered signal) and the
 (unknown) clean signal $\mathbf{x}$,
 \begin{equation}
   \mathbb{E}[(\tilde{\mathbf{x}} - \mathbf{x})^2].
-  \label{eq:WD_objective}
+  \label{eq:WF_objective}
 \end{equation}
-Because $\mathbf{x}$ is seldom known, the WD uses the statistics of
+Because $\mathbf{x}$ is seldom known, the WF uses the statistics of
 $\hat{\mathbf{x}}$ (the noisy signal) to approximate to
-Eq.~\ref{eq:WD_objective} (in other words, we can only estimate
+Eq.~\ref{eq:WF_objective} (in other words, we can only estimate
 $\tilde{\mathbf{x}}$). It can be demostrated that such estimation can
 be found as
 \begin{equation}
@@ -1579,14 +1611,14 @@ be found as
 where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
 \begin{equation}
   \mathbf{H} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{x}}) + \text{PSD}(\mathbf{n})}
-  \label{eq:WD_frequency_response}
+  \label{eq:WF_frequency_response}
 \end{equation}
 is the frequency response of the Wiener filter (its transfer
 function). In the signal domain, if the noise is ZAWG, the
-Eq.~\ref{eq:WD_frequency_response} becomes
+Eq.~\ref{eq:WF_frequency_response} becomes
 \begin{equation}
   \mathbf{h}_k = \frac{\text{Var}(\hat{\mathbf{X}}_k)}{\text{Var}(\hat{\mathbf{X}}_k) + N\sigma^2},
-  \label{eq:WD_coeffs}
+  \label{eq:WF_coeffs}
 \end{equation}
 where $\text{Var}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
 Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$, $N$ is the
@@ -1938,6 +1970,32 @@ having more noisy instances, after averaing all the denoised volumes.
 
 \subsection{3D Random Shuffling Volume Denoising (3D-RSVD)}
 
+
+%}}}
+
+\section{Results}
+%{{{
+
+\begin{table}
+\begin{tabular}{r|ccc}
+  ~~ & Confocal\_FISH & TwoPhoton\_MICE & Confocal\_MICE \\
+  \hline
+  GF-GT & & & \\
+  GF-SFC & & \\
+  WF-GT & & \\
+  WF & & & \\
+\end{tabular}  
+\caption{PCC values for different denoising algorithms and parameters estimations.}
+\end{table}
+
+\begin{enumerate}
+\item GF-GT: Gaussian Filtering using the Ground Truth (clean image)
+  to determine, through brute-force search, the optimal standard
+  deviation of the filter.
+\item GF-SFC: Gaussian Filtering using the Self Fourier Correlation to
+  estimate the PSD of the noise.
+\end{enumerate}
+
 %}}}
 
 \appendix
@@ -1970,6 +2028,36 @@ property with respect to integration,
 \int_{-\infty}^{\infty} s(t)\delta(t) \, dt = s(0),
 \end{equation}
 provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
+
+%}}}
+
+\section{Energy of a signal (Parseval's theorem)}
+%{{{
+
+By definition, the energy $E()$ of a digital (discrete and finite) signal
+$\mathbf{x}$ of length $N$ is
+\begin{equation}
+  E(\mathbf{x}) = \sum_{i}|\mathbf{x}_i|^2.
+\end{equation}
+
+Notice that, by definition, the energy of a digital signal is finite,
+but grows with $N$.
+
+%}}}
+
+\section{Power of a signal}
+%{{{
+
+By definition, the power $P()$ of a digital (discrete and finite) signal
+$\mathbf{x}$ of length $N$ is
+\begin{equation}
+  P(\mathbf{x}) = \frac{1}{N}E(\mathbf{x}),
+\end{equation}
+i.e., its average energy.
+
+When working with signals very long ($N$ is big), working with the
+power of a signal instead of the energy can be more convenient to
+avoid arithmetic overflow.
 
 %}}}
 
@@ -2377,19 +2465,67 @@ arctangent function.
 \section{Power spectrum}
 %{{{
 
-The power spectrum shows how much energy a signal has at different
-frequencies. Therefore, if $\mathbf{S}$ is the DFT of $\mathbf{s}$
-(with $N$ samples),
+The power spectrum $P()$ of a digital signal $\mathbf{x}$ shows how
+much power a signal has at different frequencies. Therefore, if
+$\mathbf{X}$ is the DFT of $\mathbf{x}$ (with $N$ samples),
 \begin{equation}
-  \frac{1}{N}|S|^2
+  P(\mathbf{x}) = \frac{1}{N}|X|^2
 \end{equation}
-is the power spectrum of $\mathbf{s}$.
+is the power spectrum of $\mathbf{x}$.
 
-For real-valued digital signals, the spectrum is symmetric about
-$N/2$ (Nyquist frequency).
+Notice that, for real-valued digital signals, the spectrum is
+symmetric about $N/2$ (Nyquist frequency).
 
 %}}}
 
+\section{Cross-Power Spectral Density}
+The Cross Power Spectral Density (CPSD), also known as the
+cross-spectrum, analyzes the relationship between two different
+signals in the frequency domain. In other words, the CPSD quantifies
+the degree to which two signals are correlated or ``statistically
+connected'' at specific frequencies. A high CPSD value at a particular
+frequency indicates a strong correlation between the two signals at
+that frequency.
+
+The $\text{CPSD}$ between two signals $\mathbf{x}$ and $\mathbf{y}$ is
+the Fourier transform of the cross-correlation between these two
+signals:
+\begin{equation}
+  \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({r(\mathbf{x},\mathbf{y})}).
+\end{equation}
+
+Alternatively,
+\begin{equation}
+  \text{CPSD}(\mathbf{x},\mathbf{y})_f=\mathbb{E}[\mathbf{X}_f\mathbf{Y}_f^*].
+\end{equation}
+In other words, the CPSD for the frequency bin of index $f$ is the
+expectation of the product of the Fourier coefficients $\mathbf{X}_f$
+and $\mathbf{Y}_f^*$, for at least two (or more) segments (or
+instances) of the signals.
+
+\section{Power Spectral Density (PSD)}
+%{{{
+
+The PSD of a digital signal (and in general, of a wide-sense
+stationary discrete-time random processes) $\mathbf{x}$,
+$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
+$r(\mathbf{x},\mathbf{x})$:
+\begin{equation}
+  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
+\end{equation}
+
+Notice also that:
+\begin{equation}
+  \text{PSD}(\mathbf{x}) = \text{CPSD}(\mathbf{x}),
+\end{equation}
+and (Wiener–Khinchin Theorem):
+\begin{equation}
+  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
+\end{equation}
+
+% }}}
+
+\begin{comment}
 \section{Energy Spectral Density (ESD)}
 %{{{
 
@@ -2404,41 +2540,20 @@ where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
 complex conjugate.
 
 %}}}
-
-\section{Energy of a signal (Parseval's theorem)}
-%{{{
-
-The energy of a discrete-time signal is defined as
-\begin{equation}
-  E(\mathbf{x}) = \sum_n|x_n|^2.
-\end{equation}
-
-%}}}
-
-\section{Power Spectral Density (PSD)}
-%{{{
-
-The PSD of a wide-sense stationary discrete-time random processes
-$\mathbf{x}$,
-$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
-$r(\mathbf{x},\mathbf{x})$:
-\begin{equation}
-  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl},
-\end{equation}
-and, the auto-correlation function can be obtained as the inverse DFT
-of the PSD (see the Wiener–Khinchin theorem, Appendix \ref{ape:WKT}):
-\begin{equation}
-  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
-\end{equation}
-
-%}}}
+\end{comment}
 
 \section{Wiener-Khinching theorem}
 \label{ape:WKT}
 %{{{
 
 The Wiener-Khinching theorem (also known as the Wiener–Khintchine
-theorem or the Wiener–Khinchin–Einstein theorem) states that the
+theorem or the Wiener–Khinchin–Einstein theorem) states that the power
+spectral density (PSD) of a wide-sense stationary random process (its
+statistical properties do not change over time) is the Fourier
+transform of its autocorrelation function.
+
+
+states that the
 cross-correlation of two wide-sense stationary random processes is the
 inverse Fourier transform of the product of the power spectral tensity
 of one process and the conjugate of the power spectral density of the
@@ -2455,10 +2570,10 @@ transform of the power spectral density.
 \section{Cross-correlation}
 %{{{
 
-In the context of discrete-time signals, the cross-correlation
-measures the similarity between two signals $\mathbf{x}$ and
-$\mathbf{y}$ as a function of the time lag $l\in\mathcal{N}$ of one
-relative to the other. It is defined as
+The cross-correlation measures the similarity between two signals
+$\mathbf{x}$ and $\mathbf{y}$ as a function of the time lag
+$l\in\mathcal{N}$ of one relative to the other. In the case of
+discrete-time signals, it is defined as
 \begin{equation}
   {r(\mathbf{x},\mathbf{y})}_l=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
 \end{equation}
