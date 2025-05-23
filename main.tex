@@ -123,6 +123,22 @@ The most common imaging techiniques used in microscopy are:
 
 %}}}
 
+\section{Signals and random variables}
+Mathematically, we will model signals as random variables. A random
+variable is a mathematical formalization of a quantity or object which
+depends on random events. When more than one value is generated in one
+of these envents, we can establish a similar connection between
+multicomponent signals and vector random variables.
+
+In the case of multicomponent signals, ${\mathbf s}$ is usually
+assumed to be drawn from a multivariate normal distribution:
+\begin{equation}
+  \mathbf{s}~\mathcal{N}(0,\Lambda),
+\end{equation}
+where $\Lambda$ is the covariance matrix of $\mathbf{s}$ which
+describes the structure of the signal (see
+Section~\ref{sec:covariance}).
+
 \section{Common sources of noise}
 %{{{
 
@@ -164,10 +180,10 @@ Eq.~\ref{eq:noise_expectation_2}).
 %}}}
 \end{comment}
 
-\subsection{Zero-mean Additive White \href{https://en.wikipedia.org/wiki/Gaussian_noise}{Gaussian (ZAWG) noise}}
+\subsection{Zero-mean Additive White Gaussian (ZAWG) noise}
 %{{{
 
-A noisy signal $\hat{\mathbf s}$ corrupted by ZAWG noise can be modeled as
+A noisy signal $\hat{\mathbf s}$ corrupted by \href{https://en.wikipedia.org/wiki/Gaussian_noise}{Zero-mean Additive White Gaussian (ZAWG) noise} can be modeled as
 \begin{equation}
   \hat{\mathbf s} = {\mathbf s} + {\mathbf n}_{{\mathcal N}(\sigma)},
   \label{eq:AWG_noise_model}  
@@ -538,11 +554,12 @@ input images into $M$ non-overlapping blocks) with
 where $\overline{\mathbf x}_j$ is the mean of the $j$-th block of
 $\mathbf{x}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
 for $\mathbf{y}$), $\sigma_{\mathbf{x}_j\mathbf{y}_j}$ is the
-covariance (see Appendix \ref{sec:covariance}) of both blocks, $c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two
-variables used to stabilize the division with weak denominator, $L$ is
-the dynamic range of the samples, $k_1=0.01$, and $k_2=0.03$, and
-where the default
-size\footnote{See \href{https://scikit-image.org/docs/stable/api/skimage.metrics.html\#skimage.metrics.structural_similarity}{\texttt{skimage.metrics.structural\_similarity}}.}
+covariance (see Section \ref{sec:covariance}) of both blocks,
+$c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two variables used to stabilize the
+division with weak denominator, $L$ is the dynamic range of the
+samples, $k_1=0.01$, and $k_2=0.03$, and where the default
+size\footnote{See
+  \href{https://scikit-image.org/docs/stable/api/skimage.metrics.html\#skimage.metrics.structural_similarity}{\texttt{skimage.metrics.structural\_similarity}}.}
 of the local blocks is $7^D$, where $D$ is the number of signal
 dimensions. When evaulating, SSIM values below $0$ does not make
 sense.
@@ -699,22 +716,22 @@ resolution at which the signal/noise parameters can be successfully
 estudied.
 \end{comment}
 
-\subsection{\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{Fourier
-    Shell Correlation (FSC)} and Fourier Ring Correlation (FRC)
-  curves}
+\subsection{Fourier Shell Correlation (FSC) and Fourier Ring
+  Correlation (FRC) curves}
 \label{sec:fourier_correlation}
 %{{{
 
-The FSC curve measures the similarity between two 3D volumes
-represented in the Fourier domain \cite{verbeke2024self} (for the 2D
-case, the equivalent metric is called FRC). Each point of the curve
-prepresents the normalized cross-correlation between two ``shells''
-(``rings'' in 2D) of Fourier coefficients of both volumes
-(images). When the number of dimensions in the signal is irrelevant,
-we will refer to these metrics as Fourier Correlation (FC). The FC
-curve has become the universal resolution metric and is used to assess
-the quality of 3D reconstructions
-\cite{rosenthal2003optimal,scheres2012prevention}.
+The
+\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{FSC}
+curve measures the similarity between two 3D volumes represented in
+the Fourier domain \cite{verbeke2024self} (for the 2D case, the
+equivalent metric is called FRC). Each point of the curve prepresents
+the normalized cross-correlation between two ``shells'' (``rings'' in
+2D) of Fourier coefficients of both volumes (images). When the number
+of dimensions in the signal is irrelevant, we will refer to these
+metrics as Fourier Correlation (FC). The FC curve has become the
+universal resolution metric and is used to assess the quality of 3D
+reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
 
 \begin{comment}
 An advantage of correlation in the Fourier domain (FC\footnote{When
@@ -901,7 +918,7 @@ instances of a single input noisy image.
     \end{tabular}
   }
   \caption{More SFRC curves of \emph{artificially-noisy} images. The
-    parameters for SPRS are the same than the obtained the (true-)
+    parameters for SPRS are the same than the obtained by the (true-)
     noisy images.\label{fig:more_artificial_SRFC}}
 \end{figure}
 
@@ -1354,7 +1371,7 @@ Appendix~\ref{ape:tau_VS_eta}) can be high enought to filter out the
 frequencies higher than $\eta^*$.
 
 Appendix~\ref{ape:results} contains a table with the performance of
-the tested denoisers.
+some denoisers.
 
 %{\color{red} Podemos comparar diferentes algoritmos de denoising si usamos, para una determinada configuración de ruido, el filtrado óptimo (que es posible encontrar porque tenemos el GT). Nos va a salir una tabla con valores de PCC.}
 
@@ -2629,28 +2646,66 @@ is an observation, and the five pieces of information are the multiple
 variables.
 
 \section{Variance}
-The variance of a random variable $X$ is a measurement of its
-dispersion. It is defined as the expected value of the squared
-deviation from the mean, i.e., 
+The variance of a random variable $\mathbf{x}$, denoted by
+$\mathbb{V}(\mathbf{x})$ is a measurement of its dispersion. It is
+defined as the expected value of the squared deviation from the mean,
+i.e.,
+%\begin{equation}
+%  \operatorname{Var}(\mathbf{x}) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
+%\end{equation}
+%\begin{equation}
+%  \operatorname{Var}(\mathbf{x}) = \operatorname{Exp}\left[(X - \operatorname{Exp}[X])^2 \right].
+%\end{equation}
 \begin{equation}
-  \operatorname{Var}(X) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
+  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
 \end{equation}
 
 \section{Covariance}
 \label{sec:covariance}
 %{{{
 
-The covariance is a measure of how two random variables change
+The covariance $\mathbb{V}(\mathbf{x}, \mathbf{y})$ is a measure of
+how two random variables $\mathbf{x}$ and $\mathbf{y}$ change
 together. In simpler terms, it tells us the direction of the linear
 relationship between two variables. The covariance between two
 discrete signals $x$ and $y$ is calculated as
 \begin{equation}
   \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
 \end{equation}
+\begin{equation}
+  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
+\end{equation}
+\begin{equation}
+  \mathbb{V}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
+\end{equation}
 
 %}}}
 
 \section{Covariance matrix}
+\label{sec:covariance_matrix}
+
+The covariance matrix, usually denoted by $\Sigma$, is a square matrix
+that summarizes the relationships between two (multivariate)
+random variables. The elements along the main diagonal of the
+covariance matrix represent the variance (see
+Section~\ref{sec:covariance}) of each individual variable, i.e.
+\begin{equation}
+  \text{Var}(X_i)=\mathbb{E}[(X_i-\mathbb{E}[X_i])^2].
+\end{equation}
+and the
+off-diagonal elements (he element at position $(i,j)$ (where
+$i\neq j$) represents the covariance between the $i$-th and the $j$-th
+variables:
+\begin{equation}
+  \text{Cov}(X_i,X_j)=\mathbb{E}[(X_i-\mathbb{E}[X_i])(X_j-\mathbb{E}[X_j])].
+\end{equation}
+Therefore, if we have $n$ 
+
+
+defined by is a square matrix that  in which 
+
+
+
 Let's say you have a (multivariate) dataset with $n$ observations and
 $p$ variables, which can be represented as a matrix $X$ of size
 $n\i¡times p$. The covariance matrix, often denoted by $\Sigma$, will
