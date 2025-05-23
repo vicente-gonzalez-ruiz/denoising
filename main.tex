@@ -2669,14 +2669,19 @@ how two random variables $\mathbf{x}$ and $\mathbf{y}$ change
 together. In simpler terms, it tells us the direction of the linear
 relationship between two variables. The covariance between two
 discrete signals $x$ and $y$ is calculated as
-\begin{equation}
-  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
-\end{equation}
-\begin{equation}
-  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
-\end{equation}
+%\begin{equation}
+%  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
+%\end{equation}
+%\begin{equation}
+%  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
+%\end{equation}
 \begin{equation}
   \mathbb{V}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
+\end{equation}
+
+We define
+\begin{equation}
+  \mathbb{V}(\mathbf{x}) = \mathbb{C}(\mathbf{x}, \mathbf{x}).
 \end{equation}
 
 %}}}
@@ -2684,57 +2689,22 @@ discrete signals $x$ and $y$ is calculated as
 \section{Covariance matrix}
 \label{sec:covariance_matrix}
 
-The covariance matrix, usually denoted by $\Sigma$, is a square matrix
-that summarizes the relationships between two (multivariate)
-random variables. The elements along the main diagonal of the
-covariance matrix represent the variance (see
-Section~\ref{sec:covariance}) of each individual variable, i.e.
+The covariance matrix $\Sigma_{\overrightarrow{\mathbf{x}}}$ of a random vector $\overrightarrow{\mathbf{x}}=[\mathbf{x}_1,\cdots,\mathbf{x}_N]^T$, defined as,
 \begin{equation}
-  \text{Var}(X_i)=\mathbb{E}[(X_i-\mathbb{E}[X_i])^2].
+  (\Sigma_{\overrightarrow{\mathbf{x}}})_{i,j}=\mathbb{C}(\mathbf{x}_i,\mathbf{x}_j),
 \end{equation}
-and the
-off-diagonal elements (he element at position $(i,j)$ (where
-$i\neq j$) represents the covariance between the $i$-th and the $j$-th
-variables:
+is a $N\times N$ matrix
 \begin{equation}
-  \text{Cov}(X_i,X_j)=\mathbb{E}[(X_i-\mathbb{E}[X_i])(X_j-\mathbb{E}[X_j])].
-\end{equation}
-Therefore, if we have $n$ 
-
-
-defined by is a square matrix that  in which 
-
-
-
-Let's say you have a (multivariate) dataset with $n$ observations and
-$p$ variables, which can be represented as a matrix $X$ of size
-$n\i¡times p$. The covariance matrix, often denoted by $\Sigma$, will
-be a $p\times p$ matrix.
-
-The diagonal elements of $\sigma$ is the
-variance of the $i$-th variable:
-\begin{equation}
-  \text{Var}(X_i)=\mathbb{E}[(X_i-\mathbb{E}[X_i])^2].
-\end{equation}
-
-For the off-diagonal elements (he element at position $(i,j)$ (where $i\neq j$)
-represents the covariance between the $i$-th and the $j$-th
-variables:
-\begin{equation}
-  \text{Cocv}(X_i,X_j)=\mathbb{E}[(X_i-\mathbb{E}[X_i])(X_j-\mathbb{E}[X_j])]
-\end{equation}
-Covariance measures the degree to which two variables
-change together.
-
-\begin{equation}
-\Sigma = E\left[ (X - E[X])(X - E[X])^T \right] =
+\Sigma_{\overrightarrow{\mathbf{x}}} = 
 \begin{pmatrix}
-Var(X_1) & Cov(X_1, X_2) & \cdots & Cov(X_1, X_p) \\
-Cov(X_2, X_1) & Var(X_2) & \cdots & Cov(X_2, X_p) \\
+\mathbb{V}(\mathbf{x}_1) & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_p) \\
+\mathbb{C}(\mathbf{x}_2, \mathbf{x}_1) & \mathbb{V}(\mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_2, \mathbf{x}_p) \\
 \vdots & \vdots & \ddots & \vdots \\
-Cov(X_p, X_1) & Cov(X_p, X_2) & \cdots & Var(X_p)
+\mathbb{C}(\mathbf{x}_p, \mathbf{x}_1) & \mathbb{C}(\mathbf{x}_p, \mathbf{x}_2) & \cdots & \mathbb{V}(\mathbf{x}_p)
 \end{pmatrix}
 \end{equation}
+that express the covariance between the random variables of a random vector.
+
 
 \section{$L_2$ norm}
 \label{sec:L2_norm}
