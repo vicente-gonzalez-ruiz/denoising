@@ -124,20 +124,20 @@ The most common imaging techiniques used in microscopy are:
 %}}}
 
 \section{Signals and random variables}
-Mathematically, we will model signals as random variables. A random
+Mathematically, we can model signals as random variables. A random
 variable is a mathematical formalization of a quantity or object which
-depends on random events. When more than one value is generated in one
-of these envents, we can establish a similar connection between
-multicomponent signals and vector random variables.
+depends on random events. When more than one value (a vector) is
+generated in one of these envents, we can establish a similar
+connection between multicomponent signals and random vectors. Random
+variables (and therefore monocomponent signals) will be denoted with
+bold-faced symbols, such as $\mathbf{x}$. Random vectors
+(multicomponent signals) will be denoted as
+$\overrightarrow{\mathbf{x}}$.
 
-In the case of multicomponent signals, ${\mathbf s}$ is usually
-assumed to be drawn from a multivariate normal distribution:
-\begin{equation}
-  \mathbf{s}~\mathcal{N}(0,\Lambda),
-\end{equation}
-where $\Lambda$ is the covariance matrix of $\mathbf{s}$ which
-describes the structure of the signal (see
-Section~\ref{sec:covariance}).
+Statistically, random variables can be described throught the mean and
+the variance and the corresponding distribution. Random vectors
+require a mean for each component, a covariance matrix, and a
+multivariate distribution.
 
 \section{Common sources of noise}
 %{{{
@@ -1598,8 +1598,7 @@ corrupted\footnote{A Wiener filter also considers that $\mathbf{x}$
   (such as a blurring), but we will ingnore this.} by noise. For this
 reason, WF is also known by \emph{minimum MSE filtering} and also by
 \emph{least square error fitering}. When the filter is used only for
-removing noise, as it is our case, we will speak about denoising using
-the WF.
+removing noise, we are refering to denoising.
 
 To use WF, the next conditions must be satisfied:
 \begin{enumerate}
@@ -1619,9 +1618,9 @@ the filter $\tilde{\mathbf{x}}$ (the filtered signal) and the
 \end{equation}
 Because $\mathbf{x}$ is seldom known, the WF uses the statistics of
 $\hat{\mathbf{x}}$ (the noisy signal) to approximate to
-Eq.~\ref{eq:WF_objective} (in other words, we can only estimate
-$\tilde{\mathbf{x}}$). It can be demostrated that such estimation can
-be found as
+Eq.~\ref{eq:WF_objective} (in other words, in general we can only
+estimate $\tilde{\mathbf{x}}$). It can be demostrated that such
+estimation can be found as \cite{wiener1942extrapolation}
 \begin{equation}
   \tilde{\mathbf{x}} = \text{DFT}^{-1}(\hat{\mathbf{X}}\mathbf{H}),
 \end{equation}
@@ -1631,34 +1630,36 @@ where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
   \label{eq:WF_frequency_response}
 \end{equation}
 is the frequency response of the Wiener filter (its transfer
-function). In the signal domain, if the noise is ZAWG, the
-Eq.~\ref{eq:WF_frequency_response} becomes
+function). If the noise is ZAWF, the PSD can be approximated by the
+variance in a. Therefore, Eq.~\ref{eq:WF_frequency_response} becomes
 \begin{equation}
-  \mathbf{h}_k = \frac{\text{Var}(\hat{\mathbf{X}}_k)}{\text{Var}(\hat{\mathbf{X}}_k) + N\sigma^2},
+  \mathbf{H}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2},
   \label{eq:WF_coeffs}
 \end{equation}
-where $\text{Var}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
-Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$, $N$ is the
-length of the noisy signal, and $\sigma^2$ is an estimation of the
-variance of the noise.
-
-Notice that $\text{len}(\mathbf{h})=N$, and that to compute the
-variances of the Fourier coefficients, we need at least two instances
-of $\hat{\mathbf{x}}$. Neither such a large value of $N$ (filters that
-are too large would not adapt to local features) nor only two
-instances of the noisy signal (the variance values would have very
-little statistical significance) are adequate in a real
-experiment. For this reason, the signal is processed by windows. For
-these reasons, the implementation offered in Scipy
+where $\mathbb{V}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
+Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$ over a
+collection of $\hat{\mathbf{x}}$ instances, and $\sigma^2$ is (an
+estimation of) the variance of the noise. For this reason, the signal
+is typically processed by blocks. For example, the
+implementation offered in Scipy
 (\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}})
 requires two arguments:
 \begin{enumerate}
-\item A window size $w$, a parameter that should take into
-  consideration the details of the signal.
-\item A noise variance $\sigma$, which by default is
-  $\sigma=\mathbb{E}[\text{Var}(\hat{\mathbf{x}}_{\{i\}})]$, where
-  $\hat{\mathbf{x}}_{\{i\}}$ is the current window.
+\item The variance of the noise $\sigma$, which by default is
+  $\sigma=\mathbb{E}[\mathbb{V}(\hat{\mathbf{x}}_{\{i\}})]$, where
+  $\hat{\mathbf{x}}_{\{i\}}$ is the block used in the denoising
+  process.
+\item A window size $w$ which controls the block size in which the
+  energy of the noise is estimated.
 \end{enumerate}
+
+Another alternative to find the transfer function of the Wiener filter
+is to use the SFC \cite{verbeke2024self}. In this case,
+Eq.~\ref{eq:WF_frequency_response} boils down to
+\begin{equation}
+  \mathbf{H} = \text{SFC}(\hat{\mathbf{x}}).
+\end{equation}
+
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
 
@@ -2525,8 +2526,8 @@ instances) of the signals.
 
 The PSD of a digital signal (and in general, of a wide-sense
 stationary discrete-time random processes) $\mathbf{x}$,
-$\text{PSD}(\mathbf{x})$, is the DFT of its auto-correlation function
-$r(\mathbf{x},\mathbf{x})$:
+$\text{PSD}(\mathbf{x})$, is defined as the DFT of its
+auto-correlation function $r(\mathbf{x},\mathbf{x})$:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
 \end{equation}
