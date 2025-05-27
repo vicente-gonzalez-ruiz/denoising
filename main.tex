@@ -1633,12 +1633,12 @@ is the frequency response of the Wiener filter (its transfer
 function). If the noise is ZAWF, the PSD can be approximated by the
 variance in a. Therefore, Eq.~\ref{eq:WF_frequency_response} becomes
 \begin{equation}
-  \mathbf{H}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2},
+  \mathbf{H}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2_{\mathbf{n}}},
   \label{eq:WF_coeffs}
 \end{equation}
 where $\mathbb{V}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
 Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$ over a
-collection of $\hat{\mathbf{x}}$ instances, and $\sigma^2$ is (an
+collection of $\hat{\mathbf{x}}$ instances, and $\sigma^2_{\mathbf{n}}$ is (an
 estimation of) the variance of the noise. For this reason, the signal
 is typically processed by blocks. For example, the
 implementation offered in Scipy
@@ -1647,29 +1647,34 @@ requires two arguments:
 \begin{enumerate}
 \item The noise power, expressed as the average variance of the noise
   which by default is
-  $\sigma^2_i= \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}_{\{i\}})\right)$,
-  where $\hat{\mathbf{x}}_{\{i\}}$ is the window used in the denoising
-  process.
-\item The window size $w$.
+  ${\sigma^2_{\mathbf{n}}}=
+  \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}})\right)$. If the GT
+  signal were known, the noise power\footnote{Remember that the noise
+    isuncorrelated with the GT signal, and therefore the power of the
+    noise is the same in all the windows, on average.} can be found as
+  \begin{equation}
+    {\sigma^2}^*_{\mathbf{n}} = \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\right).
+  \end{equation}
+\item The window size $w$, which is the side of the (usually square)
+  window of pixels $\hat{\mathbf{x}}_{[i]}$ (a window with side $w$
+  centered at the $i$-th sample of the noisy signal). In general,
+  because $\sigma^2_{\mathbf{n}}$ is unknown, the denoising process
+  should be controlled using $w$ (the larger $w$, the greater the
+  filtering effect).
 \end{enumerate}
-In general, $\sigma^2_i$ is unknown, and therefore, the denoising
-process should be controlled with $w$ (the larger $w$, the greater the
-filtering effect).
-
-If the GT signal were known, the noise power\footnote{Remember that the
-  noise is additive and therefore, uncorrelated with the GT signal,
-  the power of the noise is the same in all the windows.} can be found
-as
+Concretelly,
 \begin{equation}
-  {\sigma^2}^* = \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\right),
+  \tilde{\mathbf{x}}_i = \left\{
+    \begin{array}{ll}
+      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) + \frac{\mathbb{V}(\hat{\mathbf{x}}_{[i]})-\sigma^2_\mathbf{n}}{\mathbb{V}(\hat{\mathbf{x}}_{[i]})}\left(\hat{\mathbf{x}}_i-\mathbb{E}(\hat{\mathbf{x}}_{[i]})\right) & : \ \mathbb{V}(\hat{\mathbf{x}}_{i]}) < \sigma^2_\mathbf{n} \\
+\mathbb{E}(\hat{\mathbf{x}}_{[i]}) & : \ \text{otherwise}
+    \end{array} \right..
 \end{equation}
-and we should set $w=1$ (we do not need to estimate the noise power).
 
-In the rest of this document, we will refer to this filter as
-``scipy.Wiener''.
+We will refer to this filter as ``scipy.Wiener''.
 
-Another alternative to perform Wiener denoising is to estimate the
-transfer function of the filter through the SFC of the noisy signal
+Alternatively, we can denoise the signal in the frequency domain using
+as the transfer function of the filter, the SFC of the noisy signal
 \cite{verbeke2024self}. In this case,
 Eq.~\ref{eq:WF_frequency_response} boils down to
 \begin{equation}
@@ -1677,7 +1682,7 @@ Eq.~\ref{eq:WF_frequency_response} boils down to
   \label{eq:WF_SFC}
 \end{equation}
 
-In this case, if the GT were known, Eq.~\ref{eq:WF_SFC} becomes
+Notice that, if the GT were known, Eq.~\ref{eq:WF_SFC} becomes
 \begin{equation}
   \mathbf{H}^* = \text{SFC}(\mathbf{x}).
   \label{eq:WF_SFC*}
