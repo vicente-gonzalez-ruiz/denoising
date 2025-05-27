@@ -949,7 +949,7 @@ the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
 \label{sec:SSNR}
 
 The SNR in the frequency domain can be defined in terms of the
-auto-correlation of the signal $\mathbf{s}$ and the cross-correlation
+autocorrelation of the signal $\mathbf{s}$ and the cross-correlation
 between the signal and the noise $\mathbf{n}$,
 \begin{equation}
   \text{SNR}(f) = \frac{R_{\mathbf{ss}}}{R_{\mathbf{sn}}}.
@@ -1645,20 +1645,45 @@ implementation offered in Scipy
 (\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}})
 requires two arguments:
 \begin{enumerate}
-\item The variance of the noise $\sigma$, which by default is
-  $\sigma=\mathbb{E}[\mathbb{V}(\hat{\mathbf{x}}_{\{i\}})]$, where
-  $\hat{\mathbf{x}}_{\{i\}}$ is the block used in the denoising
+\item The noise power, expressed as the average variance of the noise
+  which by default is
+  $\sigma^2_i= \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}_{\{i\}})\right)$,
+  where $\hat{\mathbf{x}}_{\{i\}}$ is the window used in the denoising
   process.
-\item A window size $w$ which controls the block size in which the
-  energy of the noise is estimated.
+\item The window size $w$.
 \end{enumerate}
+In general, $\sigma^2_i$ is unknown, and therefore, the denoising
+process should be controlled with $w$ (the larger $w$, the greater the
+filtering effect).
 
-Another alternative to find the transfer function of the Wiener filter
-is to use the SFC \cite{verbeke2024self}. In this case,
+If the GT signal were known, the noise power\footnote{Remember that the
+  noise is additive and therefore, uncorrelated with the GT signal,
+  the power of the noise is the same in all the windows.} can be found
+as
+\begin{equation}
+  {\sigma^2}^* = \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\right),
+\end{equation}
+and we should set $w=1$ (we do not need to estimate the noise power).
+
+In the rest of this document, we will refer to this filter as
+``scipy.Wiener''.
+
+Another alternative to perform Wiener denoising is to estimate the
+transfer function of the filter through the SFC of the noisy signal
+\cite{verbeke2024self}. In this case,
 Eq.~\ref{eq:WF_frequency_response} boils down to
 \begin{equation}
   \mathbf{H} = \text{SFC}(\hat{\mathbf{x}}).
+  \label{eq:WF_SFC}
 \end{equation}
+
+In this case, if the GT were known, Eq.~\ref{eq:WF_SFC} becomes
+\begin{equation}
+  \mathbf{H}^* = \text{SFC}(\mathbf{x}).
+  \label{eq:WF_SFC*}
+\end{equation}
+
+We will refer to this filter as ``Wiener-SFC''.
 
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
@@ -2527,7 +2552,7 @@ instances) of the signals.
 The PSD of a digital signal (and in general, of a wide-sense
 stationary discrete-time random processes) $\mathbf{x}$,
 $\text{PSD}(\mathbf{x})$, is defined as the DFT of its
-auto-correlation function $r(\mathbf{x},\mathbf{x})$:
+autocorrelation function $r(\mathbf{x},\mathbf{x})$:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
 \end{equation}
@@ -2575,7 +2600,7 @@ states that the
 cross-correlation of two wide-sense stationary random processes is the
 inverse Fourier transform of the product of the power spectral tensity
 of one process and the conjugate of the power spectral density of the
-other. Similarly, the auto-correlation is the inverse Fourier
+other. Similarly, the autocorrelation is the inverse Fourier
 transform of the power spectral density.
 
 % https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
@@ -2608,28 +2633,28 @@ Cross-correlation can be normalized using
 
 %}}}
 
-\section{Auto-correlation}
-\label{ape:auto-correlation}
+\section{Autocorrelation}
+\label{ape:autocorrelation}
 %{{{
 
-The auto-correlation of a digital signal is another digital signal that
+The autocorrelation of a digital signal is another digital signal that
 measures the similarity between the signal and a time-delayed version
 of itself as a function of the time lag. Essentially, it quantifies
 the degree to which a signal is correlated with its past or future
 values. Mathematically, for a discrete-time signal $\mathbf{x}$ of
-infinite length, the
-autocorrelation signal at a lag $l$ is defined as:
+infinite length, the autocorrelation signal at a lag $l$ is defined
+as:
 \begin{equation}
   {r(\mathbf{x},\mathbf{x})}_l=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
 \end{equation}
 where $l$ is the integer time lag.
 
-Normalized auto-correlation is defined as
+Normalized autocorrelation is defined as
 \begin{equation}
   {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
 \end{equation}
 
-Auto-correlation can be computed as the inverse Fourier transform of
+Autocorrelation can be computed as the inverse Fourier transform of
 the power spectral density.
 
 % }}}
