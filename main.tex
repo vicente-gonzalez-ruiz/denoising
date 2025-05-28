@@ -2025,15 +2025,19 @@ having more noisy instances, after averaing all the denoised volumes.
 %{{{
 
 \begin{table}
-\begin{tabular}{r|ccc}
-  ~~ & Confocal\_FISH & TwoPhoton\_MICE & Confocal\_MICE \\
-  \hline
-  GF-GT & & & \\
-  GF-SFC & & \\
-  WF-GT & & \\
-  WF & & & \\
-\end{tabular}  
-\caption{PCC values for different denoising algorithms and parameters estimations.}
+  \centering
+  \begin{tabular}{r|ccc}
+    ~~ & Confocal\_FISH & TwoPhoton\_MICE & Confocal\_MICE \\
+    \hline
+    GF-GT & & & \\
+    GF-SFC & & \\
+    WF-G & & \\
+    WF & & & \\
+  \end{tabular}  
+  \caption{Highest PCC values obtained by different denoising
+    algorithms for three images for which a noise-free version is
+    available. The denoising of these images has been conducted using
+    these noisy-free images and therefore, can be considered optimal.}
 \end{table}
 
 \begin{enumerate}
