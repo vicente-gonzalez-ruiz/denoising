@@ -10,10 +10,20 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{comment}
 \usepackage{color}
-%\usepackage[%
+\usepackage[acronym]{glossaries}
+
+% \usepackage[%
 %filename ,%
 %content={no image available}
 %]{draftfigure}
+
+\makeglossaries
+%\newacronym{label}{acronym}{definition}
+\newacronym{EOS}{EOS}{Even-Odd Splitting (see Section~\ref{sec:EOS})}
+\newacronym{CBS}{CBS}{ChessBoard Splitting}
+\newacronym{ICBS}{ICBS}{Interpolated \acrshort{CBS}}
+\newacronym{SCBS}{SCBS}{Subsampled \acrshort{CBS}}
+\newacronym{SPRS}{SPRS}{Structure Preserving Random Shuffling}
 
 \title{Denoising in Microscopy Imaging}
 
@@ -29,18 +39,11 @@
   visualize small specimens (including their internal structures) that
   cannot be seen with the naked eye. For this, some kind of
   interaction between the specimens and a source of energy must exist
-  (the specimen must be irradiated). In light miscroscopy (optical
-  micoscopes), the sample is irradiated with visible light or a
-  laser. In electron microscopy we use beans of electrons that can
-  pass through the sample (TEM (Transmission Electron Microscopy)) or
-  bounce on the sample (SEM (Scanning Electron Microscopy)). X-rays
-  and ions can be also used (the smaller the wavelength of the bean,
-  the higher the resolution). Unfortunately, the radiation also
-  degrades the samples, specially in the case of biological
-  specimens. To minimize this degradation, the radiation doses are
-  minimized, generating low signal-to-noise ratio images. In this
-  report, we describe, evaluate, and compare several image denoising
-  algorithms commonly used in microscopy.
+  (the specimen must be irradiated), an action that usually degrades
+  the specimen and for this reason, the radiation is minimized
+  generating low SNR images. In this report, we describe, evaluate,
+  and compare several image denoising algorithms commonly used in
+  microscopy.
 
 %}}}
 \end{abstract}
@@ -59,11 +62,12 @@
   %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
   $\{i\}$ & The set $i$ \\
   $\mathbf{s}_{\{i\}}$ & The elements of $\mathbf{s}$ with indices $\{i\}$ \\
-  $\mathbf{s}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the 2D signal (image) $\mathbf{s}$ \\
+  $\mathbf{s}_{[i]}$ & A window of samples of $\mathbf{s}$ centered at the $i$-th sample \\
+  $\mathbf{s}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{s}$ \\
   $\mathbf{s}_{:,x}$ & The $x$-th column of the image $\mathbf{s}$ \\
   $\mathbf{s}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{s}$ \\
   %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
-  $\mathbf{s}^{()}$ & A instance of $\mathbf{s}$, possibly noisy \\
+  %$\mathbf{s}^{()}$ & An instance of $\mathbf{s}$, possibly noisy \\
   $\mathbf{s}^{(i)}$ & The $i$-th instance of the signal $\mathbf{s}$ \\
   $\tilde{\mathbf{s}}^{(I)}$ & Approximation to $\mathbf{s}$ using $I$ instances \\ 
   $\overline{\mathbf{s}}$ & A mean of the samples of $\mathbf{s}$ \\ 
@@ -78,13 +82,14 @@
   $\mathbf{x}\mathbf{y}$ & $=\{\mathbf{x}_i\mathbf{y}_i\}$ (Hadamard product) \\ 
   $\mathcal{N}$ & The normal distribution \\ 
   $\mathcal{P}$ & The Poisson distribution \\
-  $\mathbf{s}\sim\mathcal{N}$ & The elements of $\mathbf{s}$ follows a normal distribution \\
-  $\mathbf{s}_{\mathcal{N}}$ & The same as $\mathbf{s}\sim\mathcal{N}$ \\
-  $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{s}_i$ takes the value $a$ \\
+  $\mathbf{x}\sim\mathcal{N}$ & The elements of $\mathbf{x}$ follows a normal distribution \\
+  $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
+  $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{x}_i$ takes the value $a$ \\
   $\Pr(\mathbf{x}=a, \mathbf{y}=b)$ & $\Pr(\mathbf{x}=a)$ and $\Pr(\mathbf{y}=b)$ (joint probability)  \\
-  $\mathrm{Su}(\mathbf{s})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{s}=x)>0\}$ (support of $\mathbf{s}$)\\
+  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
   $\mathbb{E}(\mathbf{s})$ & Expectation of $\mathbf{s}$ \\
+  $\mathbb{V}(\mathbf{s})$ & Variance of $\mathbf{s}$ \\
   $||\mathbf{s}||_2$ & $L_2$ norm of $\mathbf{s}$ \\
   $f_s$ & Sampling frequency \\
   $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{s})=\mathbf{S}$) \\
@@ -100,6 +105,17 @@
 
 \section{Imaging techniques}
 %{{{
+
+In light miscroscopy (optical
+  micoscopes), the sample is irradiated with visible light or a
+  laser. In electron microscopy we use a beam of electrons that can
+  pass through the sample (TEM (Transmission Electron Microscopy)) or
+  bounce on the sample (SEM (Scanning Electron Microscopy)). X-rays
+  and ions can be also used (the smaller the wavelength of the bean,
+  the higher the resolution). Unfortunately, the radiation also
+  degrades the samples, specially in the case of biological
+  specimens. To minimize this degradation, the radiation doses are
+  minimized, generating low signal-to-noise ratio images.
 
 The most common imaging techiniques used in microscopy are:
 
@@ -710,8 +726,8 @@ the feasibility of acquiring multiple such instances.
 When this is not possible, one way to simulate having two or more
 noisy instances of the same clean signal is to distribute the
 pixels/voxels across two or more images/volumes (see Appendices
-\ref{ape:EOS}, \ref{ape:CBS}, \ref{ape:ICBS}, \ref{ape:SCBS}, and
-\ref{ape:SPRS}). Unfortunately, the splitting reduces the spatial
+\ref{sec:EOS}, \ref{sec:CBS}, \ref{sec:ICBS}, \ref{sec:SCBS}, and
+\ref{sec:SPRS}). Unfortunately, the splitting reduces the spatial
 resolution at which the signal/noise parameters can be successfully
 estudied.
 \end{comment}
@@ -769,11 +785,11 @@ simulate such existence, by distributing the information of the only
 image we have $\mathbf{s}^{(1)}$ between two noisy (sub-)instances
 $\mathbf{s}^{(1.1)}$ and $\mathbf{s}^{(1.2)}$. For example, in
 \cite{verbeke2024self} a even/odd signal splitting (see
-Appendix~\ref{ape:EOS}) in 2D slices is proposed to compute the
+Appendix~\ref{sec:EOS}) in 2D slices is proposed to compute the
 SFC. In \cite{koho2019fourier} a subsampled-chessboard splitting
-pattern (see Appendix~\ref{ape:SCBS}) is used. Other ``splitting''
-techniques are described in Appendices \ref{ape:ICBS}, \ref{ape:SCBS},
-and \ref{ape:SPRS}. Unfortunately, the splitting reduces the spatial
+pattern (see Appendix~\ref{sec:SCBS}) is used. Other ``splitting''
+techniques are described in Appendices \ref{sec:ICBS}, \ref{sec:SCBS},
+and \ref{sec:SPRS}. Unfortunately, the splitting reduces the spatial
 resolution at which the signal/noise parameters can be successfully
 estudied. For example, in \cite{verbeke2024self} the SFC that
 resembles the true FC in some specific cases\footnote{Gaussian noise
@@ -801,10 +817,10 @@ least\footnote{When it is possible to use more instances, the
   were different, the uncorrelated noise is also present.} instances,
 $\hat{\mathbf{X}}^{(1)}$ and $\hat{\mathbf{X}}^{(2)}$. For example, in
 \cite{verbeke2024self} a even/odd signal splitting (see
-Appendix~\ref{ape:EOS}) in 2D slices is proposed to compute the SFC
+Appendix~\ref{sec:EOS}) in 2D slices is proposed to compute the SFC
 that resembles the true FC in some specific cases. In
 \cite{koho2019fourier} a subsampled-chessboard splitting pattern (see
-Appendix~\ref{ape:SCBS}) is used to compute SFC curves. Notice that,
+Appendix~\ref{sec:SCBS}) is used to compute SFC curves. Notice that,
 to resemble the true FC curves, they must be calibrated for some
 correlation threshold.
 \end{comment}
@@ -822,10 +838,7 @@ correlation threshold.
   \caption{SFRC (Self Fourier Ring Correlation) of clean images
     (generated by averaging (arithmetic mean) 50 noisy
     instances~\cite{zhang2019poisson}) using different
-    data-splitting/shuffling algoritms: EOS (Even-Odd Splitting), CBS
-    (ChessBoard Splitting), ICBS (Interpolated CBS), and SCBS
-    (Subsampled CBS), SPRS (Structure Preserving Random
-    Shuffling). SPRS curves have been computed using faded
+    data-splitting/shuffling algoritms: \acrshort{EOS}, \acrshort{CBS}, \acrshort{ICBS}, \acrshort{SCBS}, and \acrshort{SPRS}. SPRS curves have been computed using faded
     margins. \label{fig:SFC_vs_splitting_clean}}
 \end{figure}
 
@@ -846,7 +859,7 @@ correlation threshold.
 
 Fig.~\ref{fig:SFC_vs_splitting_clean} shows a comparison between
 several SFRC curves obtained using different techniques for generating
-the instances of a single clean\emph{clean}\footnote{Generated by
+the instances of a single \emph{clean}\footnote{Generated by
   computing the arithmetic mean of the pixels of several noisy
   instances \cite{zhang2019poisson}.} input image. Ideally, the dynamic
 range of the FC curves should be [0, 1].
@@ -1246,7 +1259,7 @@ determines the bandwidth of the filter.
 \end{figure}
 
 Multidimensional GF is separable (see
-Appendix~\ref{ape:GF_separability}), which means that we can apply the
+Appendix~\ref{sec:GF_separability}), which means that we can apply the
 1D filter to the $D$ dimensions of the signal to compute a $D$D
 denoising. De facto, Gaussian kernels are the only circularly
 symmetric kernels that are also separable
@@ -1336,7 +1349,7 @@ cut-off frequency
   \label{eq:search_eta}
 \end{equation}
 where $\alpha$ is the minimun correlation that should reach the SFC to consider that the corresponding ring/shell has a high enough SNR (see
-Appendix~\ref{ape:tau_VS_eta}). Once we have already estimated
+Appendix~\ref{sec:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
 frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
 
@@ -1354,7 +1367,7 @@ frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
 
 In the Fig.~\ref{fig:tau_GF_estimation} there is a comparison between
 the true $\tau^*$ values and their estimations, using the EOS
-technique (see Appendix~\ref{ape:EOS}) to compute the SFC curves (see
+technique (see Appendix~\ref{sec:EOS}) to compute the SFC curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
 (see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:eta_vs_tau})
 \begin{equation}
@@ -1367,10 +1380,10 @@ compute the SFC, only the first half of the frequencies provide
 reliable information. Notice that, to determine $\eta^*$ (the
 estimated ``optimal'' cut-off frequency of the Gaussian filter) we
 have assumed that an attenuation higher than $1/\sqrt{2}$ (see
-Appendix~\ref{ape:tau_VS_eta}) can be high enought to filter out the
+Appendix~\ref{sec:tau_VS_eta}) can be high enought to filter out the
 frequencies higher than $\eta^*$.
 
-Appendix~\ref{ape:results} contains a table with the performance of
+Appendix~\ref{sec:results} contains a table with the performance of
 some denoisers.
 
 %{\color{red} Podemos comparar diferentes algoritmos de denoising si usamos, para una determinada configuración de ruido, el filtrado óptimo (que es posible encontrar porque tenemos el GT). Nos va a salir una tabla con valores de PCC.}
@@ -1397,7 +1410,7 @@ when we are using the SPRS algorithm to find the SFC curve, or
 \end{equation}
 if we are using the EO algorithm to find the SFC curve,
 where we are supposing that $\beta=1/\sqrt{2}$ (see
-Appendix~\ref{ape:tau_VS_eta}). 
+Appendix~\ref{sec:tau_VS_eta}). 
 
 Fig.~\ref{fig:tau_GF_estimation} shows the result of using
 Eqs.~\ref{eq:tau_VS_eta_empirical_SPRS} and
@@ -1612,84 +1625,91 @@ To use WF, the next conditions must be satisfied:
 Under these assumptions, WF minimizes the MSE between the output of
 the filter $\tilde{\mathbf{x}}$ (the filtered signal) and the
 (unknown) clean signal $\mathbf{x}$,
+$\mathbb{E}\big((\tilde{\mathbf{x}} - \mathbf{x})^2\big)$.  Because
+$\mathbf{x}$ is seldom known, WF uses the statistics of
+$\hat{\mathbf{x}}$ (the noisy signal) to minimize the error. It can be demonstrated \cite{wiener1942extrapolation} that the signal reconstruction provided by
 \begin{equation}
-  \mathbb{E}[(\tilde{\mathbf{x}} - \mathbf{x})^2].
-  \label{eq:WF_objective}
+  \tilde{\mathbf{x}} = \text{IDFT}(\hat{\mathbf{X}}\mathbf{W}),
+  \label{eq:WF}
 \end{equation}
-Because $\mathbf{x}$ is seldom known, the WF uses the statistics of
-$\hat{\mathbf{x}}$ (the noisy signal) to approximate to
-Eq.~\ref{eq:WF_objective} (in other words, in general we can only
-estimate $\tilde{\mathbf{x}}$). It can be demostrated that such
-estimation can be found as \cite{wiener1942extrapolation}
+minimizes such error, where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
 \begin{equation}
-  \tilde{\mathbf{x}} = \text{DFT}^{-1}(\hat{\mathbf{X}}\mathbf{H}),
-\end{equation}
-where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
-\begin{equation}
-  \mathbf{H} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{x}}) + \text{PSD}(\mathbf{n})}
+  \mathbf{W} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{x}}) + \text{PSD}(\mathbf{n})}
   \label{eq:WF_frequency_response}
 \end{equation}
 is the frequency response of the Wiener filter (its transfer
-function). If the noise is ZAWF, the PSD can be approximated by the
-variance in a. Therefore, Eq.~\ref{eq:WF_frequency_response} becomes
+function). If the noise is ZAWF (in general Gaussian), the PSD can be
+approximated by the variance. Therefore,
+Eq.~\ref{eq:WF_frequency_response} becomes
 \begin{equation}
-  \mathbf{H}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2_{\mathbf{n}}},
+  \mathbf{W}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2_{\mathbf{n}}},
   \label{eq:WF_coeffs}
 \end{equation}
 where $\mathbb{V}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
 Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$ over a
-collection of $\hat{\mathbf{x}}$ instances, and $\sigma^2_{\mathbf{n}}$ is (an
-estimation of) the variance of the noise. For this reason, the signal
-is typically processed by blocks. For example, the
-implementation offered in Scipy
-(\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}})
+collection of $\hat{\mathbf{x}}$ instances, and
+$\sigma^2_{\mathbf{n}}$ is (an estimation of) the variance of the
+noise. For this reason, when we have only one instance of the signal,
+the filter is performed by blocks. For example, the implementation
+offered in Scipy
+(\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}}),
+which implements a local Wiener filter based on the use of windows,
 requires two arguments:
 \begin{enumerate}
+\item The window size $w$, which is the side of the (usually
+  square\footnote{This implementation can work with multidimensional
+    signals, and the shape of the window can be any, not only square
+    (2D case) or cubic (3D case).}) window of pixels
+  $\hat{\mathbf{x}}_{[i]}$ (a window with side $w$
+  centered\footnote{For this reason, $w$ must be odd.} at the $i$-th
+  sample of the noisy signal).
 \item The noise power, expressed as the average variance of the noise
-  which by default is
-  ${\sigma^2_{\mathbf{n}}}=
-  \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}})\right)$. If the GT
-  signal were known, the noise power\footnote{Remember that the noise
-    isuncorrelated with the GT signal, and therefore the power of the
-    noise is the same in all the windows, on average.} can be found as
+  which is locally\footnote{Only in the case this parameter, the noise
+    power, is not provided. If ${\sigma^2_{\mathbf{n}}}$ is known,
+    this value is used for all the windows.} computed for the window
+  centered at the $i$-th sample as
   \begin{equation}
-    {\sigma^2}^*_{\mathbf{n}} = \mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\right).
+    {\sigma^2_{\mathbf{n}}}=\mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}_{[i]})\right).
   \end{equation}
-\item The window size $w$, which is the side of the (usually square)
-  window of pixels $\hat{\mathbf{x}}_{[i]}$ (a window with side $w$
-  centered at the $i$-th sample of the noisy signal). In general,
-  because $\sigma^2_{\mathbf{n}}$ is unknown, the denoising process
-  should be controlled using $w$ (the larger $w$, the greater the
-  filtering effect).
+  If the GT signal were known, the noise power\footnote{Remember that
+    the noise isuncorrelated with the GT signal, and therefore the
+    power of the noise is the same in all the windows, on average.}
+  could be estimated as
+  \begin{equation}
+    {\sigma^2}_{\mathbf{n}} = \mathbb{E}\big(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\big).
+  \end{equation}
 \end{enumerate}
-Concretelly,
+Concretelly, the \texttt{scipy.signal.wiener} (\texttt{SSW} in short) implements
 \begin{equation}
   \tilde{\mathbf{x}}_i = \left\{
     \begin{array}{ll}
-      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) + \frac{\mathbb{V}(\hat{\mathbf{x}}_{[i]})-\sigma^2_\mathbf{n}}{\mathbb{V}(\hat{\mathbf{x}}_{[i]})}\left(\hat{\mathbf{x}}_i-\mathbb{E}(\hat{\mathbf{x}}_{[i]})\right) & : \ \mathbb{V}(\hat{\mathbf{x}}_{i]}) < \sigma^2_\mathbf{n} \\
-\mathbb{E}(\hat{\mathbf{x}}_{[i]}) & : \ \text{otherwise}
-    \end{array} \right..
+      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) + \dfrac{\mathbb{V}(\hat{\mathbf{x}}_{[i]})-\sigma^2_\mathbf{n}}{\mathbb{V}(\hat{\mathbf{x}}_{[i]})}\left(\hat{\mathbf{x}}_i-\mathbb{E}(\hat{\mathbf{x}}_{[i]})\right) & : \ \mathbb{V}(\hat{\mathbf{x}}_{[i]}) < \sigma^2_\mathbf{n} \\
+      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) & : \ \text{otherwise.}
+    \end{array} \right.
 \end{equation}
+In general, because $\sigma^2_{\mathbf{n}}$ is unknown, the denoising
+process should be controlled using $w$ (the larger $w$, the greater
+the filtering effect).
 
-We will refer to this filter as ``scipy.Wiener''.
-
-Alternatively, we can denoise the signal in the frequency domain using
-as the transfer function of the filter, the SFC of the noisy signal
+Alternatively, as Eq.~\ref{eq:WF} indicates, we can also denoise
+$\hat{\mathbf{x}}$ in the frequency domain using as the transfer
+function of the filter the $\text{SFC}(\hat{\mathbf{x}})$
 \cite{verbeke2024self}. In this case,
 Eq.~\ref{eq:WF_frequency_response} boils down to
 \begin{equation}
-  \mathbf{W}({\hat{\mathbf{x}}}) = \text{SFC}(\hat{\mathbf{x}}).
+  \mathbf{W} = \text{SFC}(\hat{\mathbf{x}}).
   \label{eq:WF_SFC}
 \end{equation}
+This version of WF will be denoted by \texttt{WF(SFC)}.
 
+\begin{comment}
 If the GT were known, Eq.~\ref{eq:WF_SFC} becomes
 \begin{equation}
   \mathbf{W}(\mathbf{x}) = \text{SFC}(\mathbf{x}).
   \label{eq:WF_SFC*}
 \end{equation}
-
 We will refer to this filter as ``Wiener-SFC''.
-
+\end{comment}
 
 % \section{Anisotropic Non-linear Diffusion (AND)}
 
@@ -2168,7 +2188,7 @@ approximation of the FTDF for finite-length signals.
 %}}}
 
 \section{Fourier transform of a Gaussian function}
-\label{ape:FTGF}
+\label{sec:FTGF}
 %{{{
 
 Let the Gaussian function defined by
@@ -2236,7 +2256,7 @@ Eq.~\ref{eq:gaussian_ape} to the impulse signal) of the Gaussian.
 %}}}
 
 \section{Cut-off frequency of a Gaussian filter}
-\label{ape:tau_VS_eta}
+\label{sec:tau_VS_eta}
 %{{{
 
 Gaussian filters are low-pass filters. In a low-pass filter we can
@@ -2389,7 +2409,7 @@ below $\beta$.
 \section{Transfer function of a Gaussian filter}
 %{{{
 
-\label{ape:transfer_function_GK}
+\label{sec:transfer_function_GK}
 
 The transfer function of a filter (kernel) is the Fourier transform of the
 impulse response of the filter,
@@ -2410,7 +2430,7 @@ we get that
 \end{comment}
 
 \section{About separability in multidimensional GF}
-\label{ape:GF_separability}
+\label{sec:GF_separability}
 %{{{
 
 A 2D function $f(x,y)$ is said to be separable if can be expressed as
@@ -2466,7 +2486,7 @@ the $\text{rank}(w)=1$.
 
 \begin{comment}
 \section{Self Fourier correlation of random data}
-\label{ape:SFC_random_data}
+\label{sec:SFC_random_data}
 %{{{
 
 In order to know the dynamic range of frequencies that we can use to
@@ -2595,7 +2615,7 @@ complex conjugate.
 \end{comment}
 
 \section{Wiener-Khinching theorem}
-\label{ape:WKT}
+\label{sec:WKT}
 %{{{
 
 The Wiener-Khinching theorem (also known as the Wiener–Khintchine
@@ -2643,7 +2663,7 @@ Cross-correlation can be normalized using
 %}}}
 
 \section{Autocorrelation}
-\label{ape:autocorrelation}
+\label{sec:autocorrelation}
 %{{{
 
 The autocorrelation of a digital signal is another digital signal that
@@ -2760,7 +2780,7 @@ related concepts, because
 %}}}
 
 \section{Even-Odd Splitting (EOS)}
-\label{ape:EOS}
+\label{sec:EOS}
 %{{{
 
 In the 2D case, EOS generates
@@ -2781,7 +2801,7 @@ where $\mathbf{X}$ is the input image, and $\{\mathbf{X}^{(i)}\}_{i=\{\text{VE},
 %}}}
 
 \section{ChessBoard Splitting (CBS)}
-\label{ape:CBS}
+\label{sec:CBS}
 %{{{
 
 In the 2D case, chessboard splitting (CBS) generates two distinct
@@ -2832,11 +2852,11 @@ the CBS algorithm consists of:
 %}}}
 
 \section{Interpolated ChessBoard Splitting (ICBS)}
-\label{ape:ICBS}
+\label{sec:ICBS}
 %{{{
 
 ICBS is an extension of CBS (which must be run first, see
-Appendix~\ref{ape:CBS}) where the $\{w\}$ (``white'') pixels involved
+Appendix~\ref{sec:CBS}) where the $\{w\}$ (``white'') pixels involved
 in Eq.~\ref{eq:copy_blacks} are interpolated using the $\{b\}$
 (``black'') pixels (see Eq.~\ref{eq:black_pixels}), and
 viceversa. Therefore,
@@ -2857,7 +2877,7 @@ and
 %}}}
 
 \section{Subsampled ChessBoard Splitting (SCBS)}
-\label{ape:SCBS}
+\label{sec:SCBS}
 %{{{
 
 SCBS \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
@@ -2887,7 +2907,7 @@ $\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
 %}}}
 
 \section{Structure Preserving Random Shuffling (SPRS)}
-\label{ape:SPRS}
+\label{sec:SPRS}
 %{{{
 
 SPRS can be used to generate similar instances of an image or volume
@@ -2952,6 +2972,8 @@ randomization (from a visual point of view) of the structures of the
 input image.
 
 %}}}
+
+\printglossary[type=\acronymtype]
 
 \bibliographystyle{plain}
 \bibliography{signal_processing,microscopy,denoising,motion_estimation,image_compression,statistics}
