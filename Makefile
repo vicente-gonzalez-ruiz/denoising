@@ -10,6 +10,7 @@ main.pdf:	main.tex
 		pdflatex main
 		(export BIBINPUTS=${BIBINPUTS}:${BIBS}; bibtex main)
 		pdflatex main
+		makeglossaries main
 		pdflatex main
 
 clean:
