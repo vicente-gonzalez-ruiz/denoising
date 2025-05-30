@@ -1,0 +1,39 @@
+\chapter{Cryo-CARE}
+%{{{
+
+CARE (Content-Aware image REstoration) methods leverage available
+knowledge about the data at hand ought to yield superior restoration
+results \cite{weigert2018content}. Concretely, Cryo-CARE
+\cite{buchholz2019cryo} is an implementation of Noise2Noise (N2N)
+\cite{lehtinen2018noise2noise}.
+
+N2N is a ``supervised'' learning method for denoising where an
+autoencoder neural network with skip connections (a U-Net) is trained
+on pairs of noisy images. However, unlike clasical supervised
+denoising deep-learning based models, that usually implement
+\cite{lehtinen2018noise2noise}
+\begin{equation}
+  \underset{\theta}{\operatorname{arg\,min}} \, \sum_j L \big(f_\theta(\hat{\mathbf X}_j^{(1)}), {\mathbf X}_j\big)
+\end{equation}
+\begin{equation}
+  \underset{\theta}{\operatorname{arg\,min}} \, \sum_j L \big(f_\theta(\{\hat{\mathbf X}\}_j), \{{\mathbf X}\}_j\big)
+\end{equation}
+
+where $\{(\hat{\mathbf{X}}, \mathbf{X})\}_j\}$ is the training
+dataset, and $L$ is a given lost function such as the MSE, N2N solve
+
+where $\{(\hat{\mathbf X}_j^{(1)}, {\mathbf X}_j)\}_{j=1}^M$ is the training
+dataset, and $L$ is a given lost function such as the MSE, N2N solves
+\begin{equation}
+  \underset{\theta}{\operatorname{arg\,min}} \, \sum_j L \big(f_\theta(\hat{\mathbf X}_j^{(1)}), {\mathbf X}_j^{(2)}\big).
+\end{equation}
+In other words, given two noisy versions
+$\{\hat{\mathbf Y}^{(1)}, \hat{\mathbf Y}^{(2)}\}$ of the same (clean)
+volume ${\mathbf Y}$, N2N learns to infeer a denoised volume
+\begin{equation}
+  \tilde{\mathbf Y}=\frac{1}{2}\big(f_\theta(\hat{\mathbf Y}^{(1)})+f_\theta(\hat{\mathbf Y}^{(2)})\big)\approx{\mathbf Y}.
+\end{equation}
+Obviously, better approximations to ${\mathbf Y}$ will be obtained
+having more noisy instances, after averaing all the denoised volumes.
+
+%}}}

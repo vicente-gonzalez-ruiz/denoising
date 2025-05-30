@@ -1,0 +1,39 @@
+\chapter{Final comparative}
+%{{{
+
+The experiments carried out have two main objectives:
+\begin{enumerate}
+\item Check the denoising performance of the tested algorithms. Since
+  we have the clean version of the noisy signal, it is possible to
+  establish an objective comparison between them.
+\item Check whether the presence of artificial noise in the clean
+  signals and their denoising generate results that are correlated
+  with the previous. If the answer is ``yes'', this basically means
+  that we can trust in the conclusions obtained from those experiments
+  where noise is artificially incorporated.
+\end{enumerate}
+
+\begin{table}
+  \centering
+  \begin{tabular}{r|ccc}
+    ~~ & Confocal\_FISH & TwoPhoton\_MICE & Confocal\_MICE \\
+    \hline
+    GF-GT & & & \\
+    GF-SFC & & \\
+    WF-G & & \\
+    WF & & & \\
+  \end{tabular}  
+  \caption{PCC values obtained by different denoising algorithms
+    applied to (non-artificially) noisy images for which a clean version
+    is available.}
+\end{table}
+
+\begin{enumerate}
+\item GF-GT: Gaussian Filtering using the Ground Truth (clean image)
+  to determine, through brute-force search, the optimal standard
+  deviation of the filter.
+\item GF-SFC: Gaussian Filtering using the Self Fourier Correlation to
+  estimate the PSD of the noise.
+\end{enumerate}
+
+%}}}

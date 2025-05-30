@@ -1,0 +1,112 @@
+\chapter{Wiener Filtering (WF)}
+%{{{
+
+The Wiener filter \cite{wiener1942extrapolation} is an adaptive linear
+filter designed to minimize the MSE between the denoised signal
+$\tilde{\mathbf{x}}$ and clean signal $\mathbf{x}$, when this has been
+corrupted\footnote{A Wiener filter also considers that $\mathbf{x}$
+  can be affected, apart from the noise, by some linear transformation
+  (such as a blurring), but we will ingnore this.} by noise. For this
+reason, WF is also known by \emph{minimum MSE filtering} and also by
+\emph{least square error fitering}. When the filter is used only for
+removing noise, we are refering to denoising.
+
+To use WF, the next conditions must be satisfied:
+\begin{enumerate}
+\item The noise is not correlated with the original signal, i.e., the
+  noise is ZAWG.
+\item The mean of the noise is zero.
+\item Signal and noise are stationary random processes (their mean and
+  variance remains constant).
+\end{enumerate}
+
+Under these assumptions, WF minimizes the MSE between the output of
+the filter $\tilde{\mathbf{x}}$ (the filtered signal) and the
+(unknown) clean signal $\mathbf{x}$,
+$\mathbb{E}\big((\tilde{\mathbf{x}} - \mathbf{x})^2\big)$.  Because
+$\mathbf{x}$ is seldom known, WF uses the statistics of
+$\hat{\mathbf{x}}$ (the noisy signal) to minimize the error. It can be demonstrated \cite{wiener1942extrapolation} that the signal reconstruction provided by
+\begin{equation}
+  \tilde{\mathbf{x}} = \text{IDFT}(\hat{\mathbf{X}}\mathbf{W}),
+  \label{eq:WF}
+\end{equation}
+minimizes such error, where $\hat{\mathbf{X}}$ is the DFT of $\hat{\mathbf{x}}$, and
+\begin{equation}
+  \mathbf{W} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{x}}) + \text{PSD}(\mathbf{n})}
+  \label{eq:WF_frequency_response}
+\end{equation}
+is the frequency response of the Wiener filter (its transfer
+function). If the noise is ZAWF (in general Gaussian), the PSD can be
+approximated by the variance. Therefore,
+Eq.~\ref{eq:WF_frequency_response} becomes
+\begin{equation}
+  \mathbf{W}_k = \frac{\mathbb{V}(\hat{\mathbf{X}}_k)}{\mathbb{V}(\hat{\mathbf{X}}_k) + \sigma^2_{\mathbf{n}}},
+  \label{eq:WF_coeffs}
+\end{equation}
+where $\mathbb{V}(\hat{\mathbf{X}}_k)$ is the variance of the $k$-th
+Fourier coefficient of the $\text{DFT}(\hat{\mathbf{x}})$ over a
+collection of $\hat{\mathbf{x}}$ instances, and
+$\sigma^2_{\mathbf{n}}$ is (an estimation of) the variance of the
+noise. For this reason, when we have only one instance of the signal,
+the filter is performed by blocks. For example, the implementation
+offered in Scipy
+(\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.wiener.html}{\texttt{scipy.signal.wiener}}),
+which implements a local Wiener filter based on the use of windows,
+requires two arguments:
+\begin{enumerate}
+\item The window size $w$, which is the side of the (usually
+  square\footnote{This implementation can work with multidimensional
+    signals, and the shape of the window can be any, not only square
+    (2D case) or cubic (3D case).}) window of pixels
+  $\hat{\mathbf{x}}_{[i]}$ (a window with side $w$
+  centered\footnote{For this reason, $w$ must be odd.} at the $i$-th
+  sample of the noisy signal).
+\item The noise power, expressed as the average variance of the noise
+  which is locally\footnote{Only in the case this parameter, the noise
+    power, is not provided. If ${\sigma^2_{\mathbf{n}}}$ is known,
+    this value is used for all the windows.} computed for the window
+  centered at the $i$-th sample as
+  \begin{equation}
+    {\sigma^2_{\mathbf{n}}}=\mathbb{E}\left(\mathbb{V}(\hat{\mathbf{x}}_{[i]})\right).
+  \end{equation}
+  If the GT signal were known, the noise power\footnote{Remember that
+    the noise isuncorrelated with the GT signal, and therefore the
+    power of the noise is the same in all the windows, on average.}
+  could be estimated as
+  \begin{equation}
+    {\sigma^2}_{\mathbf{n}} = \mathbb{E}\big(\mathbb{V}(\hat{\mathbf{x}}-\mathbf{x})\big).
+  \end{equation}
+\end{enumerate}
+Concretelly, the \texttt{scipy.signal.wiener} (\texttt{SSW} in short) implements
+\begin{equation}
+  \tilde{\mathbf{x}}_i = \left\{
+    \begin{array}{ll}
+      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) + \dfrac{\mathbb{V}(\hat{\mathbf{x}}_{[i]})-\sigma^2_\mathbf{n}}{\mathbb{V}(\hat{\mathbf{x}}_{[i]})}\left(\hat{\mathbf{x}}_i-\mathbb{E}(\hat{\mathbf{x}}_{[i]})\right) & : \ \mathbb{V}(\hat{\mathbf{x}}_{[i]}) < \sigma^2_\mathbf{n} \\
+      \mathbb{E}(\hat{\mathbf{x}}_{[i]}) & : \ \text{otherwise.}
+    \end{array} \right.
+\end{equation}
+In general, because $\sigma^2_{\mathbf{n}}$ is unknown, the denoising
+process should be controlled using $w$ (the larger $w$, the greater
+the filtering effect).
+
+Alternatively, as Eq.~\ref{eq:WF} indicates, we can also denoise
+$\hat{\mathbf{x}}$ in the frequency domain using as the transfer
+function of the filter the $\text{SFC}(\hat{\mathbf{x}})$
+\cite{verbeke2024self}. In this case,
+Eq.~\ref{eq:WF_frequency_response} boils down to
+\begin{equation}
+  \mathbf{W} = \text{SFC}(\hat{\mathbf{x}}).
+  \label{eq:WF_SFC}
+\end{equation}
+This version of WF will be denoted by \texttt{WF(SFC)}.
+
+\begin{comment}
+If the GT were known, Eq.~\ref{eq:WF_SFC} becomes
+\begin{equation}
+  \mathbf{W}(\mathbf{x}) = \text{SFC}(\mathbf{x}).
+  \label{eq:WF_SFC*}
+\end{equation}
+We will refer to this filter as ``Wiener-SFC''.
+\end{comment}
+
+%}}}
