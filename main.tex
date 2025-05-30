@@ -11,6 +11,7 @@
 \usepackage{comment}
 \usepackage{color}
 \usepackage[acronym]{glossaries}
+\usepackage{alphalph} % For extended alphabetical numbering
 
 % \usepackage[%
 %filename ,%
@@ -47,6 +48,8 @@
 
 %}}}
 \end{abstract}
+
+\tableofcontents
 
 \section*{Definitions and notation}
 %{{{
@@ -100,10 +103,6 @@
 \end{tabular}
 
 %}}}
-
-\tableofcontents
-\clearpage
-\newpage
 
 \section{Imaging techniques}
 %{{{
@@ -421,32 +420,6 @@ our experiments, $\alpha=0.5$.
 % %\end{equation}
 
 %}}}
-
-%}}}
-
-\section{The central limit theorem}
-\label{sec:CLT}
-%{{{
-
-The Central Limit Theorem (CLT) states that the distribution of the
-sample mean (or sum) of a sufficiently large number $I$ of independent
-and identically distributed (i.i.d.) random variables will approximate
-a normal distribution with mean zero, regardless of the original
-distribution of the individual variables \cite{kendall1968advanced}
-(always that the variance is finite). This implies that, for a hight
-enought large sample size of noisy instances $\hat{\mathbf{s}}^{(i)}$,
-it holds that
-\begin{equation}
-  \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},
-\end{equation}
-where $\mathbf{s}$ is the clean signal.
-
-Notice that the even if the noise is signal dependent, for a given
-sample $\hat{\mathbf{s}}^{(i)}_j$, the average (arithmetic mean) for
-all an infinite number of $i$ instances will become
-$\mathbf{s}_j$. Because this is imposible physically, our \emph{clean}
-signal in practice will be always a $\tilde{\mathbf{s}}^{(I)}$ which
-will depends on $I$.
 
 %}}}
 
@@ -2037,8 +2010,20 @@ having more noisy instances, after averaing all the denoised volumes.
 
 %}}}
 
-\section{Results}
+\section{Experiments}
 %{{{
+
+The experiments carried out have two main objectives:
+\begin{enumerate}
+\item Check the denoising performance of the tested algorithms. Since
+  we have the clean version of the noisy signal, it is possible to
+  establish an objective comparison between them.
+\item Check whether the presence of artificial noise in the clean
+  signals and their denoising generate results that are correlated
+  with the previous. If the answer is ``yes'', this basically means
+  that we can trust in the conclusions obtained from those experiments
+  where noise is artificially incorporated.
+\end{enumerate}
 
 \begin{table}
   \centering
@@ -2050,10 +2035,9 @@ having more noisy instances, after averaing all the denoised volumes.
     WF-G & & \\
     WF & & & \\
   \end{tabular}  
-  \caption{Highest PCC values obtained by different denoising
-    algorithms for three images for which a noise-free version is
-    available. The denoising of these images has been conducted using
-    these noisy-free images and therefore, can be considered optimal.}
+  \caption{PCC values obtained by different denoising algorithms
+    applied to (non-artificially) noisy images for which a clean version
+    is available.}
 \end{table}
 
 \begin{enumerate}
@@ -2067,7 +2051,42 @@ having more noisy instances, after averaing all the denoised volumes.
 %}}}
 
 \appendix
+
+% Redefine the appendix numbering to use alphalph's extended alphabet
+\makeatletter
+\renewcommand*{\thesection}{%
+  \AlphAlph{\value{section}}%
+}
+\makeatother
+
 %{{{
+
+\section{The central limit theorem}
+\label{sec:CLT}
+%{{{
+
+The Central Limit Theorem (CLT) states that the distribution of the
+sample mean (or sum) of a sufficiently large number $I$ of independent
+and identically distributed (i.i.d.) random variables will approximate
+a normal distribution with mean zero, regardless of the original
+distribution of the individual variables \cite{kendall1968advanced}
+(always that the variance is finite). This implies that, for a hight
+enought large sample size of noisy instances $\hat{\mathbf{s}}^{(i)}$,
+it holds that
+\begin{equation}
+  \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},
+\end{equation}
+where $\mathbf{s}$ is the clean signal.
+
+Notice that the even if the noise is signal dependent, for a given
+sample $\hat{\mathbf{s}}^{(i)}_j$, the average (arithmetic mean) for
+all an infinite number of $i$ instances will become
+$\mathbf{s}_j$. Because this is imposible physically, our \emph{clean}
+signal in practice will be always a $\tilde{\mathbf{s}}^{(I)}$ which
+will depends on $I$.
+
+%}}}
+
 
 \section{Signal sampling}
 %{{{
