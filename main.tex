@@ -12,6 +12,7 @@
 \usepackage{color}
 \usepackage[acronym]{glossaries}
 %\usepackage{alphalph} % For extended alphabetical numbering
+\usepackage{appendix}
 
 % \usepackage[%
 %filename ,%
@@ -19,8 +20,26 @@
 %]{draftfigure}
 
 \makeglossaries
-%\newacronym{label}{acronym}{definition}
-\newacronym{EOS}{EOS}{Even-Odd Splitting (see Section~\ref{sec:EOS})}
+% \newacronym{label}{acronym}{definition}
+
+\newacronym{LM}{LM}{Light Microscopy}
+\newacronym{EM}{EM}{Electron Microscopy}
+\newacronym{TEM}{TEM}{Transmission Electron Microscopy}
+\newacronym{SEM}{SEM}{Scanning Electron Microscopy}
+\newacronym{SPM}{SPM}{Scanning Probe Microscopy}
+\newacronym{AFM}{AFM}{Atomic Force Microscopy}
+\newacronym{STM}{STM}{Scanning Tunneling Microscope}
+
+\newacronym{SNR}{SNR}{Signal-to-Noise Ratio}
+\newacronym{SRV}{SRV}{Stationary Random Variable}
+\newacronym{FTDF}{FTDF}{Fourier Transform of a Discrete Function}
+\newacronym{DTFT}{DTFT}{Discrete Time Fourier Transform}
+\newacronym{DFT}{DFT}{Discrete Fourier Transform}
+\newacronym{PS}{PS}{Power Spectrum}
+\newacronym{PSD}{PSD}{Power Spectral Density}
+\newacronym{CPSD}{CPSD}{Cross-Power Spectral Density}
+
+\newacronym{EOS}{EOS}{Even-Odd Splitting}
 \newacronym{CBS}{CBS}{ChessBoard Splitting}
 \newacronym{ICBS}{ICBS}{Interpolated \acrshort{CBS}}
 \newacronym{SCBS}{SCBS}{Subsampled \acrshort{CBS}}
@@ -33,6 +52,65 @@
 \begin{document}
 \maketitle
 \tableofcontents
+
+\section*{Definitions and notation}
+%{{{
+
+\begin{tabular}{ll}
+  $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
+  $s(t)$ & A (continuous) signal as a function of time \\
+  $s[n]$ & A discrete signal (only) defined at instants of time $tn, n\in\mathcal{Z}, t>0$ \\
+  $\mathbf{s}$ & A digital (discrete and finite) signal (e.g., an image) \\
+  $\mathbf{s}_{i}$ & The $i$-th element of $\mathbf{s}=\{\mathbf{s}_{i}\}_{i=0}^{N-1}=\{\mathbf{s}_{i}\}$ \\
+  %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
+  $\{i\}$ & The set $i$ \\
+  $\mathbf{s}_{\{i\}}$ & The elements of $\mathbf{s}$ with indices $\{i\}$ \\
+  $\mathbf{s}_{[i]}$ & A window of samples of $\mathbf{s}$ centered at the $i$-th sample \\
+  $\mathbf{s}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{s}$ \\
+  $\mathbf{s}_{:,x}$ & The $x$-th column of the image $\mathbf{s}$ \\
+  $\mathbf{s}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{s}$ \\
+  %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
+  %$\mathbf{s}^{()}$ & An instance of $\mathbf{s}$, possibly noisy \\
+  $\mathbf{s}^{(i)}$ & The $i$-th instance of the signal $\mathbf{s}$ \\
+  $\tilde{\mathbf{s}}^{(I)}$ & Approximation to $\mathbf{s}$ using $I$ instances \\ 
+  $\overline{\mathbf{s}}$ & A mean of the samples of $\mathbf{s}$ \\ 
+  $\href{https://docs.python.org/3/library/functions.html#len}{\text{len}}(\mathbf{s})$ & $=\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ Number of elements in $\mathbf{s}$ \\
+  $\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\text{shape}}(\mathbf{s})$ & ($=\mathbf{s}.{\mathsf{shape}}$) Shape of $\mathbf{s}$ \\
+  $\text{rank}(\mathbf{s})$ & ($=\mathbf{s}.\mathsf{rank}=\text{len}(\mathbf{s}.\mathsf{shape})$) Dimensionality of $\mathbf{s}$ \\
+  $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(s)$ & $=\{0, 1, \cdots, s-1\}$ \\
+  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{s})$ & $=\{0\}_{i=0}^{\mathbf{s}.\mathsf{size}-1}$ \\
+  % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
+  $\alpha\mathbf{s}$ & $=\{\alpha\mathbf{s}_i\}$ (scalar multiplication) \\
+  $\mathbf{x}+\mathbf{y}$ & $=\{\mathbf{x}_i + \mathbf{y}_i\}$ (Hadamard addition) \\ 
+  $\mathbf{x}\mathbf{y}$ & $=\{\mathbf{x}_i\mathbf{y}_i\}$ (Hadamard product) \\ 
+  $\mathcal{N}$ & The normal distribution \\ 
+  $\mathcal{P}$ & The Poisson distribution \\
+  $\mathbf{x}\sim\mathcal{N}$ & The elements of $\mathbf{x}$ follows a normal distribution \\
+  $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
+  $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{x}_i$ takes the value $a$ \\
+  $\Pr(\mathbf{x}=a, \mathbf{y}=b)$ & $\Pr(\mathbf{x}=a)$ and $\Pr(\mathbf{y}=b)$ (joint probability)  \\
+  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
+  $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
+  $\mathbb{E}(\mathbf{s})$ & Expectation of $\mathbf{s}$ \\
+  $\mathbb{V}(\mathbf{s})$ & Variance of $\mathbf{s}$ \\
+  $||\mathbf{s}||_2$ & $L_2$ norm of $\mathbf{s}$ \\
+  $f_s$ & Sampling frequency \\
+  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{s})=\mathbf{S}$) (see Section~\ref{sec:Fourier_transform})\\
+  $\mathcal{F}^{-1}$ & The inverse Fourier transform ($\mathcal{F}^{-1}(\mathbf{S})=\mathbf{s}$)  (see Section~\ref{sec:Fourier_transform})\\
+  $\cdot^*$ & the complex conjugate of $\cdot$ \\
+  $\mathbf{x}*\mathbf{y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})\mathcal{F}(\mathbf{y}))=\mathcal{F}^{-1}(\mathbf{X}\mathbf{Y})$ (convolution) \\
+  $A(b)$ & $A$ depends on (parameter) $b$ \\
+  $A.b$ & The $b$ component of the data structure $A$ \\
+  $(A)b$ & First $A$, then $b$ \\
+  $E(\mathbf{s})$ & Energy of $\mathbf{s}$ (see Section~\ref{sec:energy_signal}) \\
+  $P(\mathbf{s})$ & Power of $\mathbf{s}$ (see Section~\ref{sec:power_signal}) \\
+  $\text{PS}(\mathbf{s})$ & Power spectrum of $\mathbf{s}$ (see Section~\ref{sec:power_spectrum}) \\
+  $\text{PSD}(\mathbf{s})$ & Power spectral density of $\mathbf{s}$ (see Section~\ref{sec:PSD}) \\
+  $r(\mathbf{x},\mathbf{y})$ & Cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation}) \\
+  $\rho(\mathbf{x},\mathbf{y})$ & Normalized cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation})
+\end{tabular}
+
+%}}}
 
 \input{intro}
 \input{signals}
