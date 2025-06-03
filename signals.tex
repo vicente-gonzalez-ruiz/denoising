@@ -1,15 +1,14 @@
 \chapter{Signals}
-%{{{
 
 Mathematically, we can model signals as random variables. A random
 variable is a mathematical formalization of a quantity or object which
 depends on random events. When more than one value (a vector) is
-generated in one of these envents, we can establish a similar
-connection between multicomponent signals and random vectors. Random
-variables (and therefore monocomponent signals) will be denoted with
-bold-faced symbols, such as $\mathbf{x}$. Random vectors
-(multicomponent signals) will be denoted as
-$\overrightarrow{\mathbf{x}}$.
+generated in one of these events, we can establish a similar
+connection between multicomponent signals and random vectors. In this
+document, random variables (and therefore monocomponent signals) will
+be denoted with lower-case bold-faced symbols, such as
+$\mathbf{x}$. Random vectors (multicomponent signals) will be denoted
+as $\overrightarrow{\mathbf{x}}$.
 
 Statistically, random variables can be described throught the mean and
 the variance and the corresponding distribution. Random vectors
@@ -47,6 +46,7 @@ provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
 %}}}
 
 \section{Energy of a signal (Parseval's theorem)}
+\label{sec:energy_signal}
 %{{{
 
 By definition, the energy $E()$ of a digital (discrete and finite) signal
@@ -61,6 +61,7 @@ but grows with $N$.
 %}}}
 
 \section{Power of a signal}
+\label{sec:power_signal}
 %{{{
 
 By definition, the power $P()$ of a digital (discrete and finite) signal
@@ -77,6 +78,7 @@ avoid arithmetic overflow.
 %}}}
 
 \section{Fourier Transform (FT)}
+\label{sec:Fourier_transform}
 %{{{
 
 The Fourier Transform of a 1D continuous function $f(x)$ is
@@ -93,12 +95,12 @@ where $w=2\pi f$ denotes angular frequency, $j=\sqrt{-1}$, and $f$ frequency.
 %}}}
 
 \section{Fourier Transform of a Discrete Function (FTDF)}
+\label{sec:FTDF}
 %{{{
 
 If the function is discrete (defined only in a set of points in the
 domain of the function, for example, time in the case of the sound),
-its Fourier transform, also known as the Discrete Time Fourier
-Transform (DTFT), is
+its Fourier transform, also known as the \gls{DTFT}, is
 \begin{equation}
   X(e^{jw}) = \sum_{n=-\infty}^{\infty}x[n]e^{-jwn}
 \end{equation}
@@ -106,31 +108,34 @@ which is a continuous function of $w$, and its inverse is
 \begin{equation}
   x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{jw})e^{jwn}dw.
 \end{equation}
-The FTDF is periodic with period $2\pi$.
+The \acrshort{FTDF} is periodic with period $2\pi$.
 
 %}}}
 
 \section{Discrete Fourier Transform (DFT)}
+\label{sec:DFT}
 %{{{
 
-The DFT of a digital signal $\mathbf{x}$ (discrete and finite) of
-lenght $N$ is defined as
+The \gls{DFT} of a digital signal $\mathbf{x}$ (discrete and finite)
+of lenght $N$ is defined as
 \begin{equation}
   \mathbf{X}_f=\sum_{n=0}^{N-1}\mathbf{x}_ne^{-2\pi jf\frac{n}{N}},\quad f=0,1,\cdots,N-1
   \label{eq:DFT}
 \end{equation}
-where $f$ denotes (discrete) frequency bins. The inverse DFT is
+where $f$ denotes (discrete) frequency bins. The inverse \gls{DFT} is
 \begin{equation}
   \mathbf{x}_n=\frac{1}{N}\sum_{f=0}^{N-1}\mathbf{X}_fe^{2\pi jn\frac{f}{N}}, \quad  n=0,1,\cdots,N-1.
 \end{equation}
 
-Notice that the DFT can be interpreted as sampling the FTDF at $N$
-evenly spaced points over $[-\pi, \pi)$. So, the DFT is a discrete
-approximation of the FTDF for finite-length signals.
+Notice that the \gls{DFT} can be interpreted as sampling the
+\gls{FTDF} at $N$ evenly spaced points over $[-\pi, \pi)$. So, the
+\gls{DFT} is a discrete approximation of the \gls{FTDF} for
+finite-length signals.
 
 %}}}
 
 \section{Fourier spectrum}
+\label{sec:Fourier_spectrum}
 %{{{
 
 The Fourier transform of a signal $\mathbf{s}$ is a complex signal
@@ -150,14 +155,15 @@ arctangent function.
 
 %}}}
 
-\section{Power spectrum}
+\section{Power spectrum (PS)}
+\label{sec:power_spectrum}
 %{{{
 
-The power spectrum $P()$ of a digital signal $\mathbf{x}$ shows how
-much power a signal has at different frequencies. Therefore, if
-$\mathbf{X}$ is the DFT of $\mathbf{x}$ (with $N$ samples),
+The power spectrum $\text{PS}()$ of a digital signal $\mathbf{x}$
+shows how much power a signal has at different frequencies. Therefore,
+if $\mathbf{X}$ is the DFT of $\mathbf{x}$ (with $N$ samples),
 \begin{equation}
-  P(\mathbf{x}) = \frac{1}{N}|X|^2
+  \text{PS}(\mathbf{x}) = \frac{1}{N}|X|^2
 \end{equation}
 is the power spectrum of $\mathbf{x}$.
 
@@ -166,16 +172,16 @@ symmetric about $N/2$ (Nyquist frequency).
 
 %}}}
 
-\section{Cross-Power Spectral Density}
-The Cross Power Spectral Density (CPSD), also known as the
-cross-spectrum, analyzes the relationship between two different
-signals in the frequency domain. In other words, the CPSD quantifies
-the degree to which two signals are correlated or ``statistically
-connected'' at specific frequencies. A high CPSD value at a particular
-frequency indicates a strong correlation between the two signals at
-that frequency.
+\section{Cross-Power Spectral Density (CPSD)}
+\label{sec:CPSD}
+The \gls{CPSD}, also known as the cross-spectrum, analyzes the
+relationship between two different signals in the frequency domain. In
+other words, the \gls{CPSD} quantifies the degree to which two signals
+are correlated or ``statistically connected'' at specific
+frequencies. A high \gls{CPSD} value at a particular frequency indicates a
+strong correlation between the two signals at that frequency.
 
-The $\text{CPSD}$ between two signals $\mathbf{x}$ and $\mathbf{y}$ is
+The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
 the Fourier transform of the cross-correlation between these two
 signals:
 \begin{equation}
@@ -186,17 +192,18 @@ Alternatively,
 \begin{equation}
   \text{CPSD}(\mathbf{x},\mathbf{y})_f=\mathbb{E}[\mathbf{X}_f\mathbf{Y}_f^*].
 \end{equation}
-In other words, the CPSD for the frequency bin of index $f$ is the
-expectation of the product of the Fourier coefficients $\mathbf{X}_f$
-and $\mathbf{Y}_f^*$, for at least two (or more) segments (or
-instances) of the signals.
+In other words, the \gls{CPSD} for the frequency bin of index $f$ is
+the expectation of the product of the Fourier coefficients
+$\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
+segments (or instances) of the signals.
 
 \section{Power Spectral Density (PSD)}
+\label{sec:PSD}
 %{{{
 
-The PSD of a digital signal (and in general, of a wide-sense
+The \gls{PSD} of a digital signal (and in general, of a wide-sense
 stationary discrete-time random processes) $\mathbf{x}$,
-$\text{PSD}(\mathbf{x})$, is defined as the DFT of its
+$\text{PSD}(\mathbf{x})$, is defined as the \gls{DFT} of its
 autocorrelation function $r(\mathbf{x},\mathbf{x})$:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
@@ -211,7 +218,7 @@ and (Wiener–Khinchin Theorem):
   r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
 \end{equation}
 
-% }}}
+%}}}
 
 \begin{comment}
 \section{Energy Spectral Density (ESD)}
@@ -234,45 +241,42 @@ complex conjugate.
 \label{sec:WKT}
 %{{{
 
-The Wiener-Khinching theorem (also known as the Wiener–Khintchine
-theorem or the Wiener–Khinchin–Einstein theorem) states that the power
-spectral density (PSD) of a wide-sense stationary random process (its
-statistical properties do not change over time) is the Fourier
-transform of its autocorrelation function.
-
-
-states that the
-cross-correlation of two wide-sense stationary random processes is the
-inverse Fourier transform of the product of the power spectral tensity
-of one process and the conjugate of the power spectral density of the
-other. Similarly, the autocorrelation is the inverse Fourier
-transform of the power spectral density.
+The Wiener-Khinching theorem states that the \gls{PSD} of a wide-sense
+stationary random process (its statistical properties do not change
+over time) is the Fourier transform of its autocorrelation
+function. Therefore, the cross-correlation of two wide-sense
+stationary random processes is the inverse Fourier transform of the
+product of the \gls{PSD} of one process and the conjugate
+of the \gls{PSD} of the other. Similarly, the
+autocorrelation is the inverse Fourier transform of the \gls{PSD}.
 
 % https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
 \begin{equation}
   S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
 \end{equation}
 
-% }}}
-
+%}}}
 
 \section{Cross-correlation}
+\label{sec:cross-correlation}
 %{{{
 
 The cross-correlation measures the similarity between two signals
 $\mathbf{x}$ and $\mathbf{y}$ as a function of the time lag
-$l\in\mathcal{N}$ of one relative to the other. In the case of
-discrete-time signals, it is defined as
+$l\in\mathcal{N}$ of one relative to the other. In the case
+of discrete-time signals, it is defined as
 \begin{equation}
-  {r(\mathbf{x},\mathbf{y})}_l=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
+  {r(\mathbf{x},\mathbf{y})}(l)=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
 \end{equation}
 where $\mathbf{y}^* _{n-l}$ is the complex conjugate of the signal
-delayed by $l$ samples. If the signal is real-valued, then
-$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. Notice that
-${r(\mathbf{x},\mathbf{y})}$ is a discrete-time signal with so many
-samples as diferent $l$ values are used.
+delayed by $l$ samples, and therefore ${r(\mathbf{x},\mathbf{y})}(l)$
+can take as many different values as possible values $l$ can take. If
+the signal is real-valued, then
+$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. If the range of $l$ is
+undefined, we will suppose that is the
+$\mathbf{Su}(\mathbf{\mathbf{y}})$.
 
-Cross-correlation can be normalized using
+The cross-correlation can be normalized using
 \begin{equation}
   \rho(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
 \end{equation}
@@ -396,3 +400,4 @@ related concepts, because
 \end{equation}
 
 %}}}
+

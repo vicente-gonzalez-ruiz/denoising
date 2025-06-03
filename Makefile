@@ -6,7 +6,7 @@ all:	main.pdf
 
 BIBINPUTS += ".:~/bibs"
 
-main.pdf:	main.tex
+main.pdf:	*.tex
 		pdflatex main
 		(export BIBINPUTS=${BIBINPUTS}:${BIBS}; bibtex main)
 		pdflatex main

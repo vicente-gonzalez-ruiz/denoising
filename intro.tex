@@ -1,105 +1,42 @@
-\chapter{Intro}
-%{{{
+\chapter{Introduction}
 
-%\begin{abstract}
-%{{{
+Microscopy of biological specimens is used in biotechnology to
+visualize small specimens (including their internal structures) that
+cannot be seen with the naked eye. For this, some kind of interaction
+between the specimens and a source of energy must exist (the specimen
+must be irradiated), an action that usually degrades the specimen and
+for this reason, the radiation is minimized generating low SNR
+images. In this report, we describe, evaluate, and compare several
+image denoising algorithms commonly used in microscopy of biological
+specimens.
 
-  Microscopy of biological specimens is used in biotechnology to
-  visualize small specimens (including their internal structures) that
-  cannot be seen with the naked eye. For this, some kind of
-  interaction between the specimens and a source of energy must exist
-  (the specimen must be irradiated), an action that usually degrades
-  the specimen and for this reason, the radiation is minimized
-  generating low SNR images. In this report, we describe, evaluate,
-  and compare several image denoising algorithms commonly used in
-  microscopy.
-
-%}}}
-%\end{abstract}
-\section*{Definitions and notation}
-%{{{
-
-\begin{tabular}{ll}
-  $x$ & A scalar value (e.g., a value of a pixel of a grayscale image) \\
-  $s(t)$ & A (continuous) signal as a function of time \\
-  $s[n]$ & A discrete signal (only) defined at instants of time $tn, n\in\mathcal{Z}, t>0$ \\
-  $\mathbf{s}$ & A digital (discrete and finite) signal (e.g., an image) \\
-  $\mathbf{s}_{i}$ & The $i$-th element of $\mathbf{s}=\{\mathbf{s}_{i}\}_{i=0}^{N-1}=\{\mathbf{s}_{i}\}$ \\
-  %$A[b]$ & The $b$-th element of the sampled version of $A(b)$ \\
-  $\{i\}$ & The set $i$ \\
-  $\mathbf{s}_{\{i\}}$ & The elements of $\mathbf{s}$ with indices $\{i\}$ \\
-  $\mathbf{s}_{[i]}$ & A window of samples of $\mathbf{s}$ centered at the $i$-th sample \\
-  $\mathbf{s}_{\href{https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding}{y,:}}$ & The $y$-th row of the image $\mathbf{s}$ \\
-  $\mathbf{s}_{:,x}$ & The $x$-th column of the image $\mathbf{s}$ \\
-  $\mathbf{s}_{y,x}$ & The pixel $(y,x)$ of the image $\mathbf{s}$ \\
-  %$\mathbf{x}^{(i)}$ & The $i$-th real-noisy instance of the signal $\mathbf{x}$ \\
-  %$\mathbf{s}^{()}$ & An instance of $\mathbf{s}$, possibly noisy \\
-  $\mathbf{s}^{(i)}$ & The $i$-th instance of the signal $\mathbf{s}$ \\
-  $\tilde{\mathbf{s}}^{(I)}$ & Approximation to $\mathbf{s}$ using $I$ instances \\ 
-  $\overline{\mathbf{s}}$ & A mean of the samples of $\mathbf{s}$ \\ 
-  $\href{https://docs.python.org/3/library/functions.html#len}{\text{len}}(\mathbf{s})$ & $=\mathbf{s}.\href{https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html}{\mathsf{size}}$ Number of elements in $\mathbf{s}$ \\
-  $\href{https://numpy.org/doc/stable/reference/generated/numpy.shape.html}{\text{shape}}(\mathbf{s})$ & ($=\mathbf{s}.{\mathsf{shape}}$) Shape of $\mathbf{s}$ \\
-  $\text{rank}(\mathbf{s})$ & ($=\mathbf{s}.\mathsf{rank}=\text{len}(\mathbf{s}.\mathsf{shape})$) Dimensionality of $\mathbf{s}$ \\
-  $\mathsf{\href{https://docs.python.org/3/library/functions.html\#func-range}{range}}(s)$ & $=\{0, 1, \cdots, s-1\}$ \\
-  $\mathsf{\href{https://numpy.org/doc/stable/reference/generated/numpy.zeros_like.html}{zeros\_like}}(\mathbf{s})$ & $=\{0\}_{i=0}^{\mathbf{s}.\mathsf{size}-1}$ \\
-  % $|\mathbf{X}_i|$ & The absolute value of $\mathbf{X}_i$ \\
-  $\alpha\mathbf{s}$ & $=\{\alpha\mathbf{s}_i\}$ (scalar multiplication) \\
-  $\mathbf{x}+\mathbf{y}$ & $=\{\mathbf{x}_i + \mathbf{y}_i\}$ (Hadamard addition) \\ 
-  $\mathbf{x}\mathbf{y}$ & $=\{\mathbf{x}_i\mathbf{y}_i\}$ (Hadamard product) \\ 
-  $\mathcal{N}$ & The normal distribution \\ 
-  $\mathcal{P}$ & The Poisson distribution \\
-  $\mathbf{x}\sim\mathcal{N}$ & The elements of $\mathbf{x}$ follows a normal distribution \\
-  $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
-  $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{x}_i$ takes the value $a$ \\
-  $\Pr(\mathbf{x}=a, \mathbf{y}=b)$ & $\Pr(\mathbf{x}=a)$ and $\Pr(\mathbf{y}=b)$ (joint probability)  \\
-  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
-  $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
-  $\mathbb{E}(\mathbf{s})$ & Expectation of $\mathbf{s}$ \\
-  $\mathbb{V}(\mathbf{s})$ & Variance of $\mathbf{s}$ \\
-  $||\mathbf{s}||_2$ & $L_2$ norm of $\mathbf{s}$ \\
-  $f_s$ & Sampling frequency \\
-  $\mathcal{F}$ & The (forward) Fourier transform ($\mathcal{F}(\mathbf{s})=\mathbf{S}$) \\
-  $\mathcal{F}^{-1}$ & The inverse Fourier transform ($\mathcal{F}^{-1}(\mathbf{S})=\mathbf{s}$) \\
-  $\cdot^*$ & the complex conjugate of $\cdot$ \\
-  $\mathbf{x}*\mathbf{y}$ & $=\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})\mathcal{F}(\mathbf{y}))=\mathcal{F}^{-1}(\mathbf{X}\mathbf{Y})$ (convolution) \\
-  $A(b)$ & $A$ depends on (parameter) $b$ \\
-  $A.b$ & The $b$ component of the data structure $A$ \\
-  $(A)b$ & First $A$, then $b$ 
-\end{tabular}
-
-%}}}
-
-\section{Imaging techniques}
+\section{Imaging techniques in microscopy}
 %{{{
 
 There are several tecniques to capture microscopy images.
 
-In light microscopy (LM), light passes through a specimen, and this
-transmitted light is then magnified by the objective and ocular lenses
-to form an observable image. Fluorescence microscopy and confocal
-microscopy are two LM tecniques, where the specimen(s) emit light
-after have being excited by a source of light. Typical resolution: 200
-nm.
+In \gls{LM}, light passes through the specimen, and this light is then
+magnified by an objective and ocular lenses to form an observable
+image. Fluorescence microscopy and confocal microscopy are two
+\gls{LM} tecniques, where the specimen(s) emit light after have being
+excited by a source of light. Using \gls{LM} we can typical reach a
+resolution of up to 200 nm.
 
-In electron microscopy (EM) we use a beam of electrons that can pass
-through the sample (TEM (Transmission Electron Microscopy)) or bounce
-on the sample (SEM (Scanning Electron Microscopy)). X-rays and ions
-can be also used (the smaller the wavelength of the bean, the higher
-the resolution). In general, compared to LM, EM allows much higher
-resolution (down to sub-nanometer scale).
+In \gls{EM} we use a beam of electrons that can pass through the
+sample (\gls{TEM}) or bounce on the sample (\gls{SEM}). X-rays and
+ions can also be used (the smaller the wavelength of the radiation,
+the higher the resolution). In general, compared to \gls{LM}, \gls{EM}
+allows much higher resolution (down to sub-nanometer scale).
 
-Finally, there is a third techinique called atomic force microscopy
-(AFM), in which a nano-scale mechanical probe, a scanning probe
-microscopy maps the surface of a specimen.
-
-Unfortunately, the energy that impact on the specimen also degrades
-it, specially in the case of biological specimens. To minimize this
-degradation, the radiation doses are minimized, generating low
-signal-to-noise ratio images.
+Finally, there is a third imaging techinique called \gls{SPM}, in
+which a nano-scale mechanical probe maps the surface of a
+specimen. \gls{SPM} achieves sub-nanometer resolution, allowing for
+the imaging of surfaces at the atomic scale. The \gls{AFM} and the
+\gls{STM} are \gls{SPM} techniques.
 
 %}}}
 
-\section{Denoising in microscopy}
+\section{Why denoising?}
 %{{{
 
 %We consider denoising techniques where there is only one noisy
@@ -107,25 +44,27 @@ signal-to-noise ratio images.
 %different versions of the clean signal. Averaging as such is therefore
 %excluded.
 
-Microscopy images are characterized by a low signal-to-noise ratio
-(SNR), requiring the use of denoising algorithms to facilitate
-subsequent analysis. A common challenge is the limited availability of
-only a single noisy realization of these images, which complicates
-both the evaluation of denoising algorithms (due to the absence of a
-ground truth for comparative assessment) and the selection of
-appropriate denoising parameters. An optimal denoiser should
-effectively attenuate noise while concurrently preserving crucial
-image features, including edges, textures, and underlying biological
-structures.
+In general, when we study biological specimens, the impact of the
+ratiation of generated by the microscope on the specimen also degrades
+it. To minimize this degradation, the radiation doses are minimized,
+generating low signal-to-noise ratio images. Therefore, microscopy
+images are characterized by a low \gls{SNR}, requiring the use of
+denoising algorithms to facilitate subsequent analysis. A common
+challenge is the limited availability of only a single noisy
+realization of these images, which complicates both the evaluation of
+denoising algorithms (due to the absence of a ground truth for
+comparative assessment) and the selection of appropriate denoising
+parameters. An optimal denoiser should effectively attenuate noise
+while concurrently preserving crucial image features, including edges,
+textures, and underlying biological structures.
 
 In all the denoising techniques described here we will supose that
-both, the images and the noise can be modeled as \emph{stationary
-  random variables}. A stationary random variable can be described as
-a stochastic process whose statistical properties do not change. This
-means that the probability distribution of the process at any given
-set of time points is the same as the distribution at those same time
-points shifted by any constant amount in time or space.
+both, the images and the noise can be modeled as \gls{SRV}s. A
+\gls{SRV} can be described as a stochastic process whose statistical
+properties do not change. This means, for example, that the
+probability distribution of a signal at any given set of time points
+is the same as the distribution at those same time samples shifted by
+any constant amount in time or space.
 
 %}}}
 
-%}}}
