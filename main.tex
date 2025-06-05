@@ -1,5 +1,6 @@
 %\documentclass{article}
-\documentclass[draft]{report}%{article}
+%\documentclass[draft]{report}%{article}
+\documentclass{report}%{article}
 \usepackage{graphicx}
 %\usepackage[draft]{graphicx}
 \graphicspath{{figs}{notebooks}{.}}
@@ -29,8 +30,14 @@
 \newacronym{SPM}{SPM}{Scanning Probe Microscopy}
 \newacronym{AFM}{AFM}{Atomic Force Microscopy}
 \newacronym{STM}{STM}{Scanning Tunneling Microscope}
+\newacronym{GT}{GT}{Ground Truth}
 
+\newacronym{CC}{CC}{Cross-Correlation}
+\newacronym{NCC}{NCC}{Normalized Cross-Correlation}
+\newacronym{AC}{AC}{AutoCorrelation}
+\newacronym{NAC}{NAC}{Normalized AutoCorrelation}
 \newacronym{SNR}{SNR}{Signal-to-Noise Ratio}
+\newacronym{SSNR}{SSNR}{Spectral SNR}
 \newacronym{SRV}{SRV}{Stationary Random Variable}
 \newacronym{FTDF}{FTDF}{Fourier Transform of a Discrete Function}
 \newacronym{DTFT}{DTFT}{Discrete Time Fourier Transform}
@@ -38,6 +45,15 @@
 \newacronym{PS}{PS}{Power Spectrum}
 \newacronym{PSD}{PSD}{Power Spectral Density}
 \newacronym{CPSD}{CPSD}{Cross-Power Spectral Density}
+
+\newacronym{ZAWG}{ZAWG}{Zero-mean Additive White Gaussian}
+\newacronym{PDF}{PDF}{Probability Density Function}
+\newacronym{PMD}{PMD}{Probability Mass Distribution}
+\newacronym{MPG}{MPG}{Mixed Poisson-Gaussian}
+
+\newacronym{FSC}{FSC}{Fourier Shell Correlation}
+\newacronym{FRC}{FRC}{Fourier Ring Correlation}
+\newacronym{SFC}{SFC}{Self Fourier Correlation}
 
 \newacronym{EOS}{EOS}{Even-Odd Splitting}
 \newacronym{CBS}{CBS}{ChessBoard Splitting}
@@ -89,7 +105,7 @@
   $\mathbf{x}_{\mathcal{N}}$ & The same as $\mathbf{x}\sim\mathcal{N}$ \\
   $\Pr(\mathbf{x}=a)$ & Probability that a $\mathbf{x}_i$ takes the value $a$ \\
   $\Pr(\mathbf{x}=a, \mathbf{y}=b)$ & $\Pr(\mathbf{x}=a)$ and $\Pr(\mathbf{y}=b)$ (joint probability)  \\
-  $\mathrm{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
+  $\text{Su}(\mathbf{x})$ & $=\{x\in\mathbb{R}|\Pr(\mathbf{x}=x)>0\}$ (support of $\mathbf{x}$)\\
   $\Pr(A|B)$ & Conditional probability of $A$ given $B$ \\
   $\mathbb{E}(\mathbf{s})$ & Expectation of $\mathbf{s}$ \\
   $\mathbb{V}(\mathbf{s})$ & Variance of $\mathbf{s}$ \\
@@ -106,8 +122,8 @@
   $P(\mathbf{s})$ & Power of $\mathbf{s}$ (see Section~\ref{sec:power_signal}) \\
   $\text{PS}(\mathbf{s})$ & Power spectrum of $\mathbf{s}$ (see Section~\ref{sec:power_spectrum}) \\
   $\text{PSD}(\mathbf{s})$ & Power spectral density of $\mathbf{s}$ (see Section~\ref{sec:PSD}) \\
-  $r(\mathbf{x},\mathbf{y})$ & Cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation}) \\
-  $\rho(\mathbf{x},\mathbf{y})$ & Normalized cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation})
+  $\text{CC}(\mathbf{x},\mathbf{y})$ & Cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation}) \\
+  $\text{NCC}(\mathbf{x},\mathbf{y})$ & Normalized cross-correlation between $\mathbf{x}$ and $\mathbf{y}$ (see Section~\ref{sec:cross-correlation})
 \end{tabular}
 
 %}}}
@@ -227,6 +243,7 @@
 % restoration without clean data. In ICML, 2018.
 
 \input{SPGD}
+\input{machine_learning}
 \input{Cryo-CARE}
 
 %\chapter{2D Random Shuffing Volume Denoising (2D-RSVD)}

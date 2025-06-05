@@ -172,8 +172,36 @@ symmetric about $N/2$ (Nyquist frequency).
 
 %}}}
 
+\section{Cross-correlation (CC)}
+\label{sec:cross-correlation}
+%{{{
+
+The \gls{CC} measures the similarity between two signals $\mathbf{x}$
+and $\mathbf{y}$ of one relative to the other, as a function of a time
+lag $l\in\mathbb{N}$. In the case of discrete-time signals, the
+\gls{CC} is defined as
+\begin{equation}
+  {\text{CC}(\mathbf{x},\mathbf{y})}(l)=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
+\end{equation}
+where $\mathbf{y}^* _{n-l}$ is the complex conjugate\footnote{If the
+  signal is real-valued, then $\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$.}
+of the signal delayed by $l$ samples, and therefore
+${\text{CC}(\mathbf{x},\mathbf{y})}(l)$ can take as many different
+values as possible values $l$ can take (it is a function of $l$).  When
+the range of $l$ is undefined, we will suppose that is the
+$\text{Su}(\mathbf{\mathbf{y}})$.
+
+The \gls{CC} can be normalized (\gls{NCC}) using
+\begin{equation}
+  \text{NCC}(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
+\end{equation}
+
+%}}}
+
 \section{Cross-Power Spectral Density (CPSD)}
 \label{sec:CPSD}
+%{{{
+
 The \gls{CPSD}, also known as the cross-spectrum, analyzes the
 relationship between two different signals in the frequency domain. In
 other words, the \gls{CPSD} quantifies the degree to which two signals
@@ -182,7 +210,7 @@ frequencies. A high \gls{CPSD} value at a particular frequency indicates a
 strong correlation between the two signals at that frequency.
 
 The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
-the Fourier transform of the cross-correlation between these two
+the Fourier transform of the \gls{CC} between these two
 signals:
 \begin{equation}
   \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({r(\mathbf{x},\mathbf{y})}).
@@ -197,6 +225,35 @@ the expectation of the product of the Fourier coefficients
 $\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
 segments (or instances) of the signals.
 
+%}}}
+
+\section{Autocorrelation}
+\label{sec:autocorrelation}
+%{{{
+
+The \gls{AC} of a digital signal is another digital signal that
+measures the similarity between the signal and a time-delayed version
+of itself as a function of a time lag (see
+Section~\ref{sec:cross-correlation}). Essentially, the \gls{AC}
+quantifies the degree to which a signal is correlated with its past or
+future values. Mathematically, for a discrete-time signal $\mathbf{x}$
+of infinite length, the \gls{AC} signal at a lag $l$ is defined
+as:
+\begin{equation}
+  r(\mathbf{x},\mathbf{x})(l)=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
+\end{equation}
+where $l$ is the integer time lag.
+
+\gls{NAC} is defined as
+\begin{equation}
+  {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
+\end{equation}
+
+\gls{AC} can be computed as the inverse Fourier transform of
+the \gls{PSD}.
+
+%}}}
+
 \section{Power Spectral Density (PSD)}
 \label{sec:PSD}
 %{{{
@@ -204,7 +261,7 @@ segments (or instances) of the signals.
 The \gls{PSD} of a digital signal (and in general, of a wide-sense
 stationary discrete-time random processes) $\mathbf{x}$,
 $\text{PSD}(\mathbf{x})$, is defined as the \gls{DFT} of its
-autocorrelation function $r(\mathbf{x},\mathbf{x})$:
+\gls{AC} function $r(\mathbf{x},\mathbf{x})$:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
 \end{equation}
@@ -243,12 +300,12 @@ complex conjugate.
 
 The Wiener-Khinching theorem states that the \gls{PSD} of a wide-sense
 stationary random process (its statistical properties do not change
-over time) is the Fourier transform of its autocorrelation
-function. Therefore, the cross-correlation of two wide-sense
-stationary random processes is the inverse Fourier transform of the
-product of the \gls{PSD} of one process and the conjugate
-of the \gls{PSD} of the other. Similarly, the
-autocorrelation is the inverse Fourier transform of the \gls{PSD}.
+over time) is the Fourier transform of its \gls{AC}
+function. Therefore, the \gls{CC} of two wide-sense stationary random
+processes is the inverse Fourier transform of the product of the
+\gls{PSD} of one process and the conjugate of the \gls{PSD} of the
+other. Similarly, the \gls{AC} is the inverse Fourier transform
+of the \gls{PSD}.
 
 % https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
 \begin{equation}
@@ -257,78 +314,13 @@ autocorrelation is the inverse Fourier transform of the \gls{PSD}.
 
 %}}}
 
-\section{Cross-correlation}
-\label{sec:cross-correlation}
-%{{{
-
-The cross-correlation measures the similarity between two signals
-$\mathbf{x}$ and $\mathbf{y}$ as a function of the time lag
-$l\in\mathcal{N}$ of one relative to the other. In the case
-of discrete-time signals, it is defined as
-\begin{equation}
-  {r(\mathbf{x},\mathbf{y})}(l)=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
-\end{equation}
-where $\mathbf{y}^* _{n-l}$ is the complex conjugate of the signal
-delayed by $l$ samples, and therefore ${r(\mathbf{x},\mathbf{y})}(l)$
-can take as many different values as possible values $l$ can take. If
-the signal is real-valued, then
-$\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$. If the range of $l$ is
-undefined, we will suppose that is the
-$\mathbf{Su}(\mathbf{\mathbf{y}})$.
-
-The cross-correlation can be normalized using
-\begin{equation}
-  \rho(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
-\end{equation}
-
-%}}}
-
-\section{Autocorrelation}
-\label{sec:autocorrelation}
-%{{{
-
-The autocorrelation of a digital signal is another digital signal that
-measures the similarity between the signal and a time-delayed version
-of itself as a function of the time lag. Essentially, it quantifies
-the degree to which a signal is correlated with its past or future
-values. Mathematically, for a discrete-time signal $\mathbf{x}$ of
-infinite length, the autocorrelation signal at a lag $l$ is defined
-as:
-\begin{equation}
-  {r(\mathbf{x},\mathbf{x})}_l=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
-\end{equation}
-where $l$ is the integer time lag.
-
-Normalized autocorrelation is defined as
-\begin{equation}
-  {\rho(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
-\end{equation}
-
-Autocorrelation can be computed as the inverse Fourier transform of
-the power spectral density.
-
-%}}}
-
-\section{Multivariate data}
-Multivariate data refers to datasets that contain more than two
-variables for each observation. These variables represent different
-characteristics or measurements related to the observed phenomenon. In
-simpler terms, if you are collecting information about something and
-recording three or more different aspects for each item, you are
-dealing with multivariate data. Example: A study on students: You
-might collect data on their age, test scores in math, test scores in
-science, attendance rate, and extracurricular activities. Each student
-is an observation, and the five pieces of information are the multiple
-variables.
-
-
-%}}}
-
 \section{Variance}
+\label{sec:variance}
+%{{{
+
 The variance of a random variable $\mathbf{x}$, denoted by
 $\mathbb{V}(\mathbf{x})$ is a measurement of its dispersion. It is
 defined as the expected value of the squared deviation from the mean,
-i.e.,
 %\begin{equation}
 %  \operatorname{Var}(\mathbf{x}) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
 %\end{equation}
@@ -337,17 +329,20 @@ i.e.,
 %\end{equation}
 \begin{equation}
   \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
+  \label{eq:variance}
 \end{equation}
+
+%}}}
 
 \section{Covariance}
 \label{sec:covariance}
 %{{{
 
-The covariance $\mathbb{V}(\mathbf{x}, \mathbf{y})$ is a measure of
+The covariance $\mathbb{C}(\mathbf{x}, \mathbf{y})$ is a measure of
 how two random variables $\mathbf{x}$ and $\mathbf{y}$ change
 together. In simpler terms, it tells us the direction of the linear
 relationship between two variables. The covariance between two
-discrete signals $x$ and $y$ is calculated as
+discrete signals $\mathbf{x}$ and $\mathbf{y}$ is calculated as
 %\begin{equation}
 %  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
 %\end{equation}
@@ -355,18 +350,19 @@ discrete signals $x$ and $y$ is calculated as
 %  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
 %\end{equation}
 \begin{equation}
-  \mathbb{V}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
+  \mathbb{C}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
 \end{equation}
 
-We define
+Notice that (see Eq.~\ref{eq:variance})
 \begin{equation}
-  \mathbb{V}(\mathbf{x}) = \mathbb{C}(\mathbf{x}, \mathbf{x}).
+  \mathbb{C}(\mathbf{x}, \mathbf{x}) = \mathbb{V}(\mathbf{x}).
 \end{equation}
 
 %}}}
 
 \section{Covariance matrix}
 \label{sec:covariance_matrix}
+%{{{
 
 The covariance matrix $\Sigma_{\overrightarrow{\mathbf{x}}}$ of a random vector $\overrightarrow{\mathbf{x}}=[\mathbf{x}_1,\cdots,\mathbf{x}_N]^T$, defined as,
 \begin{equation}
@@ -384,20 +380,22 @@ is a $N\times N$ matrix
 \end{equation}
 that express the covariance between the random variables of a random vector.
 
+%}}}
 
 \section{$L_2$ norm}
 \label{sec:L2_norm}
 %{{{
 
-$L_2$ norm is defined by
+$L_2$ norm of a discrete signal $\mathbf{x}$ is defined by
 \begin{equation}
   ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
 \end{equation}
 Notice that the L2 norm and the Mean Square Error (MSE) are closely
 related concepts, because
 \begin{equation}
-  ||\mathbf{x} - \mathbf{y}||_2^2 = J\cdot\text{MSE}(\mathbf{x} - \mathbf{y}).
+  ||\mathbf{x} - \mathbf{y}||_2^2 = N\cdot\text{MSE}(\mathbf{x} - \mathbf{y}),
 \end{equation}
+where $N$ is the length of $\mathbf{x}$.
 
 %}}}
 
