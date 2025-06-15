@@ -2,56 +2,22 @@
 
 A discrete signal is the result of discretizing an analog signal in
 the signal domain (time, for example), producing a sequence of
-(signal) samples.
-
-\section{Discrete and digital signals}
-
-By definition, digital signals are finite in length, and therefore
-$\text{Sup}(\mathbf{x})$ is a finite set.
-
-\section{Discrete signals and random variables}
-%{{{
-
-Mathematically, we can model discrete signals as \glspl{SRV}. A
-\gls{SRV} can be described as a stochastic process whose statistical
-properties do not change with time or space. This means, basically,
-that the probability distribution of a signal at any given set of
-time/space points is the same as the distribution at those same
-samples shifted by any constant amount in time or space.
-
-
-A digital signal is the results of discretizing a discrete signal in
-amplitude. By physical reasons, a digital signal is finite in length
-(the number of signal samples is a known number) and in amplitude
-(each sample requires a finite number of bits to be
-represented). Therefore, digital signals are discrete and finite.
-
-A random variable is a mathematical formalization of a quantity or
-object which depends on random events. When more than one value (a
-vector) is generated in one of these events, we can establish a
-similar connection between multicomponent signals and random
-vectors. Statistically, random variables can be described throught the
-mean and the variance and the corresponding distribution. In the case
-of random vectors, a mean for each component, a covariance matrix, and
-a multivariate distribution are required.
-
-In this document, monocomponent (discrete) signals (and therefore
-random variables) will be denoted with lower-case bold-faced symbols,
-such as $\mathbf{x}$. Multicomponent (discrete) signals (random
-vectors) will be denoted as $\overrightarrow{\mathbf{x}}$.
-
-%}}}
+(signal) samples. Discrete signals will be represented with lower-case
+bold-faced symbols, such as $\mathbf{s}$. By physical reasons, we will
+suppose the discrete signals are finite with length $N$, and therefore, a discrete signal $\mathbf{s}$ will be denoted as
+\begin{equation}
+  \mathbf{s} = \{\mathbf{s}_n\}_{n=0}^{N-1}.
+\end{equation}
 
 \section{Signal sampling}
 %{{{
 
-A digital signal is represented as a sequences of
-samples. Mathematically, a sample $\mathbf{s}_n$ is created from the
-signal $s(t)$ through
+Discrete signal are (a priori, infinite) sequences of samples. For example, if $s(t)$ is
+a analog signal that depends on time, the $n$-th signal sample is defined by
 \begin{equation}
   \mathbf{s}_n = s(t)\delta(t-nT),
 \end{equation}
-where $n$ represents the sample index, $T$ is the sampling period, and
+where  $T$ is the sampling period, and
 $\delta(t-nT)$ is the \emph{unit impulse function} defined by
 \begin{equation}
 \delta(t) =
@@ -65,23 +31,28 @@ where
 \int_{-\infty}^{\infty} \delta(t) \, dt = 1.
 \end{equation}
 
-An impulse has the so-called sifting
-property with respect to integration,
+Notice that, an impulse has the so-called sifting property with
+respect to integration,
 \begin{equation}
 \int_{-\infty}^{\infty} s(t)\delta(t) \, dt = s(0),
 \end{equation}
 provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
 
+%Notice that, by definition,
+%\begin{equation}
+%  \text{Sup}(\mathbf{s}) = s[],
+%\end{equation}
+%where $s[]$ represents to the sequence of samples.
+
 %}}}
 
-\section{Energy of a signal}
+\section{Energy of a discrete signal}
 \label{sec:energy_signal}
 %{{{
 
-By definition, the energy $E()$ of a digital signal $\mathbf{x}$ of
-length $N$ is
+The energy of a discrete signal $\mathbf{s}$ is the sum all its samples:
 \begin{equation}
-  E(\mathbf{x}) = \sum_{i}|\mathbf{x}_i|^2.
+  E(\mathbf{s}) = \sum_{i=1}^N|\mathbf{x}_i|^2.
 \end{equation}
 
 Notice that, by definition, the energy of a digital signal is finite,
@@ -89,82 +60,83 @@ but grows with $N$.
 
 %}}}
 
-\section{Power of a signal}
+\section{Power of a discrete signal}
 \label{sec:power_signal}
 %{{{
 
-By definition, the power $P()$ of a digital signal
-$\mathbf{x}$ of length $N$ is
+The power of a discrete signal $\mathbf{s}$ is
 \begin{equation}
   P(\mathbf{x}) = \frac{1}{N}E(\mathbf{x}),
 \end{equation}
 i.e., its average energy.
 
-Notice that when $N$ is big, the use of the power of a signal instead
-of the energy can help to avoid arithmetic overflow.
+Notice that, compared to the energy of a signal, the use of the power
+of a signal can be more convenient to avoid arithmetic overflow in
+computations with long signals.
 
 %}}}
 
-\section{Fourier transform}
+\section{Fourier transform of a continuous signal}
 \label{sec:Fourier_transform}
 %{{{
 
-The Fourier transform, usually denoted by $\mathcal{F}()$, of a
-continuous function $f(x)$ is
+The Fourier transform, usually denoted by $\mathcal{F}$, of a
+continuous function $s(t)$ is
 \begin{equation}
-  \mathcal{F}(f) = F(w) = \int_{-\infty}^{\infty}f(x)e^{-jwx}dx
+  \mathcal{F}(s) = S(w) = \int_{-\infty}^{\infty}s(t)e^{-jwt}dt
   \label{eq:FT}
 \end{equation}
-and its inverse, denoted by $$ is
+and its inverse, denoted by $\mathcal{F}^{-1}$ is
 \begin{equation}
-  f(x) = \mathcal{F}^{-1}(F(w)) = \int_{-\infty}^{\infty}F(w)e^{jxw}dw,
+  s(t) = \mathcal{F}^{-1}(S(w)) = \int_{-\infty}^{\infty}S(w)e^{jtw}dw,
 \end{equation}
 where $w=2\pi f$ denotes angular frequency, $j=\sqrt{-1}$, and
-$f$ is frequency. We will denote the inverse Fourier transform of
-$\cdot$ by $\mathcal{F}^{-1}(\cdot)$.
+$f$ is frequency.
 
-Notice that, the Fourier transform of a signal $f$ is a complex signal
-$F$, even if $f$ is real.
+Notice that, the Fourier transform of a signal $s$ is a complex signal
+$S$, even if $s$ is real.
 
 %}}}
 
+\begin{comment}
 \section{Fourier transform of a discrete signal}
 \label{sec:FTDF}
 %{{{
 
-If the signal $x$ is discrete, its Fourier transform, also
+If the signal $\mathbf{s}$ is discrete, its Fourier transform, also
 known as the \gls{DTFT}, is
 \begin{equation}
-  \mathcal{F}(x[n]) = X(e^{jw}) = \sum_{n=-\infty}^{\infty}x[n]e^{-jwn}
+  \mathcal{F}(\mathbf{s}) = S(e^{jw}) = \sum_{i=1}^{N}\mathbf{s}_ie^{-jwi}
 \end{equation}
-which is a continuous function of $w$, and its inverse is
+which is a continuous function of $w$ if $N$, and its inverse is
 \begin{equation}
-  x[n] = \mathcal{F}^{-1}(X(e^{jw})) = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{jw})e^{jwn}dw.
+  \mathbf{s} = \mathcal{F}^{-1}(S(e^{jw})) = \frac{1}{2\pi}\int_{-\pi}^{\pi}S(e^{jw})e^{jwn}dw.
 \end{equation}
 The \acrshort{FTDF} is periodic with period $2\pi$.
 
-%}}}
+% }}}
+\end{comment}
 
 \section{Discrete Fourier Transform (DFT)}
 \label{sec:DFT}
 %{{{
 
-The \gls{DFT} of a digital\footnote{The \gls{DFT} is defined over
-  digital (discrete and finite) signals.} signal $\mathbf{x}$ of
-lenght $N$ is defined as
+The \gls{DFT} is the Fourier transform of a discrete finite signal $\mathbf{s}$ is
 \begin{equation}
-  \mathcal{F}(\mathbf{x}_n) = \mathbf{X}_f=\sum_{n=0}^{N-1}\mathbf{x}_ne^{-2\pi jf\frac{n}{N}},\quad f=0,1,\cdots,N-1
+  \mathcal{F}(\mathbf{s}) = \mathbf{S} = \{\mathbf{S}_f\}_{f=0}^{N-1} \quad \text{with} \quad \mathbf{S}_f=\sum_{n=0}^{N-1}\mathbf{s}_ne^{-2\pi jf\frac{n}{N}},
   \label{eq:DFT}
 \end{equation}
 where $f$ denotes (discrete) frequency bins. The inverse \gls{DFT} is
 \begin{equation}
-  \mathbf{x}_n=\frac{1}{N}\sum_{f=0}^{N-1}\mathbf{X}_fe^{2\pi jn\frac{f}{N}}, \quad  n=0,1,\cdots,N-1.
+  \mathbf{s} = \mathcal{F}^{-1}(\mathbf{S}) \quad \text{with} \quad \mathbf{x}_n = \frac{1}{N}\sum_{f=0}^{N-1}\mathbf{S}_fe^{2\pi jn\frac{f}{N}}.
 \end{equation}
 
+\begin{comment}
 Notice that the \gls{DFT} can be interpreted as sampling the
 \gls{FTDF} at $N$ evenly spaced points over $[-\pi, \pi)$. So, the
 \gls{DFT} is a discrete approximation of the \gls{FTDF} for
 finite-length signals.
+\end{comment}
 
 %}}}
 
@@ -172,11 +144,11 @@ finite-length signals.
 \label{sec:parseval}
 %{{{
 
-The Parseval's theorem for digital signals states that, except for a
+The Parseval's theorem for discrete signals states that, except for a
 scale factor, the total energy of a signal in the signal domain (time,
 for example) is equal to the total energy of its representation in the
-frequency domain. Concretely, if $N$ is the length of the signal
-$\mathbf{s}$ and $\mathbf{S}$ is its \gls{DFT}, the Parseval’s theorem
+frequency domain. Concretely, if $\mathbf{S}$ is the \gls{DFT} of the
+discrete (and finte) signal $\mathbf{s}$, the Parseval’s theorem
 states that
 \begin{equation}
   E(\mathbf{s}) = \frac{1}{N}E(\mathbf{S}),
@@ -210,7 +182,15 @@ arctangent function.
 \label{sec:power_spectrum}
 %{{{
 
-The power spectrum $\text{PS}()$ of a digital signal $\mathbf{x}$
+The power spectrum of a discrete signal expresses shows how much power
+the signal has at its different frequency bins. In other words, if
+$\mathbf{s}$ is a discrete (and finite) signal, and $\mathbf{S}$ is
+its Fourier transform, we have that
+\begin{equation}
+  \text{PS}(\mathbf{s}) = P(\mathbf{S})= \frac{1}{N}|\mathbf{S}|^2
+\end{equation}
+
+If $\mathbf{S}$ is the Fourier transform of $\mathbf{s}$, the power spectrum $\text{PS}()$ of a digital signal $\mathbf{x}$
 shows how much power a signal has at different frequencies. Therefore,
 if $\mathbf{X}$ is the DFT of $\mathbf{x}$ (with $N$ samples),
 \begin{equation}

@@ -1,12 +1,12 @@
-\chapter{Discrete signals}
+\chapter{Statistics for discrete data}
 
-A discrete signal is the result of discretizing an analog signal in
-the signal domain (time, for example), producing a sequence of
-(signal) samples.
+Random variables
 
-\section{Discrete and digital signals}
+A digital signal is the result of discretizing in amplitude a discrete
+signal. Therefore, a sample of a digital signal can be represented
+using a finite number of bits.
 
-By definition, digital signals are finite in length, and therefore
+By physical requirements, digital signals are finite in length, and therefore
 $\text{Sup}(\mathbf{x})$ is a finite set.
 
 \section{Discrete signals and random variables}
@@ -39,38 +39,6 @@ In this document, monocomponent (discrete) signals (and therefore
 random variables) will be denoted with lower-case bold-faced symbols,
 such as $\mathbf{x}$. Multicomponent (discrete) signals (random
 vectors) will be denoted as $\overrightarrow{\mathbf{x}}$.
-
-%}}}
-
-\section{Signal sampling}
-%{{{
-
-A digital signal is represented as a sequences of
-samples. Mathematically, a sample $\mathbf{s}_n$ is created from the
-signal $s(t)$ through
-\begin{equation}
-  \mathbf{s}_n = s(t)\delta(t-nT),
-\end{equation}
-where $n$ represents the sample index, $T$ is the sampling period, and
-$\delta(t-nT)$ is the \emph{unit impulse function} defined by
-\begin{equation}
-\delta(t) =
-\begin{cases}
-\infty & \text{for } t = 0 \\
-0 & \text{for } t \neq 0,
-\end{cases}
-\end{equation}
-where
-\begin{equation}
-\int_{-\infty}^{\infty} \delta(t) \, dt = 1.
-\end{equation}
-
-An impulse has the so-called sifting
-property with respect to integration,
-\begin{equation}
-\int_{-\infty}^{\infty} s(t)\delta(t) \, dt = s(0),
-\end{equation}
-provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
 
 %}}}
 
@@ -115,7 +83,7 @@ continuous function $f(x)$ is
   \mathcal{F}(f) = F(w) = \int_{-\infty}^{\infty}f(x)e^{-jwx}dx
   \label{eq:FT}
 \end{equation}
-and its inverse, denoted by $$ is
+and its inverse, denoted by $\mathcal{F}^{-1}$ is
 \begin{equation}
   f(x) = \mathcal{F}^{-1}(F(w)) = \int_{-\infty}^{\infty}F(w)e^{jxw}dw,
 \end{equation}
