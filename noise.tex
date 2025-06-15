@@ -771,7 +771,7 @@ random numbers generator follows to produce, in each run, a different
 instance. Notice that, for convenience, the input signal $\mathbf{s}$
 is also in the output set.
 
-Concretelly, each SPRS instance is generated (for the 2D case) using
+Concretelly, each \gls{SPRS} instance is generated (for the 2D case) using
 the following algorithm:
 \begin{enumerate}
 \item \textbf{Separable 2D random shuffling of the samples of
@@ -799,8 +799,8 @@ the following algorithm:
 
 \item \textbf{Projection of $\mathbf{X}$ on $\hat{\mathbf{X}}$}:
   \begin{enumerate}
-  \item \textbf{Computation of a dense optical flow (DOF) field
-      $\overrightarrow{\mathbf{V}}$}: We use the DOF Farneb\"ack
+  \item \textbf{Computation of a \gls{DOF} field
+      $\overrightarrow{\mathbf{V}}$}: We use the \gls{DOF} Farneb\"ack
     algorithm \cite{farneback2003two} to find a correspondence between
     the pixels of $\mathbf{X}$ and $\hat{\mathbf{X}}$ in terms of a
     spatial displacement (a vector) for each pixel of
@@ -817,7 +817,7 @@ the following algorithm:
 \end{enumerate}
 
 In conclusion, by applying Gaussian-distributed local perturbations to
-pixel indices and a DOF projection, SPRS generates a local
+pixel indices and a \gls{DOF} projection, \gls{SPRS} generates a local
 randomization (from a visual point of view) of the structures of the
 input image.
 
