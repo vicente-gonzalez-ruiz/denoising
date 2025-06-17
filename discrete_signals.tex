@@ -4,10 +4,16 @@ A discrete signal is the result of discretizing an analog signal in
 the signal domain (time, for example), producing a sequence of
 (signal) samples. Discrete signals will be represented with lower-case
 bold-faced symbols, such as $\mathbf{s}$. By physical reasons, we will
-suppose the discrete signals are finite with length $N$, and therefore, a discrete signal $\mathbf{s}$ will be denoted as
+suppose the discrete signals are finite with length $N$, and
+therefore, a discrete signal $\mathbf{s}$ will be denoted as
 \begin{equation}
   \mathbf{s} = \{\mathbf{s}_n\}_{n=0}^{N-1}.
 \end{equation}
+However, notice that the assumption of this constrain ($N$ finite)
+only obey to the idea of focusing our analysis into the
+\emph{expected} (and most logical) case. In other words, a similar
+presentation could be done considering infinite discrete signals. In
+some results, we will see what happens.
 
 \section{Signal sampling}
 %{{{
@@ -52,11 +58,12 @@ provided that $s(t)$ is continuous at $t=0$ \cite{gonzalez1992digital}.
 
 The energy of a discrete signal $\mathbf{s}$ is the sum all its samples:
 \begin{equation}
-  E(\mathbf{s}) = \sum_{i=1}^N|\mathbf{x}_i|^2.
+  E(\mathbf{s}) = \sum_{i=0}^{N-1}|\mathbf{s}_i|^2.
 \end{equation}
 
-Notice that, by definition, the energy of a digital signal is finite,
-but grows with $N$.
+Notice that, by definition, the energy of a finite-length discrete
+signal is finite, but grows with $N$. Obviously, if $N$ is infinite,
+the energy can be also infinite.
 
 %}}}
 
@@ -66,13 +73,15 @@ but grows with $N$.
 
 The power of a discrete signal $\mathbf{s}$ is
 \begin{equation}
-  P(\mathbf{x}) = \frac{1}{N}E(\mathbf{x}),
+  P(\mathbf{s}) = \frac{1}{N}E(\mathbf{s}),
 \end{equation}
-i.e., its average energy.
+i.e., its average energy (average of the squared magnitude of the
+signal values).
 
 Notice that, compared to the energy of a signal, the use of the power
 of a signal can be more convenient to avoid arithmetic overflow in
-computations with long signals.
+computations with long signals, and this is true even if
+$N\rightarrow\infty$.
 
 %}}}
 
@@ -98,25 +107,6 @@ $S$, even if $s$ is real.
 
 %}}}
 
-\begin{comment}
-\section{Fourier transform of a discrete signal}
-\label{sec:FTDF}
-%{{{
-
-If the signal $\mathbf{s}$ is discrete, its Fourier transform, also
-known as the \gls{DTFT}, is
-\begin{equation}
-  \mathcal{F}(\mathbf{s}) = S(e^{jw}) = \sum_{i=1}^{N}\mathbf{s}_ie^{-jwi}
-\end{equation}
-which is a continuous function of $w$ if $N$, and its inverse is
-\begin{equation}
-  \mathbf{s} = \mathcal{F}^{-1}(S(e^{jw})) = \frac{1}{2\pi}\int_{-\pi}^{\pi}S(e^{jw})e^{jwn}dw.
-\end{equation}
-The \acrshort{FTDF} is periodic with period $2\pi$.
-
-% }}}
-\end{comment}
-
 \section{Discrete Fourier Transform (DFT)}
 \label{sec:DFT}
 %{{{
@@ -131,12 +121,16 @@ where $f$ denotes (discrete) frequency bins. The inverse \gls{DFT} is
   \mathbf{s} = \mathcal{F}^{-1}(\mathbf{S}) \quad \text{with} \quad \mathbf{x}_n = \frac{1}{N}\sum_{f=0}^{N-1}\mathbf{S}_fe^{2\pi jn\frac{f}{N}}.
 \end{equation}
 
-\begin{comment}
-Notice that the \gls{DFT} can be interpreted as sampling the
-\gls{FTDF} at $N$ evenly spaced points over $[-\pi, \pi)$. So, the
-\gls{DFT} is a discrete approximation of the \gls{FTDF} for
-finite-length signals.
-\end{comment}
+The \gls{DFT} can be interpreted as sampling the \gls{FTDF} (see
+Appendix~\ref{ape:FTDF}) at $N$ evenly spaced points over
+$[-\pi, \pi)$. So, the \gls{DFT} is a discrete approximation of the
+\gls{FTDF} for finite-length signals. If $N$ were infinite, what
+happens is that the frequency bins would be infinitesimally narrow,
+and the Fourier transform of the discrete signal would be continuous.
+
+Finally, there exists a faster version of the \gls{DFT} (with have a
+complexity of $\mathcal{O}^2$ called \gls{FFT} with complexity
+$\mathcal{O}\log_2\mathcal{O}$.
 
 %}}}
 
@@ -182,21 +176,14 @@ arctangent function.
 \label{sec:power_spectrum}
 %{{{
 
-The power spectrum of a discrete signal expresses shows how much power
-the signal has at its different frequency bins. In other words, if
-$\mathbf{s}$ is a discrete (and finite) signal, and $\mathbf{S}$ is
-its Fourier transform, we have that
+The power spectrum $\text{PS}()$ of finite-length discrete signal
+$\mathbf{s}$ shows how much power (see Section~\ref{sec:power_signal})
+a signal has at its different frequency bins. Let $\mathbf{S}$ the
+Fourier transform of $\mathbf{s}$. Then,
 \begin{equation}
-  \text{PS}(\mathbf{s}) = P(\mathbf{S})= \frac{1}{N}|\mathbf{S}|^2
+  \text{PS}(\mathbf{s}) = \{\text{PS}(\mathbf{s})_f\}_{f=0}^{N-1} \quad \text{where} \quad \text{PS}(\mathbf{s})_f = \frac{1}{N}|\mathbf{S}_f|^2,
 \end{equation}
-
-If $\mathbf{S}$ is the Fourier transform of $\mathbf{s}$, the power spectrum $\text{PS}()$ of a digital signal $\mathbf{x}$
-shows how much power a signal has at different frequencies. Therefore,
-if $\mathbf{X}$ is the DFT of $\mathbf{x}$ (with $N$ samples),
-\begin{equation}
-  \text{PS}(\mathbf{x}) = \frac{1}{N}|X|^2
-\end{equation}
-is the power spectrum of $\mathbf{x}$.
+where $f$ denotes the frequency bin.
 
 Notice that, for real-valued digital signals, the spectrum is
 symmetric about $N/2$ (Nyquist frequency).
@@ -207,89 +194,85 @@ symmetric about $N/2$ (Nyquist frequency).
 \label{sec:convolution}
 %{{{
 
-Convolution, typycally represented with the symbol $\ast$, is a
+Convolution, typically represented with the symbol $\ast$, is a
 mathematical operation that combines two signals to produce a third
-signal. It is often used to determine how the shape of one signal
-modifies another, and in the context of digital signals convolution
-models the fintering operation (one signal is the impulse response of
-the filter and the other is the signal to filter).
+signal. From a physical perspective, convolution models how a signal
+is transformed by a system's behavior what is itself described by
+another signal (usually, the response of the system to the an
+impulse). An example of such system can be a digital filter.
 
-For two digital signals $\mathbf{x}$ (the signal to filter) and
+For two signals $\mathbf{s}$ (the signal to filter) and
 $\mathbf{h}$ (the filter coefficients), the convolution is defined as
 \begin{equation}
-(\mathbf{x}\ast\mathbf{h})_{n}=\sum_{k\in\text{Sup}(h)}\mathbf{x}_n-\mathbf{h}_{n-k}.
+(\mathbf{s}\ast\mathbf{h})_{n}=\sum_{k=0}^{K-1}\mathbf{s}_{n-k}\mathbf{h}_{k},
 \label{eq:convolution}
 \end{equation}
+where $K$ is the number of coefficients (of the filter), and $n$ is known as the \emph{lag} (where the filter is applied in $\mathbf{s}$).
+
+Notice that we could need to extend $\mathbf{s}$ to convolve.
 
 %}}}
 
-\section{The convolution theorem}
+\section{FFT-based convolution (the convolution theorem)}
 \label{sec:convolution_theorem}
-The convolution theorem states that the convolution of two discrete signals in
-the signal domain is equivalent to the multiplication of their Fourier
-transforms in the frequency domain:
+%{{{
+
+The convolution theorem states that the convolution of two signals in
+the signal domain is equivalent to the (coefficient-wise)
+multiplication of their Fourier transforms and then performs the
+inverse Fourier transform:
 \begin{equation}
-  \mathbf{x}\ast\mathbf{h} = \text{inverse~DTFT}(\mathbf{X}(e^{jw}\mathbf{H}(e^{jw}) 
+  \mathbf{x}\ast\mathbf{h} = \mathcal{F}^{-1}(\mathbf{X}\mathbf{H}).
 \end{equation}
+
+Conversely, the Fourier transform of the product of two signals is
+the convolution of their individual Fourier transforms:
+\begin{equation}
+  \mathcal{F}(\mathbf{x}\mathbf{h}) = \mathbf{X}\ast\mathbf{H}.
+\end{equation}
+
+Notice that to perform a convolution in the Fourier domain, both
+signals must have the same shape, which likely will force to zero-pad
+$\mathbf{h}$. Therefore, when $K$ iw big, this can speed-up the
+convolution if we use \gls{FFT} algorithms.
+
+%}}}
 
 \section{Cross-correlation (CC)}
 \label{sec:cross-correlation}
 %{{{
 
 \gls{CC}, usually represented by the symbol $\circledast$, measures
-the similarity between two signals $\mathbf{x}$ and $\mathbf{y}$ of
-one relative to the other, as a function of a time lag
-$l\in\mathbb{N}$. In the case of discrete-time signals, the \gls{CC}
-is defined as
+the similarity between two signals $\mathbf{s}$ and $\mathbf{h}$ (both
+usually with the same shape) of one relative to the other, as a
+function of a time lag $n\in\{n\}_{n=0}^{N-1}$. The \gls{CC} is
+defined as
 \begin{equation}
-  {\text{CC}(\mathbf{x},\mathbf{y})}(l)=\sum_n{\mathbf{x}}_n \mathbf{y}^*_{n-l},
+  (\mathbf{s}\circledast\mathbf{h})_n=\sum_{k=0}^{N-1}{\mathbf{s}}_{n+k} \mathbf{h}_n.
 \end{equation}
-where $\mathbf{y}^* _{n-l}$ is the complex conjugate\footnote{If the
-  signal is real-valued, then $\mathbf{y}^*_{n-l}=\mathbf{y}_{n-l}$.}
-of the signal delayed by $l$ samples, and therefore
-${\text{CC}(\mathbf{x},\mathbf{y})}(l)$ can take as many different
-values as possible values $l$ can take (it is a function of $l$).
-When the range of $l$ is undefined, we will suppose that $l$ ranges in
-$\text{Su}(\mathbf{\mathbf{y}})$.
+Notice that the \gls{CC} is identical to the convolution except that
+one of the signals is \emph{flipped} ($\mathbf{s}$ in our case).
 
-The \gls{CC} can be normalized (\gls{NCC}) using
+The \gls{CC} can be normalized between 0 and 1 (\gls{NCC}) using
 \begin{equation}
-  \text{NCC}(\mathbf{x},\mathbf{y})=\frac{{r(\mathbf{x},\mathbf{y})}}{\sqrt{\sum_n \mathbf{x}_n^2 \sum_n \mathbf{y}_n^2}}.
+  \text{NCC}(\mathbf{s},\mathbf{h})=\frac{{\mathbf{s}\circledast\mathbf{h}}}{\sqrt{\sum_n \mathbf{s}_n^2 \sum_n \mathbf{h}_n^2}}.
 \end{equation}
 
 %}}}
 
-\section{Cross-Power Spectral Density (CPSD)}
-\label{sec:CPSD}
+\section{FFT-based cross-correlation (the cross-correlation theorem)}
 %{{{
 
-The \gls{CPSD}, also known as the cross-spectrum, analyzes the
-relationship between two different signals in the frequency domain. In
-other words, the \gls{CPSD} quantifies the degree to which two signals
-are correlated or ``statistically connected'' at specific
-frequencies. A high \gls{CPSD} value at a particular frequency indicates a
-strong correlation between the two signals at that frequency.
-
-The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
-the Fourier transform of the \gls{CC} between these two
-signals:
+See the convolution in the Fourier fomain (Section~\ref{sec:convolution_theorem}):
 \begin{equation}
-  \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({\text{CC}(\mathbf{x},\mathbf{y})}).
+  \mathbf{x}\circledast\mathbf{h} = \mathcal{F}^{-1}(\mathbf{X}\mathbf{H}^*).
 \end{equation}
-
-Alternatively,
-\begin{equation}
-  \text{CPSD}(\mathbf{x},\mathbf{y})_f=E(\mathbf{X}_f\mathbf{Y}_f^*).
-\end{equation}
-In other words, the \gls{CPSD} for the frequency bin of index $f$ is
-the expectation of the product of the Fourier coefficients
-$\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
-segments (or instances) of the signals.
+where $\mathbf{H}^*$ is the complex conjugate of $\mathbf{H}$.
 
 %}}}
 
-\section{Autocorrelation}
-\label{sec:autocorrelation}
+\section{Auto-correlation}
+\label{sec:auto-correlation}
 %{{{
 
 The \gls{AC} of a digital signal is another digital signal that
@@ -312,6 +295,36 @@ where $l$ is the integer time lag.
 
 \gls{AC} can be computed as the inverse Fourier transform of
 the \gls{PSD}.
+
+%}}}
+
+\section{Cross-Power Spectral Density (CPSD)}
+\label{sec:CPSD}
+%{{{
+
+The \gls{CPSD}, also known as cross-spectrum, analyzes the
+relationship between two different signals in the Fourier domain. In
+other words, the \gls{CPSD} quantifies the degree to which two signals
+are correlated or ``statistically connected'' at specific
+frequencies. A high \gls{CPSD} value at a particular frequency
+indicates a strong correlation between the two signals at that
+frequency.
+
+The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
+the Fourier transform of the \gls{CC} between these two
+signals:
+\begin{equation}
+  \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({\mathbf{x}\circledast\mathbf{y}}).
+\end{equation}
+
+Alternatively,
+\begin{equation}
+  \text{CPSD}(\mathbf{x},\mathbf{y})_f = \mathbb{E}(\mathbf{X}_f\mathbf{Y}_f^*).
+\end{equation}
+In other words, the \gls{CPSD} for the frequency bin of index $f$ is
+the expectation of the product of the Fourier coefficients
+$\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
+segments (or instances) of the signals.
 
 %}}}
 
@@ -338,23 +351,6 @@ and (Wiener–Khinchin Theorem):
 
 %}}}
 
-\begin{comment}
-\section{Energy Spectral Density (ESD)}
-%{{{
-
-The ESD of a signal describes the distribution of the
-energy\footnote{That obviously must be finite.} of the signal over
-their frequency components. For a discrete-time signal $\mathbf{x}$,
-the $\text{ESD}(\mathbf{x})$ is defined as
-\begin{equation}
-  \text{ESD}(\mathbf{x})=|\mathbf{X}|^2=\mathbf{X}\mathbf{X}^*,
-\end{equation}
-where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
-complex conjugate.
-
-%}}}
-\end{comment}
-
 \section{Wiener-Khinching theorem}
 \label{sec:WKT}
 %{{{
@@ -375,88 +371,41 @@ of the \gls{PSD}.
 
 %}}}
 
-\section{Variance}
-\label{sec:variance}
+\begin{subappendices}
+
+\begin{comment}
+\section{Energy Spectral Density (ESD)}
 %{{{
 
-The variance of a random variable $\mathbf{x}$, denoted by
-$\mathbb{V}(\mathbf{x})$ is a measurement of its dispersion. It is
-defined as the expected value of the squared deviation from the mean,
-%\begin{equation}
-%  \operatorname{Var}(\mathbf{x}) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
-%\end{equation}
-%\begin{equation}
-%  \operatorname{Var}(\mathbf{x}) = \operatorname{Exp}\left[(X - \operatorname{Exp}[X])^2 \right].
-%\end{equation}
+The ESD of a signal describes the distribution of the
+energy\footnote{That obviously must be finite.} of the signal over
+their frequency components. For a discrete-time signal $\mathbf{x}$,
+the $\text{ESD}(\mathbf{x})$ is defined as
 \begin{equation}
-  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
-  \label{eq:variance}
+  \text{ESD}(\mathbf{x})=|\mathbf{X}|^2=\mathbf{X}\mathbf{X}^*,
 \end{equation}
+where $\mathbf{X}$ the DFT of $\mathbf{x}$, and $\mathbf{X}^*$ is its
+complex conjugate.
+
+%}}}
+\end{comment}
+
+\section{Fourier transform of a discrete signal}
+\label{sec:FTDF}
+%{{{
+
+If the signal $\mathbf{s}$ is discrete, its Fourier transform, also
+known as the \gls{DTFT}, is
+\begin{equation}
+  \mathcal{F}(\mathbf{s}) = S(e^{jw}) = \sum_{i=1}^{N}\mathbf{s}_ie^{-jwi}
+\end{equation}
+which is a continuous function of $w$ if $N$, and its inverse is
+\begin{equation}
+  \mathbf{s} = \mathcal{F}^{-1}(S(e^{jw})) = \frac{1}{2\pi}\int_{-\pi}^{\pi}S(e^{jw})e^{jwn}dw.
+\end{equation}
+The \acrshort{FTDF} is periodic with period $2\pi$.
 
 %}}}
 
-\section{Covariance}
-\label{sec:covariance}
-%{{{
-
-The covariance $\mathbb{C}(\mathbf{x}, \mathbf{y})$ is a measure of
-how two random variables $\mathbf{x}$ and $\mathbf{y}$ change
-together. In simpler terms, it tells us the direction of the linear
-relationship between two variables. The covariance between two
-discrete signals $\mathbf{x}$ and $\mathbf{y}$ is calculated as
-%\begin{equation}
-%  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
-%\end{equation}
-%\begin{equation}
-%  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
-%\end{equation}
-\begin{equation}
-  \mathbb{C}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
-\end{equation}
-
-Notice that (see Eq.~\ref{eq:variance})
-\begin{equation}
-  \mathbb{C}(\mathbf{x}, \mathbf{x}) = \mathbb{V}(\mathbf{x}).
-\end{equation}
-
-%}}}
-
-\section{Covariance matrix}
-\label{sec:covariance_matrix}
-%{{{
-
-The covariance matrix $\Sigma_{\overrightarrow{\mathbf{x}}}$ of a random vector $\overrightarrow{\mathbf{x}}=[\mathbf{x}_1,\cdots,\mathbf{x}_N]^T$, defined as,
-\begin{equation}
-  (\Sigma_{\overrightarrow{\mathbf{x}}})_{i,j}=\mathbb{C}(\mathbf{x}_i,\mathbf{x}_j),
-\end{equation}
-is a $N\times N$ matrix
-\begin{equation}
-\Sigma_{\overrightarrow{\mathbf{x}}} = 
-\begin{pmatrix}
-\mathbb{V}(\mathbf{x}_1) & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_p) \\
-\mathbb{C}(\mathbf{x}_2, \mathbf{x}_1) & \mathbb{V}(\mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_2, \mathbf{x}_p) \\
-\vdots & \vdots & \ddots & \vdots \\
-\mathbb{C}(\mathbf{x}_p, \mathbf{x}_1) & \mathbb{C}(\mathbf{x}_p, \mathbf{x}_2) & \cdots & \mathbb{V}(\mathbf{x}_p)
-\end{pmatrix}
-\end{equation}
-that express the covariance between the random variables of a random vector.
-
-%}}}
-
-\section{$L_2$ norm}
-\label{sec:L2_norm}
-%{{{
-
-$L_2$ norm of a discrete signal $\mathbf{x}$ is defined by
-\begin{equation}
-  ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
-\end{equation}
-Notice that the L2 norm and the Mean Square Error (MSE) are closely
-related concepts, because
-\begin{equation}
-  ||\mathbf{x} - \mathbf{y}||_2^2 = N\cdot\text{MSE}(\mathbf{x} - \mathbf{y}),
-\end{equation}
-where $N$ is the length of $\mathbf{x}$.
-
-%}}}
+\end{subappendices}
 
