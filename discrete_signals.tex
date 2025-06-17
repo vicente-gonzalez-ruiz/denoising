@@ -249,7 +249,9 @@ function of a time lag $n\in\{n\}_{n=0}^{N-1}$. The \gls{CC} is
 defined as
 \begin{equation}
   (\mathbf{s}\circledast\mathbf{h})_n=\sum_{k=0}^{N-1}{\mathbf{s}}_{n+k} \mathbf{h}_n.
+  \label{eq:cross-correlation}
 \end{equation}
+
 Notice that the \gls{CC} is identical to the convolution except that
 one of the signals is \emph{flipped} ($\mathbf{s}$ in our case).
 
@@ -265,7 +267,8 @@ The \gls{CC} can be normalized between 0 and 1 (\gls{NCC}) using
 
 See the convolution in the Fourier fomain (Section~\ref{sec:convolution_theorem}):
 \begin{equation}
-  \mathbf{x}\circledast\mathbf{h} = \mathcal{F}^{-1}(\mathbf{X}\mathbf{H}^*).
+  \mathbf{x}\circledast\mathbf{h} = \mathcal{F}^{-1}(\mathbf{X}\mathbf{H}^*),
+  \label{eq:FFT_CC}
 \end{equation}
 where $\mathbf{H}^*$ is the complex conjugate of $\mathbf{H}$.
 
@@ -274,6 +277,17 @@ where $\mathbf{H}^*$ is the complex conjugate of $\mathbf{H}$.
 \section{Auto-correlation}
 \label{sec:auto-correlation}
 %{{{
+
+\gls{AC} measures the similarity (through a \gls{CC} operation)
+between a signal and a shifted version of it. Therefore (see
+Eq.~\ref{eq:cross-correlation}),
+\begin{equation}
+  \text{AC}(\mathbf{s})_n = (\mathbf{s}\circledast\mathbf{s})_n.
+\end{equation}
+
+Notice that if we are insterested in the \gls{AC} for all the possible lag values,  Eq.~\ref{eq:FFT_CC} offers an efficient technique.
+
+------
 
 The \gls{AC} of a digital signal is another digital signal that
 measures the similarity between the signal and a time-delayed version
@@ -296,6 +310,8 @@ where $l$ is the integer time lag.
 \gls{AC} can be computed as the inverse Fourier transform of
 the \gls{PSD}.
 
+------
+
 %}}}
 
 \section{Cross-Power Spectral Density (CPSD)}
@@ -303,12 +319,11 @@ the \gls{PSD}.
 %{{{
 
 The \gls{CPSD}, also known as cross-spectrum, analyzes the
-relationship between two different signals in the Fourier domain. In
-other words, the \gls{CPSD} quantifies the degree to which two signals
+relationship between two different signals in the Fourier domain. Therefore, the \gls{CPSD} quantifies the degree to which two signals
 are correlated or ``statistically connected'' at specific
-frequencies. A high \gls{CPSD} value at a particular frequency
+frequencies (a high \gls{CPSD} value at a particular frequency
 indicates a strong correlation between the two signals at that
-frequency.
+frequency).
 
 The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
 the Fourier transform of the \gls{CC} between these two
