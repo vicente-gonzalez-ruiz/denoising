@@ -262,6 +262,36 @@ The \gls{CC} can be normalized between 0 and 1 (\gls{NCC}) using
 
 %}}}
 
+\section{Cross-Power Spectral Density (CPSD)}
+\label{sec:CPSD}
+%{{{
+
+The \gls{CPSD}, also known as cross-spectrum, analyzes the
+relationship between two different signals in the Fourier
+domain. Therefore, the \gls{CPSD} quantifies the degree to which two
+signals are correlated or ``statistically connected'' at specific
+frequencies (a high \gls{CPSD} value at a particular frequency
+indicates a strong correlation between the two signals at that
+frequency).
+
+The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
+the Fourier transform of the \gls{CC} between these two
+signals:
+\begin{equation}
+  \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({\mathbf{x}\circledast\mathbf{y}}).
+\end{equation}
+
+%Alternatively,
+%\begin{equation}
+%  \text{CPSD}(\mathbf{x},\mathbf{y})_f = \mathbb{E}(\mathbf{X}_f\mathbf{Y}_f^*).
+%\end{equation}
+%In other words, the \gls{CPSD} for the frequency bin of index $f$ is
+%the expectation of the product of the Fourier coefficients
+%$\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
+%segments (or instances) of the signals.
+
+%}}}
+
 \section{FFT-based cross-correlation (the cross-correlation theorem)}
 %{{{
 
@@ -285,61 +315,29 @@ Eq.~\ref{eq:cross-correlation}),
   \text{AC}(\mathbf{s})_n = (\mathbf{s}\circledast\mathbf{s})_n.
 \end{equation}
 
-Notice that if we are insterested in the \gls{AC} for all the possible lag values,  Eq.~\ref{eq:FFT_CC} offers an efficient technique.
+Notice that if we are insterested in the \gls{AC} for all the possible
+lag values, Eq.~\ref{eq:FFT_CC} offers an efficient technique.
 
-------
+%The \gls{AC} of a digital signal is another digital signal that
+%measures the similarity between the signal and a time-delayed version
+%of itself as a function of a time lag (see
+%Section~\ref{sec:cross-correlation}). Essentially, the \gls{AC}
+%quantifies the degree to which a signal is correlated with its past or
+%future values. Mathematically, for a discrete-time\footnote{And
+%  therefore, for a digital signal.} signal $\mathbf{x}$ of infinite
+%length, the \gls{AC} signal at a lag $l$ is defined as:
+%\begin{equation}
+%  \text{AC}(\mathbf{x})(l)=\text{CC}(\mathbf{x},\mathbf{x})(l)=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
+%\end{equation}
+%where $l$ is the integer time lag.
 
-The \gls{AC} of a digital signal is another digital signal that
-measures the similarity between the signal and a time-delayed version
-of itself as a function of a time lag (see
-Section~\ref{sec:cross-correlation}). Essentially, the \gls{AC}
-quantifies the degree to which a signal is correlated with its past or
-future values. Mathematically, for a discrete-time\footnote{And
-  therefore, for a digital signal.} signal $\mathbf{x}$ of infinite
-length, the \gls{AC} signal at a lag $l$ is defined as:
-\begin{equation}
-  \text{AC}(\mathbf{x})(l)=\text{CC}(\mathbf{x},\mathbf{x})(l)=\sum_n{\mathbf{x}}_n \mathbf{x}^*_{n-l}
-\end{equation}
-where $l$ is the integer time lag.
+%\gls{NAC} is defined as
+%\begin{equation}
+%  {\text{NAC}(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
+%\end{equation}
 
-\gls{NAC} is defined as
-\begin{equation}
-  {\text{NAC}(\mathbf{x},\mathbf{x})} = \frac{{r(\mathbf{x},\mathbf{x})}}{\sum_n \mathbf{x}_n^2} = \frac{{r(\mathbf{x},\mathbf{x})}}{{r(\mathbf{x},\mathbf{x})}_0}
-\end{equation}
-
-\gls{AC} can be computed as the inverse Fourier transform of
+%\gls{AC} can be computed as the inverse Fourier transform of
 the \gls{PSD}.
-
-------
-
-%}}}
-
-\section{Cross-Power Spectral Density (CPSD)}
-\label{sec:CPSD}
-%{{{
-
-The \gls{CPSD}, also known as cross-spectrum, analyzes the
-relationship between two different signals in the Fourier domain. Therefore, the \gls{CPSD} quantifies the degree to which two signals
-are correlated or ``statistically connected'' at specific
-frequencies (a high \gls{CPSD} value at a particular frequency
-indicates a strong correlation between the two signals at that
-frequency).
-
-The \gls{CPSD} between two signals $\mathbf{x}$ and $\mathbf{y}$ is
-the Fourier transform of the \gls{CC} between these two
-signals:
-\begin{equation}
-  \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({\mathbf{x}\circledast\mathbf{y}}).
-\end{equation}
-
-Alternatively,
-\begin{equation}
-  \text{CPSD}(\mathbf{x},\mathbf{y})_f = \mathbb{E}(\mathbf{X}_f\mathbf{Y}_f^*).
-\end{equation}
-In other words, the \gls{CPSD} for the frequency bin of index $f$ is
-the expectation of the product of the Fourier coefficients
-$\mathbf{X}_f$ and $\mathbf{Y}_f^*$, for at least two (or more)
-segments (or instances) of the signals.
 
 %}}}
 
@@ -347,42 +345,51 @@ segments (or instances) of the signals.
 \label{sec:PSD}
 %{{{
 
-The \gls{PSD} of a digital signal (and in general, of a wide-sense
-stationary discrete-time random processes) $\mathbf{x}$,
-$\text{PSD}(\mathbf{x})$, is defined as the \gls{DFT} of its
-\gls{AC} function $r(\mathbf{x},\mathbf{x})$:
+As happens with the \gls{CC} and the \gls{AC}, the \gls{PSD} of a
+signal $\mathbf{x}$ is the Fourier transform of its \gls{AC}:
 \begin{equation}
-  \text{PSD}(\mathbf{x}) = \mathcal{F}(r(\mathbf{x},\mathbf{x})) = \sum_l r(\mathbf{x},\mathbf{x})_le^{-2\pi jfl}.
+  \text{PSD}(\mathbf{x}) = \mathcal{F}(\mathbf{x}\circledast\mathbf{x}).
 \end{equation}
-
-Notice also that:
-\begin{equation}
-  \text{PSD}(\mathbf{x}) = \text{CPSD}(\mathbf{x}),
-\end{equation}
-and (Wiener–Khinchin Theorem):
-\begin{equation}
-  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
-\end{equation}
-
 %}}}
 
 \section{Wiener-Khinching theorem}
 \label{sec:WKT}
 %{{{
 
-The Wiener-Khinching theorem states that the \gls{PSD} of a wide-sense
-stationary random process (its statistical properties do not change
-over time) is the Fourier transform of its \gls{AC}
-function. Therefore, the \gls{CC} of two wide-sense stationary random
-processes is the inverse Fourier transform of the product of the
-\gls{PSD} of one process and the conjugate of the \gls{PSD} of the
-other. Similarly, the \gls{AC} is the inverse Fourier transform
-of the \gls{PSD}.
+The Wiener-Khinching theorem states that the \gls{PSD} of a signal is
+the Fourier transform of its autocorrelation function:
+\begin{equation}
+  \text{PSD}(\mathbf{s}) = \mathcal{F}(\text{AC}(\mathbf{s})).
+\end{equation}
+Therefore, taking the inverse Fourier transform on both sides,
+\begin{equation}
+  \mathcal{F}^{-1}(\text{PSD}(\mathbf{s})) = \text{AC}(\mathbf{s}),
+\end{equation}
+which matches the Eq.~\ref{eq:FFT_CC}.
+
+%Notice also that:
+%\begin{equation}
+%  \text{PSD}(\mathbf{x}) = \text{CPSD}(\mathbf{x}),
+%\end{equation}
+%and (Wiener–Khinchin Theorem):
+%\begin{equation}
+%  r(\mathbf{x},\mathbf{x}) = \mathcal{F}^{-1}(\text{PSD}(\mathbf{x})).
+%\end{equation}
+
+
+%The Wiener-Khinching theorem states that the \gls{PSD} of a wide-sense
+%stationary random process (its statistical properties do not change
+%over time) is the Fourier transform of its \gls{AC}
+%function. Therefore, the \gls{CC} of two wide-sense stationary random
+%processes is the inverse Fourier transform of the product of the
+%\gls{PSD} of one process and the conjugate of the \gls{PSD} of the
+%other. Similarly, the \gls{AC} is the inverse Fourier transform
+%of the \gls{PSD}.
 
 % https://engineering.purdue.edu/~bouman/ece637/notes/pdf/WK.pdf
-\begin{equation}
-  S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
-\end{equation}
+%\begin{equation}
+%  S_x(e^jw)=\sum_kR_x(k)e^{-jwk}
+%\end{equation}
 
 %}}}
 
