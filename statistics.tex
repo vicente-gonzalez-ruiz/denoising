@@ -67,15 +67,17 @@ refers to the expectation. However, when we deal with a digital signal
 \begin{equation}
   \overline{\mathbf{x}} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{x}_i,
 \end{equation}
-where $N$ is the number of samples in $\mathbf{x}$.
+where $N$ is the number of samples in $\mathbf{x}$. We will also use
+$\mu$ to denote the mean value.
 
 \section{Variance}
 \label{sec:variance}
 %{{{
 
 The variance of a random variable $\mathbf{x}$, denoted by
-$\mathbb{V}(\mathbf{x})$ is a measurement of its dispersion. It is
-defined as the expected value of the squared deviation from the mean,
+$\mathbb{V}(\mathbf{x})$ (or simply by $\sigma^2$) is a measurement of
+its dispersion. It is defined as the expected value of the squared
+deviation from the mean,
 %\begin{equation}
 %  \operatorname{Var}(\mathbf{x}) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
 %\end{equation}
@@ -159,13 +161,6 @@ where $N$ is the length of $\mathbf{x}$.
 The uniform distribution, usually denoted by $\mathcal{U}(c)$, is a
 continous probability distribution in which all outcomes are equally
 likely, and can br described by \gls{PDF}
-\begin{equation}
-  \Pr(X{=}x)) =
-  \begin{cases}
-    \frac{1}{2c} & \text{for}\quad -c \le x \le c, \\
-    0 & \text{otherwise},
-  \end{cases}
-\end{equation}
 \begin{equation}
   \Pr(X{=}x)) =
   \begin{cases}
