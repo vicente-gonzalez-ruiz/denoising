@@ -1,4 +1,4 @@
-\chapter{Statistics for discrete data}
+\chapter{Statistics for digital data}
 
 % We will assume that discrete signals are stationary (discrete) random processes
 
@@ -47,8 +47,27 @@ vectors) will be denoted as $\overrightarrow{\mathbf{x}}$.
 %}}}
 
 \section{Expectation}
+The expected value (or expectation, mathematical expectation,
+expectancy) of a random variable $X$, $\mathbb{E}(X)$, is a
+theoretical concept representing the long-run average value of the
+variable if the experiment were to be repeated an infinite number of
+times. It's a weighted average of all possible values the random
+variable can take, where the weights are the probabilities of those
+values occurring.
+
+For a digital signal $\mathbf{x}$, it is defined as
+\begin{equation}
+  \mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
+\end{equation}
 
 \section{Mean}
+In statistics, when referring to a random variable, the mean usually
+refers to the expectation. However, when we deal with a digital signal
+(sample data) $\mathbf{x}$, we define
+\begin{equation}
+  \overline{\mathbf{x}} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{x}_i,
+\end{equation}
+where $N$ is the number of samples in $\mathbf{x}$.
 
 \section{Variance}
 \label{sec:variance}
@@ -134,4 +153,83 @@ related concepts, because
 where $N$ is the length of $\mathbf{x}$.
 
 %}}}
+
+\section{Uniform distribution}
+
+The uniform distribution, usually denoted by $\mathcal{U}(c)$, is a
+continous probability distribution in which all outcomes are equally
+likely, and can br described by \gls{PDF}
+\begin{equation}
+  \Pr(X{=}x)) =
+  \begin{cases}
+    \frac{1}{2c} & \text{for}\quad -c \le x \le c, \\
+    0 & \text{otherwise},
+  \end{cases}
+\end{equation}
+\begin{equation}
+  \Pr(X{=}x)) =
+  \begin{cases}
+    \frac{1}{b-a} & \text{for}\quad a \le x \le b, \\
+    0 & \text{otherwise},
+  \end{cases}
+\end{equation}
+where $X$ represents a continuous random variable, and $[a, b]$ is the
+range of amplitudes of the random samples.
+
+As can be seen, the mean
+\begin{equation}
+  \mu = \frac{a+b}{2},
+\end{equation}
+and the variance
+\begin{equation}
+  \sigma^2 = \frac{(b-a)^{2}}{12}.
+  \end{equation}
+
+\section{Gaussian distribution}
+%{{{
+
+A continuous random variable $X$ that is generated following a Gaussian
+distribution (also known as the normal distribution and usually denoted
+by $\mathcal{N}(\mu, \sigma)$) is described by a \gls{PDF}
+\begin{equation}
+  \Pr(X{=}x) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2} },
+  \label{eq:normal_PDF}
+\end{equation}
+where $x$ is a random sample of $X$, $\Pr(X{=}x)$ represents the
+probability of finding $x$ in $X$, $\mu$ is the mean of $X$, and
+$\sigma$ is the standard deviation of $X$.
+
+When we work with a digital signal (quantized discrete random
+variable) $\mathbf{x}$, the \gls{PDF} becomes a
+\gls{PMF}\footnote{Also called discrete \gls{PDF}.}
+\begin{equation}
+  \Pr(\mathbf{x}{=}\mathbf{x}_i) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(\mathbf{x}_i-\mu)^2}{2\sigma^2} },
+  \label{eq:normal_PMD}
+\end{equation}
+where $\mathbf{x}_i$ is the $i$-th sample of $\mathbf{x}$.
+
+%}}}
+
+\section{Poisson distribution}
+%{{{
+
+The Poisson distribution, denoted by $\mathcal{P}(\lambda)$ is a
+discrete probability distribution that models the number of times an
+event occurs in a fixed interval of time or space, under the following
+assumptions:
+\begin{enumerate}
+\item Events occur independently.
+\item The average rate (events per interval) is constant.
+\item Two events cannot occur at the exact same instant.
+\end{enumerate}
+Its \gls{PMF} is:
+\begin{equation}
+  \Pr(\mathbf{x}{=}\mathbf{x}_i) = \frac{e^{-\mathbf{\lambda}}\lambda^{\mathbf{x}_i}}{\mathbf{x}_i!},
+  \label{eq:PN}
+\end{equation}
+where $\lambda$ is the mean and the standard deviation.
+
+%}}}
+
+
 
