@@ -5,10 +5,10 @@ visualize small specimens (including their internal structures) that
 cannot be seen with the naked eye. For this, some kind of interaction
 between the specimens and a source of energy must exist (the specimen
 must be irradiated), an action that usually degrades the specimen and
-for this reason, the radiation is minimized generating low SNR
-images. In this report, we describe, evaluate, and compare several
-image denoising algorithms commonly used in microscopy of biological
-specimens.
+for this reason, the radiation is minimized (in radiation power or
+time) generating low SNR images. In this report, we describe,
+evaluate, and compare several image denoising algorithms commonly used
+in microscopy of biological specimens.
 
 \section{Image acquisition in microscopy}
 %{{{
@@ -119,4 +119,34 @@ ground truth for comparative assessment) and the selection of
 appropriate denoising parameters. 
 
 %}}}
+
+\section{Denoiser classification}
+
+\begin{enumerate}
+  
+\item Planar imaging-based denoising methods, that only a single 2D image to be applied.
+
+  % Z. Y. M. Q. e. a. Qiao, C., “Zero-shot learning enables instant denoising
+  % and super-resolution in optical fluorescence microscopy,” Nature Com-
+  % munications, vol. 15, no. 4180, 2024.
+
+  % P. R. S. A. e. a. Lequyer, J., “A fast blind zero-shot denoiser,” Nature
+  % Machine Intelligence, vol. 4, p. 953–963, 2022.
+
+\item Time-lapse imaging-based denoising methods, which leverage the
+  temporal information present across multiple frames to distinguish
+  between actual signal and random noise.
+  
+  % X. Li, G. Zhang, J. Wu, Y. Zhang, Z. Zhao, X. Lin, H. Qiao, H. Xie,
+  % H. Wang, L. Fang et al., “Reinforcing neuron extraction and spike
+  % inference in calcium imaging using deep self-supervised denoising,”
+  % Nature Methods, pp. 1–6, 2021.
+
+  % . H. S. N. O. P. L. . C. K. J´erˆome Lecoq, Michael Oliver, “Removing in-
+  % dependent noise in systems neuroscience data using deepinterpolation,”
+  % Nature Methods, vol. 18, pp. 1401–1408, 2021.
+
+\end{enumerate}
+
+\section{Constructing noisy images from a single noisy image}
 

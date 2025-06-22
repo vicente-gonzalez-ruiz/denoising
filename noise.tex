@@ -632,7 +632,8 @@ instances
 \end{equation}
 where $\mathbf{X}$ is the input image, and
 $\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}$ are the output
-images. Defining a chessboard mask function
+images. Defining a chessboard\footnote{It is also common to found in
+  the literature the term checkerboard.}} mask function
 \begin{equation}
   M(y,x)=(y+x)~\text{mod}~2,
 \end{equation}
@@ -724,6 +725,29 @@ where
 \end{equation}
 and $\mathbf{X}_{i,:}$ denotes the $i$-th row of $\mathbf{X}$, and
 $\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
+
+%}}}
+
+\section{TriS-D Random Pixel Resampling (TRPR)}
+\label{sec:TRPR}
+%{{{
+
+\gls{TRPR} divides one noisy image into overlaping $2\times 2$ patches
+and randomly samples two pixels from each patch, to obtain a pair of
+noisy images \cite{ma2025spatiotemporal}. The number $S$ of
+\gls{TRPR}-images with shape $(H-1)\times (W-1)$ is bounded by
+\begin{equation}
+  S \leq 4^{(H-1)(W-1)},
+\end{equation}
+where $W$ and $H$ are the number of horizontal and vertical pixels,
+respectively.
+
+In the case of volume imaging, the shape of the patches is
+$2\times 2\times 2$ and we sample two voxels from each patch. Now
+\begin{equation}
+  S \leq 8^{(H-1)(W-1)(D-1)},
+\end{equation}
+and the shape of the \gls{TRPR}-volumes is $(H-1)(W-1)(D-1)$.
 
 %}}}
 
