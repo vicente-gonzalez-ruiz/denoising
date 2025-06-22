@@ -69,6 +69,7 @@
 \newacronym{ICBS}{ICBS}{Interpolated \acrshort{CBS}}
 \newacronym{SCBS}{SCBS}{Subsampled \acrshort{CBS}}
 \newacronym{SPRS}{SPRS}{Structure Preserving Random Shuffling}
+\newacronym{TRPR}{TRPR}{TriS-D Random Pixel Resampling}
 
 \newacronym{MSE}{MSE}{Mean Square Error}
 \newacronym{RMSE}{RMSE}{Root Mean Square Error}
@@ -216,6 +217,7 @@
 
 %}}}
 
+% \chapter{The U-Net}
 % \chapter{N2V}
 %{{{
 
@@ -257,6 +259,15 @@
 % ras, M. Aittala, and T. Aila. Noise2noise: Learning image
 % restoration without clean data. In ICML, 2018.
 
+%\chapter{Adapted RCAN (as denoiser)}
+
+% Used in TriS-D, were the last upscaling module is removed to keep
+% the spatial resolution \cite{ma2025spatiotemporal}.
+
+% Y. Zhang, K. Li, K. Li, L. Wang, B. Zhong, and Y. Fu, “Image super-
+% resolution using very deep residual channel attention networks,” in
+% European Conference on Computer Vision (ECCV), 2018.
+
 \input{SPGD}
 \input{machine_learning}
 \input{Cryo-CARE}
@@ -288,6 +299,6 @@
 \printglossary[type=\acronymtype]
 
 \bibliographystyle{plain}
-\bibliography{signal_processing,microscopy,denoising,motion_estimation,image_compression,statistics}
+\bibliography{signal_processing,microscopy,denoising,motion_estimation,image_compression,statistics,noise}
 
 \end{document}
