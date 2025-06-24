@@ -37,23 +37,54 @@ following properties:
 \item The noise samples follow a Gaussian (normal) distribution,
   centered at zero:
   \begin{equation}
-    {\mathbf n}\sim{\mathcal N}(\mu=0,\sigma).
+    {\mathbf n}\sim{\mathcal N}(\mu=0,\sigma^2),
   \end{equation}
+  and exhibit a standard deviation of $\sigma$. 
 \end{enumerate}
+
+Notice that in this Gaussian noise model,
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s}),
+  \label{eq:E_ZAWG}
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
+  \label{eq:V_ZAWG}
+\end{equation}
+
+If $\mathbf{s}=\mathbf{0}$ (a constant signal
+with zeros), Equations \ref{eq:E_ZAWG} and Eq.~\ref{eq:V_ZAWG}
+reduce to
+\begin{equation}
+  \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2,
+\end{equation}
+and for $\mathbf{s}=\mathbf{1}$ (a constant signal with ones)
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{1}) = 1,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2.
+\end{equation}
 
 \section{Poisson noise}
 
 Poisson noise is a type of signal-dependent noise that arises in
 systems where the measured data represent counts of discrete events
-(e.g., photons, electrons). It is particularly relevant in
+(e.g., photons and electrons). It is particularly relevant in
 low-radiation imaging, and quantum physics.
 
-Poisson noise can be generated as
+Signal-dependent Poisson noise can be modeled as
 \begin{equation}
   \hat{\mathbf{s}} = \frac{\mathbf{n}(\mathbf{s})}{\gamma},~\mathbf{n}\sim\mathcal{P}(\lambda=\gamma\mathbf{s}),
   \label{eq:PN}
 \end{equation}
-where $\gamma$ controls the standard deviation (the higher $\gamma$,
+where $\gamma$ controls the variance (the higher $\gamma$,
 the smaller the deviation from the $\mathbf{s}$ values). As can be
 seen, this is a signal-dependent model because the brighter parts of
 $\hat{\mathbf s}$ will have a higher mean and variance\footnote{The
@@ -62,6 +93,15 @@ and therefore a higher noise level \cite{meiniel2018denoising}. This
 also implies that the standard deviation of the noise depends on the
 expectation of the noisy signal, which depends on the expectation of
 the clean signal \cite{foi2008practical}.
+
+In this case,
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s}),
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) = \mathbb{E}(\mathbf{s}).
+\end{equation}
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
 %{{{
@@ -74,42 +114,44 @@ generated as
   \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
-where $\alpha\in[0,~1]$ controls the ratio of both types of
-noise (Poissonian and Gaussian). Therefore, for $\alpha > 0$,\footnote{If $\sigma=0$ and
-  $\alpha=0$, both types of noise vanish and
+where $\alpha\in[0,~1]$ controls the ratio of both types of noise
+(Poissonian and Gaussian). Therefore, for $\alpha > 0$,\footnote{If
+  $\sigma=0$ and $\alpha=0$, both types of noise vanish and
   $\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and
 it's spectrum resembles the spectrum of $\mathbf{x}$. By default, in
-our experiments, $\alpha=0.5$. As reported in \cite{foi2008practical},
-this ratio should be representative of typical imaging sensors.
+our experiments, $\alpha=0.5$. Notice that, as reported in
+\cite{foi2008practical}, this ratio should be described in the
+datasheet of the imaging hardware. Otherwise, estimated from the noisy
+images.
 
-It should be obvious to see that in the noise model described in
+It is easy to see that in the noise model described in
 Eq.~\ref{eq:MPG_noise_model} we have that
 \begin{equation}
-  \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s}/\gamma,
-  \label{eq:E_MPG_0}
+  \mathbb{E}(\hat{\mathbf{s}}) = (1-\alpha)\mathbb{E}(\mathbf{s}) + \alpha\mathbb{E}(\gamma\mathbf{s})/\gamma = (1-\alpha)\mathbb{E}(\mathbf{s}) + \alpha\mathbb{E}(\mathbf{s}) = \mathbb{E}(\mathbf{s}),
+  \label{eq:E_MPG}
 \end{equation}
 and that
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = \mathbf{s}/\gamma + \sigma.
-  \label{eq:V_MPG_0}
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\mathbb{V}(\mathbf{s}) + \alpha\mathbb{V}(\gamma\mathbf{s})/\gamma = (1-\alpha)\sigma^2 + \alpha\gamma\mathbf{s}/\gamma = (1-\alpha)\sigma^2 + \alpha\mathbf{s}.
+  \label{eq:V_MPG}
 \end{equation}
-In particular, for $\hat{\mathbf{s}}=\mathbf{0}$ (a constant signal
-with zeros), Equations \ref{eq:E_MPG_0} and Eq.~\ref{eq:V_MPG_0}
+In particular, for $\mathbf{s}=\mathbf{0}$ (a constant signal
+with zeros), Equations \ref{eq:E_MPG} and Eq.~\ref{eq:V_MPG}
 become
 \begin{equation}
-  \mathbb{E}(\mathbf{0}) = 0
+  \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
 \end{equation}
 and
 \begin{equation}
-  \mathbb{V}(\mathbf{0}) = \sigma,
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2,
 \end{equation}
-and for $\hat{\mathbf{s}}=\mathbf{1}$ (a constant signal with ones)
+and for $\mathbf{s}=\mathbf{1}$ (a constant signal with ones)
 \begin{equation}
-  \mathbb{E}(\mathbf{1}) = 1/\gamma
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{1}) = 1,
 \end{equation}
 and
 \begin{equation}
-  \mathbb{V}(\mathbf{1}) = 1/\gamma + \sigma,
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2 + \alpha.
 \end{equation}
 
 %In this case, we have that
