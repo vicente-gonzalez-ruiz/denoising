@@ -53,12 +53,15 @@ Poisson noise can be generated as
   \hat{\mathbf{s}} = \frac{\mathbf{n}(\mathbf{s})}{\gamma},~\mathbf{n}\sim\mathcal{P}(\lambda=\gamma\mathbf{s}),
   \label{eq:PN}
 \end{equation}
-  where $\gamma$ controls the standard deviation (the higher $\gamma$,
+where $\gamma$ controls the standard deviation (the higher $\gamma$,
 the smaller the deviation from the $\mathbf{s}$ values). As can be
 seen, this is a signal-dependent model because the brighter parts of
 $\hat{\mathbf s}$ will have a higher mean and variance\footnote{The
   mean and variance of a Poisson law are both equal to $\lambda$.},
-and therefore a higher noise level \cite{meiniel2018denoising}.
+and therefore a higher noise level \cite{meiniel2018denoising}. This
+also implies that the standard deviation of the noise depends on the
+expectation of the noisy signal, which depends on the expectation of
+the clean signal \cite{foi2008practical}.
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
 %{{{
@@ -68,15 +71,46 @@ consists in a combination of both Poisson and \gls{ZAWG} noise, which
 is commonly called \gls{MPG} noise \cite{meiniel2018denoising},
 generated as
 \begin{equation}
-  \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf s}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
+  \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
 where $\alpha\in[0,~1]$ controls the ratio of both types of
-noise. Therefore, for $\alpha > 0$,\footnote{If $\sigma=0$ and
-$\alpha=0$, both types of noise vanish and
-$\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and it's
-spectrum resembles the spectrum of $\mathbf{x}$. By default, in our
-experiments, $\alpha=0.5$.
+noise (Poissonian and Gaussian). Therefore, for $\alpha > 0$,\footnote{If $\sigma=0$ and
+  $\alpha=0$, both types of noise vanish and
+  $\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and
+it's spectrum resembles the spectrum of $\mathbf{x}$. By default, in
+our experiments, $\alpha=0.5$. As reported in \cite{foi2008practical},
+this ratio should be representative of typical imaging sensors.
+
+It should be obvious to see that in the noise model described in
+Eq.~\ref{eq:MPG_noise_model} we have that
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s}/\gamma,
+  \label{eq:E_MPG_0}
+\end{equation}
+and that
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbf{s}/\gamma + \sigma.
+  \label{eq:V_MPG_0}
+\end{equation}
+In particular, for $\hat{\mathbf{s}}=\mathbf{0}$ (a constant signal
+with zeros), Equations \ref{eq:E_MPG_0} and Eq.~\ref{eq:V_MPG_0}
+become
+\begin{equation}
+  \mathbb{E}(\mathbf{0}) = 0
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\mathbf{0}) = \sigma,
+\end{equation}
+and for $\hat{\mathbf{s}}=\mathbf{1}$ (a constant signal with ones)
+\begin{equation}
+  \mathbb{E}(\mathbf{1}) = 1/\gamma
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\mathbf{1}) = 1/\gamma + \sigma,
+\end{equation}
 
 %In this case, we have that
 %\begin{equation}
@@ -633,7 +667,7 @@ instances
 where $\mathbf{X}$ is the input image, and
 $\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}$ are the output
 images. Defining a chessboard\footnote{It is also common to found in
-  the literature the term checkerboard.}} mask function
+  the literature the term checkerboard.} mask function
 \begin{equation}
   M(y,x)=(y+x)~\text{mod}~2,
 \end{equation}
