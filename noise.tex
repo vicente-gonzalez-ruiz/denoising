@@ -54,7 +54,7 @@ and
 \end{equation}
 
 If $\mathbf{s}=\mathbf{0}$ (a constant signal
-with zeros), Equations \ref{eq:E_ZAWG} and Eq.~\ref{eq:V_ZAWG}
+with zeros), Equations \ref{eq:E_ZAWG} and \ref{eq:V_ZAWG}
 reduce to
 \begin{equation}
   \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
@@ -63,7 +63,8 @@ and
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2,
 \end{equation}
-and for $\mathbf{s}=\mathbf{1}$ (a constant signal with ones)
+respectively, and if $\mathbf{s}=\mathbf{1}$ (a constant signal with
+ones)
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{1}) = 1,
 \end{equation}
@@ -87,20 +88,38 @@ Signal-dependent Poisson noise can be modeled as
 where $\gamma$ controls the variance (the higher $\gamma$,
 the smaller the deviation from the $\mathbf{s}$ values). As can be
 seen, this is a signal-dependent model because the brighter parts of
-$\hat{\mathbf s}$ will have a higher mean and variance\footnote{The
-  mean and variance of a Poisson law are both equal to $\lambda$.},
-and therefore a higher noise level \cite{meiniel2018denoising}. This
+$\hat{\mathbf s}$ will have a higher mean and variance,
+and therefore a higher noise power \cite{meiniel2018denoising}. This
 also implies that the standard deviation of the noise depends on the
 expectation of the noisy signal, which depends on the expectation of
 the clean signal \cite{foi2008practical}.
 
-In this case,
+Concretely,
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s}),
+  \label{eq:E_Poisson}
 \end{equation}
 and
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) = \mathbb{E}(\mathbf{s}).
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s})/\gamma.
+  \label{eq:E_Poisson}
+\end{equation}
+
+In the exteme case where $\mathbf{s}=\mathbf{0}$, we get that
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = 0,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = 0.
+\end{equation}
+If $\mathbf{s}=\mathbf{1}$, then
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = 1,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = 1/\gamma.
 \end{equation}
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
@@ -124,17 +143,19 @@ our experiments, $\alpha=0.5$. Notice that, as reported in
 datasheet of the imaging hardware. Otherwise, estimated from the noisy
 images.
 
-It is easy to see that in the noise model described in
-Eq.~\ref{eq:MPG_noise_model} we have that
+Considering the results shown by Equations \ref{eq:E_ZAWG} and
+\ref{eq:E_Poisson}, it should be obvious to determine that
 \begin{equation}
-  \mathbb{E}(\hat{\mathbf{s}}) = (1-\alpha)\mathbb{E}(\mathbf{s}) + \alpha\mathbb{E}(\gamma\mathbf{s})/\gamma = (1-\alpha)\mathbb{E}(\mathbf{s}) + \alpha\mathbb{E}(\mathbf{s}) = \mathbb{E}(\mathbf{s}),
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s}),
   \label{eq:E_MPG}
 \end{equation}
 and that
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\mathbb{V}(\mathbf{s}) + \alpha\mathbb{V}(\gamma\mathbf{s})/\gamma = (1-\alpha)\sigma^2 + \alpha\gamma\mathbf{s}/\gamma = (1-\alpha)\sigma^2 + \alpha\mathbf{s}.
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2 + \alpha\mathbb{V}(\mathbf{s})/\gamma.
   \label{eq:V_MPG}
 \end{equation}
+for the \gls{MPG} noise model.
+
 In particular, for $\mathbf{s}=\mathbf{0}$ (a constant signal
 with zeros), Equations \ref{eq:E_MPG} and Eq.~\ref{eq:V_MPG}
 become
@@ -151,7 +172,7 @@ and for $\mathbf{s}=\mathbf{1}$ (a constant signal with ones)
 \end{equation}
 and
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2 + \alpha.
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2 + \alpha/\gamma.
 \end{equation}
 
 %In this case, we have that
