@@ -60,6 +60,13 @@ For a digital signal $\mathbf{x}$, it is defined as
   \mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
 \end{equation}
 
+Notice that using the expectation operator, the power of a digital
+signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
+\begin{equation}
+  P(\mathbf{x}) = \mathbb{E}(|\mathbf{x}|^2).
+  \label{eq:power_as_expectation}
+\end{equation}
+
 \section{Mean}
 In statistics, when referring to a random variable, the mean usually
 refers to the expectation. However, when we deal with a digital signal
@@ -90,6 +97,22 @@ deviation from the mean,
 \end{equation}
 
 %}}}
+
+\section{Power of a signal as a function of its mean and variance}
+The average power of a random variable is equal to its variance plus its mean
+(expectation) squared
+\begin{equation}
+  P(\mathbf{x}) =  \mathbb{V}(\mathbf{x}) + \mathbb{E}(\mathbf{x})^2.
+  \label{eq:power_mean_variance}
+\end{equation}
+This is because
+\begin{align*}
+  \mathbb{E}(\mathbf{x}^2)
+  & = \mathbb{E}(\mathbf{x}^2 - \mathbb{E}(\mathbf{x}) + \mathbb{E}(\mathbf{x})) \\
+  & = \mathbb{E}((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 + 2\mathbb{E}(\mathbf{x})(\mathbf{x}-\mathbb{E}(\mathbf{x})) + \mathbb{E}(\mathbf{x})^2) \\
+  & = \mathbb{E}((\mathbf{x}-\mathbb{E}(\mathbf{x}))^2) + 2\mathbb{E}(\mathbf{x})(\mathbb{E}(\mathbf{x})-\mathbb{E}(\mathbf{x})) + \mathbb{E}(\mathbf{x})^2) \\
+  & = \mathbb{V}(\mathbf{x}) + 0 + \mathbb{E}(\mathbf{x})^2.
+\end{align*}
 
 \section{Covariance}
 \label{sec:covariance}
