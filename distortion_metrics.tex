@@ -5,21 +5,21 @@ $\mathbf{s}$ and its denoised version $\tilde{\mathbf{s}}$, both with
 $N$ samples. These metrics help assess how well the denoising
 algorithm preserved important signal features while removing
 noise. Notice however, that in practice the \gls{GT} is rarely
-available, and whether this happens, these metrics are not applicable.
+available.
 
 \section{Mean Square Error (MSE) and Root MSE (RMSE)}
 %{{{
 
-The \gls{MSE} is a statistical measure that quantifies the mean square
+The \gls{MSE} is a distortion metric that quantifies the mean square
 difference between the values of corresponding samples in two digital
-signals with the same shape. The \gls{MSE} is simple and fast to
+signals, usually with the same shape. The \gls{MSE} is simple and fast to
 compute, but is very sensitive to shifts or misalignments. We define
 \begin{equation}
   \text{MSE}(\mathbf{s},\tilde{\mathbf{s}}) = \frac{1}{N}\sum_i(\mathbf{s}_i - \tilde{\mathbf{s}}_i)^2.
   \label{eq:MSE}
 \end{equation}
-Notice that the \gls{MSE} is always positive, being usually the lower
-\gls{MSE}, the bettet.
+Notice that the \gls{MSE} is always positive, and the lower
+\gls{MSE} values, the bettet.
 
 In the case of the \gls{RMSE}, we have that
 \begin{equation}
@@ -43,14 +43,14 @@ the signal) to average noise power (expectation of the
 noise). Therefore,
 
 \begin{equation}
-  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\mathbb{E}(\mathbf{x})}{\mathbb{E}(\mathbf{x} - \mathbf{y})},
+  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\mathbb{E}(\mathbf{x})}{\mathbb{E}(\mathbf{x} - \mathbf{y})}.
   \label{eq:formal_SNR}
 \end{equation}
-where, in general, 
-\begin{equation}
-  \mathbb{E}(\mathbf{x}) = \sum_{i}\mathbf{x}_iP(\mathbf{x}_i).
-  \label{eq:expectation}
-\end{equation}
+%where, in general, 
+%\begin{equation}
+%  \mathbb{E}(\mathbf{x}) = \sum_{i}\mathbf{x}_iP(\mathbf{x}_i).
+%  \label{eq:expectation}
+%\end{equation}
 Notice that if the noise has zero mean, the expectation
 of the noise is also the variance of the noise.
 
@@ -70,11 +70,7 @@ Finally, it is common to express the power (energy) in decibels (dB).
 \end{equation}
 
 A ratio higher than 1:1 (greater than 0 dB) indicates more signal than
-noise. Therefore, a high SNR means better quality (less noise).
-
-Notice that, having two images/volumes $\mathbf{x}$ and $\mathbf{y}$
-of size $J$, the RMSE expresses the distortion in the same units as
-the input samples (pixels/voxels).
+noise. Therefore, a high SNR implies better quality (less noise).
 
 %}}}
 
@@ -116,11 +112,11 @@ samples, $k_1=0.01$, and $k_2=0.03$, and where the default
 size\footnote{See
   \href{https://scikit-image.org/docs/stable/api/skimage.metrics.html\#skimage.metrics.structural_similarity}{\texttt{skimage.metrics.structural\_similarity}}.}
 of the local blocks is $7^D$, where $D$ is the number of signal
-dimensions. When evaulating, SSIM values below $0$ does not make
+dimensions. When evaulating, SSIM values below $0$ do not make
 sense.
 
 MS-SSIM \cite{wang2003multiscale} is an extension of SSIM computed at
-multiple image scales. It is omre suitable to capture structural
+multiple image scales. It is more suitable to capture structural
 similarities across different levels of detail, which can be useful in
 microscopy where both fine and coarse features matter. It is defned as
 \begin{equation}
@@ -139,12 +135,12 @@ importance of each term at the $j\text{-th}$ scale/block.
 
 %}}}
 
-\section{Pearson Correlation Coefficient (PPC)}
+\section{Pearson Correlation Coefficient (PCC)}
 %{{{
-Essentially, correlation is the measure of how two or more variables
-are related to one another. The
-\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{PPC}
-is given by
+
+The \gls{PCC} is
+\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{given
+  by}
 \begin{equation}
   \text{PPC}(\mathbf{x}, \mathbf{y}) = \frac{\sum_j(\mathbf{x}_j - \overline{\mathbf{x}})(\mathbf{y}_j - \overline{\mathbf{y}})}{\sqrt{\sum_j (\mathbf{x}_j - \overline{\mathbf{x}})^2 \sum_j (\mathbf{y}_j - \overline{\mathbf{y}})^2}},
 \end{equation}
@@ -154,32 +150,10 @@ $[-1, -1]$, meaning $-1$ a perfect negative linear relationship
 between the input tensors, $0$ no linear relation, and $1$ a perfect
 coincidence.
 
-Notice that the PCC can be found if we compute the cross-correlation
-only for the 0-displacement and the signals are normalized. Therefore,
-although the computation of the PCC has a computational complexity of
-$O(N)$, it is also possible to compute the cross-correlation in the
-Fourier domain (Wiener-Khinchin theorem, see Section~\ref{sec:WKT})
-with a complexity of $O(N\log N)$, using the following steps:
-\begin{enumerate}
-\item Take the FFT of $\mathbf{x}$ ($O(N\log N)$):
-  \begin{equation}
-    \mathbf{X} = \mathcal{F}(x).
-  \end{equation}
-\item Take the FFT of $\mathbf{y}$ ($O(N\log N)$):
-  \begin{equation}
-    \mathbf{Y} = \mathcal{F}(y).
-  \end{equation}
-\item Multiply (element-wise) $\mathbf{X}$ by the complex conjugate of
-  $\mathbf{Y}$ to get the CPSD (Cross-Power Spectral Density) ($O(N)$):
-  \begin{equation}
-    \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}({r(\mathbf{x},\mathbf{y})})=\mathbf{X}\mathbf{Y}^*
-  \end{equation}
-\item Take the inverse FFT of the result to get the cross-correlation
-  function ($O(N\log N)$):
-  \begin{equation}
-    \mathbf{PCC} = \mathcal{F}^{-1}(\text{CPSD}(\mathbf{x},\mathbf{y}))
-  \end{equation}
-\end{enumerate}
+Notice that the \gls{PCC} is the same that the cross-correlation
+only for the 0-displacement when the signals are normalized. Therefore,
+although the computation of the \gls{CC} has a computational complexity of
+$O(N^2)$, we can determine the \gls{PCC} in $O(N)$.
 
 %}}}
 
