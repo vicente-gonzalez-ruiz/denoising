@@ -232,6 +232,30 @@ the convolution of their individual Fourier transforms:
   \mathcal{F}(\mathbf{x}\mathbf{h}) = \mathbf{X}\ast\mathbf{H}.
 \end{equation}
 
+We can compute the convolution in the Fourier
+domain with a
+complexity of $O(N\log N)$, using the following steps:
+\begin{enumerate}
+\item Take the FFT of $\mathbf{x}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{X} = \mathcal{F}(x).
+  \end{equation}
+\item Take the FFT of $\mathbf{y}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{Y} = \mathcal{F}(y).
+  \end{equation}
+\item Multiply (element-wise) $\mathbf{X}$ by
+  $\mathbf{Y}$:
+  \begin{equation}
+    \mathcal{F}(\mathbf{x}\ast\mathbf{y})=\mathbf{X}\mathbf{Y}.
+  \end{equation}
+\item Take the inverse FFT of the result to get the convolution
+  function ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{x}\ast\mathbf{y} = \mathcal{F}^{-1}(\mathcal{F}(\mathbf{x}\ast\mathbf{y}))
+  \end{equation}
+\end{enumerate}
+
 Notice that to perform a convolution in the Fourier domain, both
 signals must have the same shape, which likely will force to zero-pad
 $\mathbf{h}$. Therefore, when $K$ iw big, this can speed-up the
@@ -243,11 +267,13 @@ convolution if we use \gls{FFT} algorithms.
 \label{sec:cross-correlation}
 %{{{
 
-\gls{CC}, usually represented by the symbol $\circledast$, measures
-the similarity between two signals $\mathbf{s}$ and $\mathbf{h}$ (both
-usually with the same shape) of one relative to the other, as a
-function of a time lag $n\in\{n\}_{n=0}^{N-1}$. The \gls{CC} is
-defined as
+Essentially, \gls{CC}, usually represented by the symbol
+$\circledast$, is the measure of how two or more variables are related
+to one another. In the context of this chapter, \gls{CC} can be used
+to measure the similarity between two signals $\mathbf{s}$ and
+$\mathbf{h}$ (both usually with the same shape) of one relative to the
+other, as a function of a time lag $n\in\{n\}_{n=0}^{N-1}$. The
+\gls{CC} is defined as
 \begin{equation}
   (\mathbf{s}\circledast\mathbf{h})_n=\sum_{k=0}^{N-1}{\mathbf{s}}_{n+k} \mathbf{h}_n.
   \label{eq:cross-correlation}
@@ -302,6 +328,30 @@ See the convolution in the Fourier fomain (Section~\ref{sec:convolution_theorem}
   \label{eq:FFT_CC}
 \end{equation}
 where $\mathbf{H}^*$ is the complex conjugate of $\mathbf{H}$.
+
+We can compute the cross-correlation in the Fourier
+domain with a
+complexity of $O(N\log N)$, using the following steps:
+\begin{enumerate}
+\item Take the FFT of $\mathbf{x}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{X} = \mathcal{F}(x).
+  \end{equation}
+\item Take the FFT of $\mathbf{y}$ ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{Y} = \mathcal{F}(y).
+  \end{equation}
+\item Multiply (element-wise) $\mathbf{X}$ by the complex conjugate of
+  $\mathbf{Y}$ to get the CPSD (Cross-Power Spectral Density) ($O(N)$):
+  \begin{equation}
+    \text{CPSD}(\mathbf{x},\mathbf{y})=\mathcal{F}(\mathbf{x}\circledast\mathbf{y})=\mathbf{X}\mathbf{Y}^*
+  \end{equation}
+\item Take the inverse FFT of the result to get the cross-correlation
+  function ($O(N\log N)$):
+  \begin{equation}
+    \mathbf{PCC} = \mathcal{F}^{-1}(\text{CPSD}(\mathbf{x},\mathbf{y}))
+  \end{equation}
+\end{enumerate}
 
 %}}}
 
