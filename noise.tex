@@ -5,7 +5,61 @@ alteration of the original signal, which can corrupt the information
 being transmitted or processed. In other words, noise is any
 interference that distorts a \emph{clean} signal.
 
-\section{Signal-to-Noise Ratio (SNR)}
+% \section{Noise models}
+%{{{
+
+% \label{sec:noise_models}
+
+% Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
+% usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
+% noisy-version tensor random instance of $\mathbf{X}$ generated, in
+% general, through
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
+%   \label{eq:general_model}
+% \end{equation}
+% where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
+% with the same shape as $\mathbf{X}$.
+
+% We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
+% independent, and therefore, nothing can be said about
+% ${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
+% viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
+% from a single $\hat{\mathbf X}^{(i)}$.
+
+% \subsection{Signal-independent noise model}
+% In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
+% identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
+% \begin{equation}
+%   {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
+%   \label{eq:noise_expectation_1}
+% \end{equation}
+% where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
+% of ${\mathbf N}^{(i)}$, and
+% \begin{equation}
+%   J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
+% \end{equation}
+% being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+
+% SIN models are also called additive noise models defined by
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
+%   \label{eq:additive_noisy_model}
+% \end{equation}
+
+% \subsection{Signal-dependent noise (SDN) models}
+% In SDN models, the amplitude of the random noise samples depends on
+% the clean signal (see Eq.~\ref{eq:general_model}).
+
+% %\begin{equation}
+% %  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
+% %  \label{eq:SDN_model}
+% %\end{equation}
+
+%}}}
+
+\section{A statistical model for the Signal-to-Noise Ratio (SNR)}
+%{{{
 
 If $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
 noisy version, the \gls{SNR} is defined as the ratio between the power
@@ -33,7 +87,11 @@ $\mathbb{E}(\mathbf{n}))=0$ (the mean of the noise is zero). Under these assumpt
   \label{eq:SNR_distribution}
 \end{equation}
 
+%}}}
+
 \section{Zero-mean Additive White Gaussian (ZAWG) noise}
+%{{{
+
 \gls{ZAWG} noise is a type of random noise characterized by the
 following properties:
 \begin{enumerate}
@@ -81,6 +139,7 @@ and
   \label{eq:V_ZAWG}
 \end{equation}
 
+\begin{comment}
 If $\mathbf{s}=\mathbf{0}$ (a constant signal
 with zeros), Equations \ref{eq:E_ZAWG} and \ref{eq:V_ZAWG}
 reduce to
@@ -100,13 +159,17 @@ and
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2.
 \end{equation}
+\end{comment}
 
 Using Eq.~\ref{eq:SNR_distribution},
 \begin{equation}
   \text{SNR}_{\mathcal{N}(\mu,\sigma^2)} = \frac{\mu}{\sigma}.
 \end{equation}
 
+%}}}
+
 \section{Poisson noise}
+%{{{
 
 Poisson noise is a type of signal-dependent noise that arises in
 systems where the measured data represent counts of discrete events
@@ -185,6 +248,8 @@ Using Eq.~\ref{eq:SNR_distribution},
 Notice that the SNR grows with $\mathbf{s}$ and with
 $\gamma$. Therefore, using the Eq.~\ref{eq:PN}, we must reduce
 $\gamma$ to increase the noise.
+
+%}}}
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
 %{{{
@@ -281,61 +346,7 @@ and
 
 %}}}
 
-
-%\subsection{Noise estimation}
-%{{{
-
-% Makitalo and A. Foi. Optimal inversion of the generalized
-% Anscombe transformation for Poisson-Gaussian noise. IEEE
-% Transactions on Image Processing, 22(1):91–103, 2013.
-% https://link.springer.com/chapter/10.1007/978-3-030-87231-1_33
-
-% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
-% Practical Poissonian-Gaussian noise modeling and fitting for
-% single-image raw-data. IEEE Transactions on Image Pro-
-% cessing, 17(10):1737–1754, 2008.
-
-%}}}
-
-%\subsection{The Anscombe transform and generalized Anscombe transformation (GAT)}
-%{{{
-
-% Using a nonlinear variance-stabilizing transformation (VST) to convert the
-% Poisson-Gaussian denoising problem into a Gaussian noise
-% removal problem. The VST is able to remove the signal-dependency of
-% the Poisson component, whose noise variance varies with
-% the expected pixel value, and results in a modified image
-% with signal-independent Gaussian noise only and a constant
-% (unitary) noise variance. Next, a Gaussian denoising algo-
-% rithm is applied to the transformed image. And finally, the
-% Gaussian-denoised data is transformed back via an inverse
-% VST algorithm, such as the exact unbiased inverse transfor-
-% mation [19], and the estimation of the noise-free image is
-% obtained.
-
-% https://arxiv.org/abs/2209.09825?utm_source=chatgpt.com
-% . Makitalo and A. Foi. Optimal inversion of the generalized
-% Anscombe transformation for Poisson-Gaussian noise. IEEE
-% Transactions on Image Processing, 22(1):91–103, 2013.
-
-% [19] M. Makitalo and A. Foi. Optimal inversion of the generalized
-% Anscombe transformation for Poisson-Gaussian noise. IEEE
-% Transactions on Image Processing, 22(1):91–103, 2013.
-
-% En "A Poisson-Gaussian Denoising Dataset with Real Fluorescence Microscopy
-% Images" hay una definición de la transformada (Eq. 4).
-
-%Variance-Stabilizing Transform (VST)
-
-%    Problem: The signal-dependent variance of Poisson noise makes it hard to apply standard Gaussian-based denoisers.
-
-%    Solution: Use a variance-stabilizing transformation, such as the Anscombe transform, to approximate the Poisson noise as Gaussian with constant variance:
-%    A(y)=2\sqrt(y+3/8)
-% After this, the transformed image has approximately unit Gaussian noise.
-
-%}}}
-
-%\subsection{Speckle noise}
+%\section{Speckle noise}
 %{{{
 
 % Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
@@ -375,62 +386,60 @@ and
 
 %}}}
 
-% \section{Noise models}
+%\section{The Anscombe transform and generalized Anscombe transformation (GAT)}
 %{{{
 
-% \label{sec:noise_models}
+% Using a nonlinear variance-stabilizing transformation (VST) to convert the
+% Poisson-Gaussian denoising problem into a Gaussian noise
+% removal problem. The VST is able to remove the signal-dependency of
+% the Poisson component, whose noise variance varies with
+% the expected pixel value, and results in a modified image
+% with signal-independent Gaussian noise only and a constant
+% (unitary) noise variance. Next, a Gaussian denoising algo-
+% rithm is applied to the transformed image. And finally, the
+% Gaussian-denoised data is transformed back via an inverse
+% VST algorithm, such as the exact unbiased inverse transfor-
+% mation [19], and the estimation of the noise-free image is
+% obtained.
 
-% Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
-% usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
-% noisy-version tensor random instance of $\mathbf{X}$ generated, in
-% general, through
-% \begin{equation}
-%   \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
-%   \label{eq:general_model}
-% \end{equation}
-% where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
-% with the same shape as $\mathbf{X}$.
+% https://arxiv.org/abs/2209.09825?utm_source=chatgpt.com
+% . Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
 
-% We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
-% independent, and therefore, nothing can be said about
-% ${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
-% viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
-% from a single $\hat{\mathbf X}^{(i)}$.
+% [19] M. Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
 
-% \subsection{Signal-independent noise model}
-% In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
-% identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
-% \begin{equation}
-%   {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
-%   \label{eq:noise_expectation_1}
-% \end{equation}
-% where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
-% of ${\mathbf N}^{(i)}$, and
-% \begin{equation}
-%   J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
-% \end{equation}
-% being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+% En "A Poisson-Gaussian Denoising Dataset with Real Fluorescence Microscopy
+% Images" hay una definición de la transformada (Eq. 4).
 
-% SIN models are also called additive noise models defined by
-% \begin{equation}
-%   \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
-%   \label{eq:additive_noisy_model}
-% \end{equation}
+%Variance-Stabilizing Transform (VST)
 
-% \subsection{Signal-dependent noise (SDN) models}
-% In SDN models, the amplitude of the random noise samples depends on
-% the clean signal (see Eq.~\ref{eq:general_model}).
+%    Problem: The signal-dependent variance of Poisson noise makes it hard to apply standard Gaussian-based denoisers.
 
-% %\begin{equation}
-% %  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
-% %  \label{eq:SDN_model}
-% %\end{equation}
+%    Solution: Use a variance-stabilizing transformation, such as the Anscombe transform, to approximate the Poisson noise as Gaussian with constant variance:
+%    A(y)=2\sqrt(y+3/8)
+% After this, the transformed image has approximately unit Gaussian noise.
 
 %}}}
 
+%\section{Noise estimation}
+%{{{
+
+% Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+% https://link.springer.com/chapter/10.1007/978-3-030-87231-1_33
+
+% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
+% Practical Poissonian-Gaussian noise modeling and fitting for
+% single-image raw-data. IEEE Transactions on Image Pro-
+% cessing, 17(10):1737–1754, 2008.
+
 %}}}
 
-\section{Noise mesurement}
+\section{Noise characterization}
 %{{{
 
 When a clean signal is not available, it is necessary to use a
@@ -460,8 +469,6 @@ underlying clean signal, $\mathbf{s}^{(1)}$ and
 $\mathbf{s}^{(2)}$.
 
 \begin{comment}
-%{{{
-
 Noise can be additive or multiplicative. In the first case, noise is
 signal independent between samples of the same signal instance, and
 between samples of different instances, even if we consider the same
@@ -471,13 +478,9 @@ we can estimate, for example, the local variance of the noise after
 supposing some statistical model. Notice, however, that in any case,
 we must known, at least two (inevitable noisy) instances of the clean
 signal.
-
-%}}}
 \end{comment}
 
 \begin{comment}
-%{{{
-
 This requirement often presents a significant
 challenge, particularly in contexts where samples are susceptible to
 the degradation caused by the microscope radiation, thereby limiting
@@ -490,11 +493,11 @@ pixels/voxels across two or more images/volumes (see Appendices
 \ref{sec:SPRS}). Unfortunately, the splitting reduces the spatial
 resolution at which the signal/noise parameters can be successfully
 estudied.
-
-%}}}
 \end{comment}
 
-\subsection{Fourier Shell Correlation (FSC) and Fourier Ring
+%}}}
+
+\section{Fourier Shell Correlation (FSC) and Fourier Ring
   Correlation (FRC)}
 \label{sec:fourier_correlation}
 %{{{
@@ -511,8 +514,6 @@ used to assess the quality of 3D reconstructions
 \cite{rosenthal2003optimal,scheres2012prevention}.
 
 \begin{comment}
-%{{{
-
 An advantage of correlation in the Fourier domain (FC\footnote{When
   the number of dimensions is not relevant, we will refer to this
   metric simply by FC (Fourier Correlation).}) over other similarity
@@ -527,8 +528,6 @@ basically noise.\footnote{When the SNR is very low, the Fourier
   of the same signal are uncorrelated and therefore, the corresponding
   curves values should be close to zero.}  For this reason, in some
 fields such as single particle electron cryo-microscopy (cryo-EM),
-
-%}}}
 \end{comment}
 
 A FSC value of the FSC curve is determined\footnote{An similar
@@ -541,7 +540,7 @@ where $i=(x, y, z)$ is a point (a coordinate of a Fourier coefficient)
 of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$.
 %}}}
 
-\subsection{Self Fourier Correlation (SFC)}
+\section{Self Fourier Correlation (SFC)}
 %{{{
 
 Unfortunately, the existence of two noisy instances (see
@@ -757,7 +756,7 @@ that the filter is truncated at $\pm 4\tau$.
 
 %}}}
 
-\subsection{Spectral SNR (SSNR)}
+\section{Spectral SNR (SSNR)}
 \label{sec:SSNR}
 %{{{
 
@@ -780,8 +779,6 @@ the 3D case (and we only have two instances)
 \begin{equation}
 \text{SSNR}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f) = \frac{\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f)}{1-\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f)}.
 \end{equation}
-
-%}}}
 
 %}}}
 
