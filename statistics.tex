@@ -58,6 +58,7 @@ values occurring.
 For a digital signal $\mathbf{x}$, it is defined as
 \begin{equation}
   \mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
+  \label{eq:expectation}
 \end{equation}
 
 Notice that using the expectation operator, the power of a digital
@@ -73,9 +74,14 @@ refers to the expectation. However, when we deal with a digital signal
 (sample data) $\mathbf{x}$, we define
 \begin{equation}
   \overline{\mathbf{x}} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{x}_i,
+  \label{eq:mean}
 \end{equation}
 where $N$ is the number of samples in $\mathbf{x}$. We will also use
 $\mu$ to denote the mean value.
+
+Notice that Eq.~\ref{eq:mean} is equivalent to
+Ed.~\ref{eq:expectation} when all the samples have the same
+probability.
 
 \section{Variance}
 \label{sec:variance}
