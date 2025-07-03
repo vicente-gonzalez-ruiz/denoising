@@ -65,7 +65,7 @@ If $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
 noisy version, the \gls{SNR} is defined as the ratio between the power
 (see Eq.~\ref{eq:power_discrete_signal}) and
 Eq.~\ref{eq:power_as_expectation}) of the clean signal and the power
-of the noise
+of the noise:
 \begin{equation}
   \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})},
 \end{equation}
@@ -79,9 +79,10 @@ Considering now Eq.~\ref{eq:power_mean_variance}, we come to
   \text{SNR} = \frac{\mathbb{V}(\mathbf{s}) + \mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n}) + \mathbb{E}(\mathbf{n})^2}.
 \end{equation}
 
-Without loss of generality, we can suppose that
+If we are interested in analyze the noise, we can suppose that
 $\mathbb{V}(\mathbf{s})=0$ (the signal is constant) and that
-$\mathbb{E}(\mathbf{n}))=0$ (the mean of the noise is zero). Under these assumptions, we get that
+$\mathbb{E}(\mathbf{n}))=0$ (the mean of the noise is zero). Under
+these assumptions, we get that
 \begin{equation}
   \text{SNR} = \frac{\mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n})} = \frac{\mathbb{E}(\mathbf{s})}{\sqrt{\mathbb{V}(\mathbf{n})}}.
   \label{eq:SNR_distribution}
@@ -216,12 +217,12 @@ also implies that the standard deviation of the noise depends on the
 expectation of the noisy signal, which depends on the expectation of
 the clean signal \cite{foi2008practical}.
 
+\subsection{Expectation}
 From Eq.~\ref{eq:PN} we have that
 \begin{equation}
   \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\gamma\mathbf{s}_i).
   \label{eq:PNi}
 \end{equation}
-
 Considering expectations,
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbb{E}\left(\frac{\mathbf{n}_i}{\gamma}\right) = \frac{1}{\gamma}\mathbb{E}(\mathbf{n}_i) = \frac{1}{\gamma}\gamma\mathbf{s}_i = \mathbf{s}_i.
@@ -232,16 +233,11 @@ Therefore,
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s},
   \label{eq:E_Poisson}
 \end{equation}
+Therefore, as it happens with the \gls{ZAWG} model, $\hat{\mathbf{s}}$
+is an unbiased estimator of $\mathbf{s}$ (the expected value for each
+noisy $i$-th pixel is the clean $i$-th pixel).
 
-Notice that this expectation is a vector (with the same shape that
-$\mathbf{s}$). Equations \ref{eq:EPNi} and \ref{eq:E_Poisson} tell us
-that, for example, if we take an infinite number of noisy instances of
-the same biological specimen, and these instances are affected by
-Poisson noise, then the expected value for each noisy $i$-th pixel is
-the clean $i$-th pixel. As happens with the ZAWG noisy model,
-$\hat{\mathbf{s}}$ is an unbiased estimator or $\mathbf{s}$.
-
-In the case of the variance,
+\subsection{Variance}
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}\left(\frac{\mathbf{n}}{\gamma}\right) = \frac{1}{\gamma^2}\mathbb{V}(\mathbf{n}) = \frac{1}{\gamma^2}\gamma\mathbf{s} = \mathbf{s}/\gamma,
   \label{eq:V_Poisson}
@@ -270,13 +266,14 @@ and
 \end{equation}
 \end{comment}
 
+\subsection{\gls{SNR}}
 Using Eq.~\ref{eq:SNR_distribution},
 \begin{equation}
   \text{SNR}_{\mathcal{P}(\gamma\mathbf{s})} = \frac{\mathbf{s}}{\sqrt{\mathbf{s}/\gamma}} = \sqrt{\gamma\mathbf{s}}.
   \label{eq:SNR_Poisson}
 \end{equation}
 Notice that the SNR grows with $\mathbf{s}$ and with
-$\gamma$. Therefore, using the Eq.~\ref{eq:PN}, we must reduce
+$\gamma$. Therefore, considering the Eq.~\ref{eq:PN}, we must reduce
 $\gamma$ to increase the noise.
 
 %}}}
@@ -286,7 +283,8 @@ $\gamma$ to increase the noise.
 
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{ZAWG} noise, which is commonly known as
-\gls{MPG} noise \cite{meiniel2018denoising}, generated as
+\gls{MPG} noise \cite{meiniel2018denoising}. The genration of \gls{MPG} noise can be modeled as
+as
 \begin{equation}
   \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
@@ -472,31 +470,31 @@ and
 \section{Noise characterization}
 %{{{
 
-When a clean signal is not available, it is necessary to use a
-different kind of information that help us to (without any other
-alternative) \emph{estimate} the characteristics of the noise in the
-signal.
+When the clean signal $\mathbf{s}$ is not available, it is necessary
+to use a different kind of information that help us to \emph{estimate}
+the characteristics of the noise in the signal $\hat{\mathbf{s}}$.
 
-The two metrics included in this section are distortion metrics that
-can help to determine resolution of a signal, for example, the maximum
-spatial resolution that a microscope can achieve. In microscopy, we
-use the \emph{resolving power} of the microscope, which is the
-smallest distance $d$ between two points that can still be
-distinguished (from a biological perspective) as separate entities
-\cite{nieuwenhuizen2013measuring}. The idea is that, any frequency
+The following twe metrics included in this section are distortion
+metrics that can help to determine maximum resolution (frequency) of
+$\mathbf{s}$, considering, for example, the maximum spatial resolution
+that a microscope can achieve.\footnote{In microscopy, we use the
+  \emph{resolving power} of the microscope, which is the smallest
+  distance $d$ between two points that can still be distinguished
+  (from a biological perspective) as separate entities
+  \cite{nieuwenhuizen2013measuring}.} The idea is that, any frequency
 above $1/d$ will be dominated by noise (or at least, information that
-is not relevant), and therefore, a low-pass filter with a cut-off
-frequency of $1/d$ should only remove noise.\footnote{Notice that
-  $d/2$ could be the sampling step size used to digitalize the signal
-  without lossing information.}
+is not relevant\footnote{Notice that $d/2$ could be the sampling step
+  size used to digitalize the signal without lossing information.}),
+and therefore, a low-pass filter with a cut-off frequency of $1/d$
+should only remove noise.
 
 Therefore, characterization of noise (in terms of power, statistical
 model, and spectral profile, etc.) can provide valuable insights for
 determining the optimal operational parameters of denoising
 algorithms. However, this approach typically necessitates the
 availability of at least two independent noisy realizations of the
-underlying clean signal, $\mathbf{s}^{(1)}$ and
-$\mathbf{s}^{(2)}$.
+underlying clean signal, $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$.
 
 \begin{comment}
 Noise can be additive or multiplicative. In the first case, noise is
@@ -528,7 +526,7 @@ estudied.
 %}}}
 
 \section{Fourier Shell Correlation (FSC) and Fourier Ring
-  Correlation (FRC)}
+  Correlation (FRC) curves}
 \label{sec:fourier_correlation}
 %{{{
 
@@ -563,44 +561,48 @@ fields such as single particle electron cryo-microscopy (cryo-EM),
 A FSC value of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
 \begin{equation}
-  \text{FSC}(\mathbf{s}^{(1)}, \mathbf{s}^{(2)}; r) = \frac{\sum_{i \in S_r} \mathbf{S}^{(1)}_i {\mathbf{S}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\mathbf{S}^{(1)}_i|^2 \sum_{i \in S_r} |\mathbf{S}^{(2)}_i|^2}},
+  \text{FSC}(\hat{\mathbf{s}}^{(1)}, \hat{\mathbf{s}}^{(2)}; r) = \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i \hat{{\mathbf{S}}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\hat{\mathbf{S}}^{(1)}_i|^2 \sum_{i \in S_r} |mathbf{\mathbf{S}}^{(2)}_i|^2}},
   \label{eq:FSC}
 \end{equation}
 where $i=(x, y, z)$ is a point (a coordinate of a Fourier coefficient)
-of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$.
+of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$, and
+$\hat{\mathbf{S}}$ is the Fourier transform of $\hat{\mathbf{s}}$. We
+will use the term \gls{FC} to refeer to these metrics when the number
+of dimenssions is not relevant.
+
 %}}}
 
-\section{Self Fourier Correlation (SFC)}
+\section{Self Fourier Correlation (SFC) curve}
 %{{{
 
-Unfortunately, the existence of two noisy instances (see
-$\mathbf{s}^{(1)}$ and $\mathbf{s}^{(2)}$ in Eq.~\ref{eq:FSC}) of the
-clean signal $\mathbf{s}$ not always is possible in
-practice (see Section~\ref{sec:why_denoising})
-In this case, a workaround is to simulate such existence, by
-distributing the information of the only image we have
-$\mathbf{s}^{(1)}$ between two noisy (sub-)instances
-$\mathbf{s}^{(1.1)}$ and $\mathbf{s}^{(1.2)}$. For example, in
-\cite{verbeke2024self} a even/odd signal splitting (see
-Appendix~\ref{sec:EOS}) in 2D slices is proposed to compute the
-\gls{SFC}. In \cite{koho2019fourier} a subsampled-chessboard splitting
-pattern (see Appendix~\ref{sec:SCBS}) is used. Other ``splitting''
-techniques are described in Appendices \ref{sec:ICBS}, \ref{sec:SCBS},
-and \ref{sec:SPRS}. Unfortunately, the splitting reduces the spatial
+Unfortunately, the two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$ do not always exist (see
+Section~\ref{sec:why_denoising}).  In this case, a workaround is to
+simulate its existence, by distributing the information of the only
+image we have $\hat{\mathbf{s}}^{(1)}$ between two noisy
+(sub-)instances $\hat{\mathbf{s}}^{(1.1)}$ and
+$\hat{\mathbf{s}}^{(1.2)}$. For example, in \cite{verbeke2024self} a
+even/odd signal splitting (see Appendix~\ref{sec:EOS}) in 2D slices is
+proposed to compute the so called \gls{SFC}. In \cite{koho2019fourier}
+a subsampled-chessboard splitting pattern (see
+Appendix~\ref{sec:SCBS}) is used. Other ``splitting'' techniques are
+described in Appendices \ref{sec:ICBS}, \ref{sec:SCBS}, and
+\ref{sec:SPRS}. Unfortunately, the splitting reduces the spatial
 resolution at which the signal/noise parameters can be successfully
 estudied (for example, in \cite{verbeke2024self} the \gls{SFC} that
-resembles the true FC only in some specific cases\footnote{Gaussian noise
-  distribution must be white, and the power spectrum of the signal
-  decays.} and in \cite{koho2019fourier}, the \gls{SFC} curves must be calibrated
-depending on the correlation). Therefore, in general, we should always
-consider \gls{SFC} curves as estimations of the true FC curves.
+resembles the true \gls{FC} only in some specific cases\footnote{Gaussian
+  noise distribution must be white, and the power spectrum of the
+  signal decays.} and in \cite{koho2019fourier}, the \gls{SFC} curves
+must be calibrated depending on the correlation). Therefore, in
+general, we should always consider \gls{SFC} curves as estimations of
+the true \gls{FC} curves.
 
-Finally, notice that, although the FC and the SFC curves can be traced
-using only 2 signals, more accurate estimations can be obtained if
-more instances are available, plotting the arithmetic mean of all of
-them. For example, in the case of SCBS the we average 2 curves, and in
-the case of SPRS the number of averaged curves can be choosen by the
-user.
+Finally, notice that, although the \gls{FC} and the \gls{SFC} curves
+can be traced using only two signals, more accurate estimations can be
+obtained if more noisy instances are available, plotting the arithmetic mean
+of all the curves. For example, in the case of SCBS the we average 2
+curves, and in the case of SPRS the number of averaged curves can be
+choosen by the user.
 
 \begin{comment}
 Finally, notice that it is possible to compute the so called Self FC
