@@ -81,8 +81,9 @@ Considering now Eq.~\ref{eq:power_mean_variance}, we come to
 
 If we are interested in analyze the noise, we can suppose that
 $\mathbb{V}(\mathbf{s})=0$ (the signal is constant) and that
-$\mathbb{E}(\mathbf{n}))=0$ (the mean of the noise is zero). Under
-these assumptions, we get that
+$\mathbb{E}(\mathbf{n})=0$ (the mean of the noise is zero). Under
+these assumptions, we get the following statistical estimation for the
+\gls{SNR}:
 \begin{equation}
   \text{SNR} = \frac{\mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n})} = \frac{\mathbb{E}(\mathbf{s})}{\sqrt{\mathbb{V}(\mathbf{n})}}.
   \label{eq:SNR_distribution}
@@ -93,20 +94,42 @@ these assumptions, we get that
 \section{Zero-mean Additive White Gaussian (ZAWG) noise}
 %{{{
 
-\gls{ZAWG} noise is a type of random noise
+\gls{ZAWG} noise is a type of random\footnote{There exist a different
+  type of noise, not random, sometimes called (depending on the
+  context) \emph{coherent noise}, \emph{procedural noise}, and
+  \emph{gradient noise}, etc., that we will not study.} noise
 characterized by:
 \begin{enumerate}
 
-\item The noise is added to the signal:
+\item \textbf{Additive}: The noise is added to the signal:
   \begin{equation}
-    \hat{\mathbf s} = {\mathbf s} + {\mathbf n},
+    \hat{\mathbf{s}}_i = {\mathbf{s}}_i + {\mathbf{n}}_i,
   \end{equation}
-  where $\mathbf{s}$ is the \emph{clean} signal (without noise, ground
-  truth usually unknown), $\hat{\mathbf{s}}$ is the noisy signal, and
-  ${\mathbf n}$ is a sequence of random samples with the same shape
-  than $\mathbf{s}$.
+  where $\mathbf{s}_i$ is a pixel of the \emph{clean} image (without
+  noise, ground truth usually unknown), $\hat{\mathbf{s}}_i$ is the
+  noisy image, and ${\mathbf{n}}_i$ is the $i$-th sample of a sequence
+  of random samples that follow a Gaussian (normal) distribution (see
+  Section~\ref{sec:gaussian_distribution}) , centered at zero
+  ($\mathbb{E}(\mathbf{n}_i) = 0$), and exhibit a variance of
+  $\sigma^2$:
+  \begin{equation}
+    {\mathbf n}_i\sim{\mathcal N}(\mu=0,\sigma^2).
+  \end{equation}
 
-\item The nose is independent of the signal:
+  Notice that, if
+  \begin{equation}
+    \mathbb{E}(\mathbf{n}_i)=0,
+  \end{equation}
+  then, it can be said that
+  \begin{equation}
+    \mathbb{E}(\mathbf{n}) = \mathbf{0}.
+  \end{equation}
+
+\item \textbf{Uncorrelated with the signal}: The noise is independent of the clean image:
+  \begin{equation}
+    \mathbb{E}(\mathbf{n}_i\mathbf{n}_j) = 0 \quad \text{for} \quad i\neq j.
+  \end{equation}
+  In other words, nothing can said about the noise, except that
   \begin{equation}
     \Pr(\mathbf{n}{=}\mathbf{n}_i|\mathbf{s}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
   \end{equation}
@@ -114,34 +137,13 @@ characterized by:
   \begin{equation}
     \Pr(\mathbf{n}{=}\mathbf{n}_i|\hat{\mathbf{s}}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
   \end{equation}
-  
-\item The noise samples $\mathbf{n}_i$ follow a Gaussian (normal)
-  distribution, centered at zero ($\mathbb{E}(\mathbf{n}_i) = 0$), and
-  exhibit a standard deviation of $\sigma$:
-  \begin{equation}
-    {\mathbf n}_i\sim{\mathcal N}(\mu=0,\sigma^2).
-  \end{equation}
 
-\item The noise is uncorrelated:
-  \begin{equation}
-    \mathbb{E}(\mathbf{n}_i\mathbf{n}_j) = 0 \quad \text{for} \quad i\neq j.
-  \end{equation}
-
-\item The noise has a constant \gls{PSD} over all frequencies (in
+\item \textbf{White spectrum}: The noise has a constant \gls{PSD} over all frequencies (in
   other words, the spectrum of \gls{ZAWG} noise is flat).
   
 \end{enumerate}
 
-Notice that, if
-\begin{equation}
-  \mathbb{E}(\mathbf{n}_i)=0,
-\end{equation}
-then
-\begin{equation}
-  \mathbb{E}(\mathbf{n}) = \mathbf{0}.
-\end{equation}
-
-\subsection{Expectation}
+\subsection{Expectation of the noisy signal}
 In this noise model, considering that $\mathbf{s}$ is a constant (the
 clean image is fixed for each adquisition of the image $\mathbf{s}$),
 \begin{equation}
@@ -154,7 +156,13 @@ affected by ZAWG noise, then the expected value for each noisy $i$-th
 pixel is the clean $i$-th pixel. In other words, $\hat{\mathbf{s}}$ is
 an unbiased estimator or $\mathbf{s}$.
 
-\subsection{Variance}
+Obviously, if Eq.~\ref{eq:E_ZAWG} holds, then
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbf{s}_i.
+  \label{eq:E_ZAWG_i}
+\end{equation}
+
+\subsection{Variance of the noisy signal}
 In the case of the variance, we have that
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
@@ -162,7 +170,7 @@ In the case of the variance, we have that
 \end{equation}
 Notice that the variance of the noisy signal depend on the variance of
 the clean signal and the variance of the noise, and there is not a
-dependency betweeen both variances. This is 
+dependency betweeen both variances. This is a
 charactaristic of signal-independent noisy models.
 
 \begin{comment}
@@ -187,43 +195,76 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{\gls{SNR}}
-Now, using Eq.~\ref{eq:SNR_distribution}, we come to
+\subsection{\gls{SNR} of the model}
+Considering that
 \begin{equation}
-  \text{SNR}_{\mathcal{N}(\mu,\sigma^2)} = \frac{\mu}{\sigma}.
+  \mathbb{E}(\mathbf{s}) = \mathbf{s},
 \end{equation}
+that $\hat{\mathbf{s}}$ is an unbiased estimator of $\mathbf{s}$, i.e.,
+\begin{equation}
+  \lim_{N\rightarrow\infty}\frac{1}{N}\sum_{n=0}^{N-1}\hat{\mathbf{s}}^{(n)} = \mathbf{s},
+\end{equation}
+where $\hat{\mathbf{s}}^{(n)}$ is the $n$-th noisy instance of
+$\mathbf{s}$, and using Eq.~\ref{eq:SNR_distribution}, we come to
+\begin{equation}
+  \text{SNR} = \frac{\textbf{s}}{\sigma} = \frac{\hat{\textbf{s}}}{\sigma},
+  \label{eq:SNR_ZAWG}
+\end{equation}
+and therefore to
+\begin{equation}
+  \text{SNR}_i = \frac{\hat{\textbf{s}}_i}{\sigma}.
+  \label{eq:SNR_ZAWG_i}
+\end{equation}
+
+\subsection*{Examples}
+
+See Figure~\ref{fig:ZAWG_examples}.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian.pdf}}
+    \end{tabular}
+  }
+  \caption{Examples of \gls{ZAWG} noisy images. On the left, the clean images. On the right, the noisy ones (with the correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
+\end{figure}
+
 
 %}}}
 
 \section{Poisson noise}
 %{{{
 
-Poisson noise is a type of signal-dependent noise that arises in
-systems where the measured data represent counts of discrete events
-(e.g., photons and electrons). It is particularly relevant in
-low-radiation imaging, and quantum physics.
+Poisson noise (see Section~\ref{sec:poisson_distribution}) is a type of
+signal-dependent noise that arises in systems where the measured data
+represent counts of discrete events (e.g., photons and electrons), and
+it becomes particularly relevant in low-radiation imaging.
 
-Signal-dependent Poisson noise can be modeled as
+Pixel-wise signal-dependent Poisson noise can be modeled as
 \begin{equation}
-  \hat{\mathbf{s}} = \frac{\mathbf{n}}{\gamma},~\mathbf{n}\sim\mathcal{P}(\lambda=\gamma\mathbf{s}),
-  \label{eq:PN}
+  \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\lambda=\gamma\mathbf{s}_i),
+  \label{eq:PN_i}
 \end{equation}
-where $\gamma$ controls the variance (the higher $\gamma$,
-the smaller the deviation from the $\mathbf{s}$ values). As can be
-seen, this is a signal-dependent model because the brighter parts of
-$\hat{\mathbf s}$ will have a higher mean and variance,
-and therefore a higher noise power \cite{meiniel2018denoising}. This
-also implies that the standard deviation of the noise depends on the
-expectation of the noisy signal, which depends on the expectation of
-the clean signal \cite{foi2008practical}.
+where $\gamma$ controls the variance (the higher $\gamma$, the smaller
+the deviation from the $\mathbf{s}_i$ values). As can be seen, this is
+a signal-dependent model because the brighter parts of
+$\hat{\mathbf s}$ will have a higher mean and variance, and therefore
+a higher noise power \cite{meiniel2018denoising}. This also implies
+that the standard deviation of the noise depends on the expectation of
+the noisy signal, which depends on the expectation of the clean signal
+\cite{foi2008practical}. Finally, notice that $|\mathbf{N}|$ and
+$|\mathbf{S}|$ should look alike.
 
-\subsection{Expectation}
-From Eq.~\ref{eq:PN} we have that
-\begin{equation}
-  \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\gamma\mathbf{s}_i).
-  \label{eq:PNi}
-\end{equation}
-Considering expectations,
+\subsection{Expectation of the noisy signal}
+%From Eq.~\ref{eq:PN} we have that
+%\begin{equation}
+%  \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\gamma\mathbf{s}_i).
+%  \label{eq:PNi}
+%\end{equation}
+Considering expectations in Eq.~\ref{eq:PN_i}, we get that
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbb{E}\left(\frac{\mathbf{n}_i}{\gamma}\right) = \frac{1}{\gamma}\mathbb{E}(\mathbf{n}_i) = \frac{1}{\gamma}\gamma\mathbf{s}_i = \mathbf{s}_i.
   \label{eq:EPNi}
@@ -233,19 +274,21 @@ Therefore,
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s},
   \label{eq:E_Poisson}
 \end{equation}
-Therefore, as it happens with the \gls{ZAWG} model, $\hat{\mathbf{s}}$
-is an unbiased estimator of $\mathbf{s}$ (the expected value for each
-noisy $i$-th pixel is the clean $i$-th pixel).
+and as it happens with the \gls{ZAWG} model, in the case of Poisson
+noise, $\hat{\mathbf{s}}$ is an unbiased estimator of $\mathbf{s}$
+(the expected value for each noisy $i$-th pixel is the clean $i$-th
+pixel).
 
-\subsection{Variance}
+\subsection{Variance of the noisy signal}
+Starting again from the Eq.~\ref{eq:PN_i}
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}\left(\frac{\mathbf{n}}{\gamma}\right) = \frac{1}{\gamma^2}\mathbb{V}(\mathbf{n}) = \frac{1}{\gamma^2}\gamma\mathbf{s} = \mathbf{s}/\gamma,
+  \mathbb{V}(\hat{\mathbf{s}}_i) = \mathbb{V}\left(\frac{\mathbf{n}_i}{\gamma}\right) = \frac{1}{\gamma^2}\mathbb{V}(\mathbf{n}_i) = \frac{1}{\gamma^2}\gamma\mathbf{s}_i = \mathbf{s}_i/\gamma,
   \label{eq:V_Poisson}
 \end{equation}
-which indicates that the variance of the noisy signal depends linearly
-on the expectation of the clean signal
-\cite{foi2008practical}. Obviously, this is a signal-dependent noisy
-model.
+which indicates that the variance of pixel of noisy image depends
+linearly on the expectation of the corresponding pixel of the clean
+image \cite{foi2008practical}. Obviously, this is a signal-dependent
+noisy model.
 
 \begin{comment}
 In the exteme case where $\mathbf{s}=\mathbf{0}$, we get that
@@ -266,39 +309,56 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{\gls{SNR}}
-Using Eq.~\ref{eq:SNR_distribution},
+\subsection{\gls{SNR} of the model}
+Using Eq.~\ref{eq:SNR_distribution}, (and again that $\mathbb{E}(\mathbf{s})=\mathbf{s}$,)
 \begin{equation}
-  \text{SNR}_{\mathcal{P}(\gamma\mathbf{s})} = \frac{\mathbf{s}}{\sqrt{\mathbf{s}/\gamma}} = \sqrt{\gamma\mathbf{s}}.
+  \text{SNR} = \frac{\mathbf{s}}{\sqrt{\gamma\mathbf{s}}} = \sqrt{\mathbf{s}/\gamma}.
   \label{eq:SNR_Poisson}
 \end{equation}
 Notice that the SNR grows with $\mathbf{s}$ and with
-$\gamma$. Therefore, considering the Eq.~\ref{eq:PN}, we must reduce
-$\gamma$ to increase the noise.
+$\gamma^{-1}$. Therefore, considering the Eq.~\ref{eq:SNR_Poisson}, we should reduce
+$\gamma$ to reduce the noise.
 
-%}}}
+\subsection*{Examples}
+
+See Figure~\ref{fig:ZAWG_examples}.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    %\begin{tabular}{cc}
+    %  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{Poisson_2d_gaussian.pdf}}
+    %\end{tabular}
+  }
+  \caption{Examples of \gls{ZAWG} noisy images. On the left, the clean images. On the right, the noisy ones (with the correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
+\end{figure}
+
+% }}}
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
 %{{{
 
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{ZAWG} noise, which is commonly known as
-\gls{MPG} noise \cite{meiniel2018denoising}. The genration of \gls{MPG} noise can be modeled as
-as
+\gls{MPG} noise \cite{meiniel2018denoising}. The generation of
+\gls{MPG} noise can be modeled as as
 \begin{equation}
   \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
 where $\alpha\in[0,~1]$ controls the ratio between both types of noise
-(Poissonian and Gaussian). Therefore, for $\alpha > 0$,\footnote{If
-  $\sigma=0$ and $\alpha=0$, both types of noise vanish and
-  $\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and
-it's spectrum resembles the spectrum of $\mathbf{x}$ (by default, in
-our experiments, $\alpha=0.5$), i.e. both types of noise are present
-in the same proportion. Notice that, as reported in
-\cite{foi2008practical}, this ratio should be described in the
-datasheet of the imaging hardware, or if this information is not
-known, estimated from the noisy images.
+(Poissonian and Gaussian). Therefore, for
+$\alpha > 0$,\footnote{Notice that if $\sigma=0$ and $\alpha=0$, both
+  types of noise vanish and $\hat{\mathbf{s}}=\mathbf{s}$. By default,
+  in our experiments, $\alpha=0.5$, i.e. both types of noise are
+  present in the same proportion.} the noise is signal-dependent and
+it's spectrum resembles in some degree the spectrum of
+$\mathbf{s}$. Notice that, as reported in \cite{foi2008practical},
+this mixing ratio should be described in the datasheet of the imaging
+hardware, or if this information is not known, could be estimated from the
+noisy images.
 
 Considering the results shown by Equations \ref{eq:E_ZAWG} and
 \ref{eq:E_Poisson}, it should be obvious to determine that
