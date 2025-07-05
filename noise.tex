@@ -225,11 +225,13 @@ See Figure~\ref{fig:ZAWG_examples}.
   \resizebox{1.0\textwidth}{!}{
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-    \begin{tabular}{cc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian.pdf}}
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian_20.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian_100.pdf}}
     \end{tabular}
   }
-  \caption{Examples of \gls{ZAWG} noisy images. On the left, the clean images. On the right, the noisy ones (with the correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
+  \caption{Examples of noisy images corrupted by \gls{ZAWG} noise. On
+    the left, the clean images. On the right, the noisy ones (with the
+    correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
 \end{figure}
 
 
@@ -310,29 +312,35 @@ and
 \end{comment}
 
 \subsection{\gls{SNR} of the model}
-Using Eq.~\ref{eq:SNR_distribution}, (and again that $\mathbb{E}(\mathbf{s})=\mathbf{s}$,)
+Using Eq.~\ref{eq:SNR_distribution}, and that
 \begin{equation}
-  \text{SNR} = \frac{\mathbf{s}}{\sqrt{\gamma\mathbf{s}}} = \sqrt{\mathbf{s}/\gamma}.
+  \mathbb{E}(\mathbf{s})=\mathbb{E}(\hat{\mathbf{s}})=\gamma\mathbf{s},
+\end{equation}
+\begin{equation}
+  \text{SNR} = \frac{\gamma\mathbf{s}}{\sqrt{\gamma\mathbf{s}}} = \sqrt{\gamma\mathbf{s}}.
   \label{eq:SNR_Poisson}
 \end{equation}
 Notice that the SNR grows with $\mathbf{s}$ and with
-$\gamma^{-1}$. Therefore, considering the Eq.~\ref{eq:SNR_Poisson}, we should reduce
+$\gamma$. Therefore, considering the Eq.~\ref{eq:SNR_Poisson}, we should increase
 $\gamma$ to reduce the noise.
 
 \subsection*{Examples}
 
-See Figure~\ref{fig:ZAWG_examples}.
+See Figure~\ref{fig:Poisson_examples}.
 
 \begin{figure}
   \centering
   \resizebox{1.0\textwidth}{!}{
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
-    %\begin{tabular}{cc}
-    %  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{Poisson_2d_gaussian.pdf}}
-    %\end{tabular}
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{Poisson_2d_gaussian_0.1.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{Poisson_2d_gaussian_0.01.pdf}}
+    \end{tabular}
   }
-  \caption{Examples of \gls{ZAWG} noisy images. On the left, the clean images. On the right, the noisy ones (with the correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
+  \caption{Examples of noisy images corrupted by Poisson noise. On the
+    left, the clean images. On the right, the noisy ones (with the
+    correspoinding \gls{SNR} in
+    decibels). \label{fig:Poisson_examples}}
 \end{figure}
 
 % }}}
