@@ -68,26 +68,31 @@ Eq.~\ref{eq:power_as_expectation}) of the clean signal and the power
 of the noise:
 \begin{equation}
   \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})},
+  \label{eq:SNR}
 \end{equation}
 where
 \begin{equation}
   \mathbf{n} = \hat{\mathbf{s}} - \mathbf{s}.
 \end{equation}
 
-Considering now Eq.~\ref{eq:power_mean_variance}, we come to
+Unfortunately, in general we don't know either $\mathbf{s}$ or
+$\mathbf{n}$. However, we can suppose that (see
+Appendix~\ref{sec:power_signal}):
 \begin{equation}
-  \text{SNR} = \frac{\mathbb{V}(\mathbf{s}) + \mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n}) + \mathbb{E}(\mathbf{n})^2}.
+  P(\mathbf{s}) = \mathbb{E}(\hat{\mathbf{s}}^2) \approx \mathbb{E}(\hat{\mathbf{s}})^2,
+\end{equation}
+and that (see
+  Appendix~\ref{sec:power_noise}):
+\begin{equation}
+  P(\mathbf{n}) = \mathbb{V}(\hat{\mathbf{s}}).
 \end{equation}
 
-If we are interested in analyze the noise, we can suppose that
-$\mathbb{V}(\mathbf{s})=0$ (the signal is constant) and that
-$\mathbb{E}(\mathbf{n})=0$ (the mean of the noise is zero). Under
-these assumptions, we get the following statistical estimation for the
-\gls{SNR}:
+Therefore, Eq.~\ref{eq:SNR} becomes
 \begin{equation}
-  \text{SNR} = \frac{\mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n})} = \frac{\mathbb{E}(\mathbf{s})}{\sqrt{\mathbb{V}(\mathbf{n})}}.
-  \label{eq:SNR_distribution}
+  \text{SNR} \approx \frac{\mathbb{E}(\hat{\mathbf{s}})^2}{\mathbb{V}(\hat{\mathbf{s}})}.
+  \label{eq:SNR-distribution}
 \end{equation}
+
 
 %}}}
 
@@ -199,6 +204,7 @@ and
 Considering that
 \begin{equation}
   \mathbb{E}(\mathbf{s}) = \mathbf{s},
+  \label{eq:E_constant}
 \end{equation}
 that $\hat{\mathbf{s}}$ is an unbiased estimator of $\mathbf{s}$, i.e.,
 \begin{equation}
@@ -230,8 +236,9 @@ See Figure~\ref{fig:ZAWG_examples}.
     \end{tabular}
   }
   \caption{Examples of noisy images corrupted by \gls{ZAWG} noise. On
-    the left, the clean images. On the right, the noisy ones (with the
-    correspoinding \gls{SNR} in decibels). \label{fig:ZAWG_examples}}
+    the left, the clean images. On the center and right, the noisy
+    ones (with the corresponding \gls{SNR} in
+    decibels). \label{fig:ZAWG_examples}}
 \end{figure}
 
 
@@ -312,12 +319,12 @@ and
 \end{comment}
 
 \subsection{\gls{SNR} of the model}
-Using Eq.~\ref{eq:SNR_distribution}, and that
+Using Eq.~\ref{eq:SNR_distribution}, and Eq.~\ref{eq:E_constant}, %that
+%\begin{equation}
+%  \mathbb{E}(\mathbf{s})=\mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s},
+%\end{equation}
 \begin{equation}
-  \mathbb{E}(\mathbf{s})=\mathbb{E}(\hat{\mathbf{s}})=\gamma\mathbf{s},
-\end{equation}
-\begin{equation}
-  \text{SNR} = \frac{\gamma\mathbf{s}}{\sqrt{\gamma\mathbf{s}}} = \sqrt{\gamma\mathbf{s}}.
+  \text{SNR} = \frac{\mathbf{s}}{\sqrt{\gamma\mathbf{s}}} = \sqrt{\gamma\mathbf{s}}.
   \label{eq:SNR_Poisson}
 \end{equation}
 Notice that the SNR grows with $\mathbf{s}$ and with
@@ -338,8 +345,8 @@ See Figure~\ref{fig:Poisson_examples}.
     \end{tabular}
   }
   \caption{Examples of noisy images corrupted by Poisson noise. On the
-    left, the clean images. On the right, the noisy ones (with the
-    correspoinding \gls{SNR} in
+    left, the clean images. On the center and right, the noisy ones (with the
+    corresponding \gls{SNR} in
     decibels). \label{fig:Poisson_examples}}
 \end{figure}
 
@@ -351,9 +358,10 @@ See Figure~\ref{fig:Poisson_examples}.
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{ZAWG} noise, which is commonly known as
 \gls{MPG} noise \cite{meiniel2018denoising}. The generation of
-\gls{MPG} noise can be modeled as as
+\gls{MPG} noise can be modeled as
 \begin{equation}
-  \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
+  \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma,
+  %\hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
 where $\alpha\in[0,~1]$ controls the ratio between both types of noise
@@ -367,6 +375,16 @@ $\mathbf{s}$. Notice that, as reported in \cite{foi2008practical},
 this mixing ratio should be described in the datasheet of the imaging
 hardware, or if this information is not known, could be estimated from the
 noisy images.
+
+\subsection{Expectation of the noisy signal}
+Considering that $\mathbb{E}(\mathbf{n}^{\mathcal{N}(\sigma^2)}_i)=0$
+that
+$\mathbf{E}(\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i)=\gamma\mathbf{s}_i$, and Eq.~\ref{eq:E_constant} (applied to the $i$-pixel),
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}_i) = (1-\alpha)(\mathbb{E}(\mathbf{s}_i)) + \alpha\gamma\mathbf{s}_i/\gamma = (1-\alpha)\mathbf{s}_i + \alpha\mathbf{s}_i = \mathbf{s}_i.
+\end{equation}
+
+Therefore, the model is unbiases.
 
 Considering the results shown by Equations \ref{eq:E_ZAWG} and
 \ref{eq:E_Poisson}, it should be obvious to determine that
@@ -1102,6 +1120,38 @@ pixel indices and a \gls{DOF} projection, \gls{SPRS} generates a local
 randomization (from a visual point of view) of the structures of the
 input image.
 
-%}}}
+% }}}
+
+\section{Relation between the power of a clean signal and a noisy version of it}
+\label{sec:power_signal}
+If $\mathbb{E}(\mathbf{n})=0$, the power of the original signal is the
+same than the mean of the square of the noisy signal:
+
+\begin{alignat*}{2}
+  P(\mathbf{s}) & = \mathbb{E}(\mathbf{s}^2) \\
+                & = \mathbb{E}\left((\mathbf{n}+\hat{\mathbf{s}})^2\right) \\
+                & = \mathbb{E}(\mathbf{n}^2+2\mathbf{n}\mathbf{s}+\hat{\mathbf{s}}^2) \\
+                & = \mathbb{E}(\mathbf{n}^2) + 2\mathbb{E}(\mathbf{n})\mathbb{E}(\hat{\mathbf{s}}) + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+                & = \mathbb{E}(\hat{\mathbf{s}}^2).
+\end{alignat*}
+
+\section{Relation between the power of the noise and the noisy signal}
+\label{sec:power_noise}
+If $\mathbb{E}(\hat{\mathbf{s}})=\mathbb{E}(\mathbf{s})$, i.e.,
+the noise is the random fluctuation arround that mean, then:
+
+\begin{align*}
+  P(\mathbf{n})
+  & = \mathbb{E}(\mathbf{n}^2) \\
+  & = \mathbb{E}\left((\hat{\mathbf{s}}-\mathbf{s})^2\right)\\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2 - 2\hat{\mathbf{s}}\mathbf{s} + \mathbf{s}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})\mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{s}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})\mathbb{E}(\hat{\mathbf{s}}) + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})^2 + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2)-\mathbb{E}(\hat{\mathbf{s}})^2 \\
+  & = \mathbb{V}(\hat{\mathbf{s}}).
+\end{align*}
+
+
 
 \end{subappendices}
