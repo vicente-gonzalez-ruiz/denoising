@@ -1,9 +1,14 @@
 \chapter{Noise}
 
-Noise in digital signals refers to any unwanted or unintended
+\emph{Noise} in digital signals refers to any unwanted or unintended
 alteration of the original signal, which can corrupt the information
 being transmitted or processed. In other words, noise is any
-interference that distorts a \emph{clean} signal.
+interference that distorts a \emph{clean} signal, generating a
+\emph{noisy} signal.
+
+An important idea to keep in mind is that, in general, only one noisy
+version of the clean signal is available (neither
+the clean signal nor the noise are known).
 
 % \section{Noise models}
 %{{{
@@ -61,38 +66,63 @@ interference that distorts a \emph{clean} signal.
 \section{A statistical model for the Signal-to-Noise Ratio (SNR)}
 %{{{
 
-If $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
-noisy version, the \gls{SNR} is defined as the ratio between the power
-(see Eq.~\ref{eq:power_discrete_signal}) and
-Eq.~\ref{eq:power_as_expectation}) of the clean signal and the power
-of the noise:
+The \gls{SNR} is defined as the ratio between the power (see
+Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
+clean signal and the power of the noise:
 \begin{equation}
-  \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})},
+  \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})} = \frac{\mathbb{E}(\mathbf{s}^2)}{\mathbb{E}(\mathbf{n}^2)} = \frac{\mathbb{E}(\mathbf{s})^2+\mathbb{V}(\mathbf{s})}{\mathbb{E}(\mathbf{n})^2+\mathbb{V}(\mathbf{n})},
   \label{eq:SNR}
 \end{equation}
-where
+where $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
+noisy version, and
 \begin{equation}
   \mathbf{n} = \hat{\mathbf{s}} - \mathbf{s}.
 \end{equation}
 
-Unfortunately, in general we don't know either $\mathbf{s}$ or
-$\mathbf{n}$. However, we can suppose that (see
-Appendix~\ref{sec:power_signal}):
+\begin{comment}
+Supposing that
 \begin{equation}
-  P(\mathbf{s}) = \mathbb{E}(\hat{\mathbf{s}}^2) \approx \mathbb{E}(\hat{\mathbf{s}})^2,
+  \mathbb{V}(\mathbf{s}) = 0,
 \end{equation}
-and that (see
-  Appendix~\ref{sec:power_noise}):
+because we are interested in measuring the power of the clean signal,
+and considering only its mean can be a good approximation to this, and
+that
 \begin{equation}
-  P(\mathbf{n}) = \mathbb{V}(\hat{\mathbf{s}}).
+  \mathbb{E}(\mathbf{n}) = 0,
+\end{equation}
+because this the most common in real imaging systems, Eq.~\ref{eq:SNR}
+becomes
+\begin{equation}
+  \text{SNR} \approx \frac{\mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n})}.
 \end{equation}
 
-Therefore, Eq.~\ref{eq:SNR} becomes
+Unfortunately, in general we don't know either $\mathbf{s}$ or
+$\mathbf{n}$. However, using that
+\begin{equation}
+  \mathbb{E}(\mathbf{s}^2) = \mathbb{E}(\hat{\mathbf{s}}^2),
+\end{equation}
+(see Appendix~\ref{sec:power_signal},
+ that 
+\begin{equation}
+  \mathbb{E}(\mathbf{s}^2)^2 = \mathbb{E}(\hat{\mathbf{s}}^2)^2,
+\end{equation}
+(see Appendix~\ref{sec:power_noise}) and that
+\begin{equation}
+  \mathbb{V}(\mathbf{n}) = \mathbb{V}(\hat{\mathbf{s}}-\mathbf{s}) = \mathbb{V}(\hat{\mathbf{s}}) + \mathbb{V}(\mathbf{s}) = \mathbb{V}(\hat{\mathbf{s}}),
+\end{equation}
+because $\mathbb{V}(\mathbf{s})=0$, we finally get that
 \begin{equation}
   \text{SNR} \approx \frac{\mathbb{E}(\hat{\mathbf{s}})^2}{\mathbb{V}(\hat{\mathbf{s}})}.
   \label{eq:SNR-distribution}
 \end{equation}
+(again, we are interested in the power of the signal, not in its
+\end{comment}
 
+In decibels,
+\begin{equation}
+  \text{SNR}_{\text{dB}} = 10\log_{10}\text{SNR}.
+  \label{eq:SNR_dB}
+\end{equation}
 
 %}}}
 
@@ -108,67 +138,79 @@ characterized by:
 
 \item \textbf{Additive}: The noise is added to the signal:
   \begin{equation}
-    \hat{\mathbf{s}}_i = {\mathbf{s}}_i + {\mathbf{n}}_i,
+    \hat{\mathbf{s}} = {\mathbf{s}} + {\mathbf{n}},
   \end{equation}
-  where $\mathbf{s}_i$ is a pixel of the \emph{clean} image (without
-  noise, ground truth usually unknown), $\hat{\mathbf{s}}_i$ is the
-  noisy image, and ${\mathbf{n}}_i$ is the $i$-th sample of a sequence
-  of random samples that follow a Gaussian (normal) distribution (see
-  Section~\ref{sec:gaussian_distribution}) , centered at zero
-  ($\mathbb{E}(\mathbf{n}_i) = 0$), and exhibit a variance of
-  $\sigma^2$:
-  \begin{equation}
-    {\mathbf n}_i\sim{\mathcal N}(\mu=0,\sigma^2).
+  where $\mathbf{s}$ is the clean signal (without noise, ground truth
+  usually unknown), $\hat{\mathbf{s}}$ is the noisy signal, and
+  ${\mathbf{n}}$ is a sequence of random real values (noise samples)
+  that follow a Gaussian (normal) distribution (see
+  Section~\ref{sec:gaussian_distribution}), centered at zero:
+  \begin{equation} 
+    \mathbb{E}(\mathbf{n}_i) = 0,\quad {\mathbf n}_i\sim{\mathcal N}(\mu=0,\sigma^2).
   \end{equation}
+  %and therefore
+  %\begin{equation}
+  %  \mathbb{E}(\mathbf{n}) = \mathbf{0}.
+  %\end{equation}
 
-  Notice that, if
-  \begin{equation}
-    \mathbb{E}(\mathbf{n}_i)=0,
-  \end{equation}
-  then, it can be said that
-  \begin{equation}
-    \mathbb{E}(\mathbf{n}) = \mathbf{0}.
-  \end{equation}
-
-\item \textbf{Uncorrelated with the signal}: The noise is independent of the clean image:
+\item \textbf{Uncorrelated with the clean signal}: %The noise is independent of the clean image:
+\begin{comment}
   \begin{equation}
     \mathbb{E}(\mathbf{n}_i\mathbf{n}_j) = 0 \quad \text{for} \quad i\neq j.
   \end{equation}
+\end{comment}
   In other words, nothing can said about the noise, except that
   \begin{equation}
     \Pr(\mathbf{n}{=}\mathbf{n}_i|\mathbf{s}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
   \end{equation}
+\begin{comment}
   Moreover, because $\mathbf{s}$ is unknown, 
   \begin{equation}
     \Pr(\mathbf{n}{=}\mathbf{n}_i|\hat{\mathbf{s}}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
   \end{equation}
-
-\item \textbf{White spectrum}: The noise has a constant \gls{PSD} over all frequencies (in
-  other words, the spectrum of \gls{ZAWG} noise is flat).
+\end{comment}
+  
+\item \textbf{White spectrum}: $\mathbf{n}$ has a constant \gls{PSD} over all frequencies (in
+  other words, the spectrum of $\mathbf{n}$ is flat).
   
 \end{enumerate}
 
 \subsection{Expectation of the noisy signal}
-In this noise model, considering that $\mathbf{s}$ is a constant (the
-clean image is fixed for each adquisition of the image $\mathbf{s}$),
+
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s} + \mathbf{n}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}) = \mathbb{E}(\mathbf{s}) + 0 = \mathbb{E}(\mathbf{s}).
+  \label{eq:E_ZAWG}
+\end{equation}
+
+\begin{comment}
+Considering that $\mathbf{s}$ is a constant (the
+clean image is fixed for each adquisition of the image $\hat{\mathbf{s}}$),
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s} + \mathbf{n}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}) = \mathbf{s} + \mathbf{0} = \mathbf{s}.
   \label{eq:E_ZAWG}
 \end{equation}
-This basically implies that if we take an infinite number of noisy
-instances of the same biological specimen, and these instances are
-affected by ZAWG noise, then the expected value for each noisy $i$-th
-pixel is the clean $i$-th pixel. In other words, $\hat{\mathbf{s}}$ is
-an unbiased estimator or $\mathbf{s}$.
+This basically implies that if, for example, we take an infinite
+number of noisy instances of the same biological specimen, and these
+instances are affected by ZAWG noise, then the expected value for each
+noisy $i$-th pixel is the clean $i$-th pixel. In other words,
+$\hat{\mathbf{s}}$ is an unbiased estimator or $\mathbf{s}$.
 
 Obviously, if Eq.~\ref{eq:E_ZAWG} holds, then
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbf{s}_i.
   \label{eq:E_ZAWG_i}
 \end{equation}
+\end{comment}
 
 \subsection{Variance of the noisy signal}
-In the case of the variance, we have that
+
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s} + \mathbf{n}) = \mathbb{V}(\mathbf{s}) + \mathbb{V}(\mathbf{n}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
+  \label{eq:V_ZAWG}
+\end{equation}
+
+\begin{comment}
+We have that
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
   \label{eq:V_ZAWG}
@@ -177,6 +219,7 @@ Notice that the variance of the noisy signal depend on the variance of
 the clean signal and the variance of the noise, and there is not a
 dependency betweeen both variances. This is a
 charactaristic of signal-independent noisy models.
+\end{comment}
 
 \begin{comment}
 If $\mathbf{s}=\mathbf{0}$ (a constant signal
@@ -201,7 +244,13 @@ and
 \end{comment}
 
 \subsection{\gls{SNR} of the model}
-Considering that
+Considering Eq.~\ref{eq:SNR}: %and Eq.~\ref{eq:E_ZAWG}, we get that
+\begin{equation}
+  \text{SNR} = \frac{\mathbb{E}(\mathbf{s})^2 + \mathbb{V}(\mathbf{s})}{\sigma^2},
+\end{equation}
+
+\begin{comment}
+that
 \begin{equation}
   \mathbb{E}(\mathbf{s}) = \mathbf{s},
   \label{eq:E_constant}
@@ -221,6 +270,7 @@ and therefore to
   \text{SNR}_i = \frac{\hat{\textbf{s}}_i}{\sigma}.
   \label{eq:SNR_ZAWG_i}
 \end{equation}
+\end{comment}
 
 \subsection*{Examples}
 
@@ -247,10 +297,11 @@ See Figure~\ref{fig:ZAWG_examples}.
 \section{Poisson noise}
 %{{{
 
-Poisson noise (see Section~\ref{sec:poisson_distribution}) is a type of
-signal-dependent noise that arises in systems where the measured data
-represent counts of discrete events (e.g., photons and electrons), and
-it becomes particularly relevant in low-radiation imaging.
+Poisson noise (see Section~\ref{sec:poisson_distribution}) is a type
+of signal-dependent noise that arises in systems where the measured
+data represent counts of discrete events (e.g., photons, electrons,
+etc.). Poisson noise becomes particularly relevant in low-radiation
+imaging.
 
 Pixel-wise signal-dependent Poisson noise can be modeled as
 \begin{equation}
@@ -744,7 +795,7 @@ correlation threshold.
 
 Fig.~\ref{fig:SFC_vs_splitting_clean} shows a comparison between
 several SFRC curves obtained using different techniques for generating
-the instances of a single \emph{clean}\footnote{Generated by
+the instances of a single clean\footnote{Generated by
   computing the arithmetic mean of the pixels of several noisy
   instances \cite{zhang2019poisson}.} input image. Ideally, the dynamic
 range of the FC curves should be [0, 1].
@@ -1122,20 +1173,20 @@ input image.
 
 % }}}
 
-\section{Relation between the power of a clean signal and a noisy version of it}
+\section{If $\mathbb{E}(\mathbf{n})=0$, then $\mathbb{E}(\mathbf{s}^2)=\mathbb{E}(\hat{\mathbf{s}}^2)$}
 \label{sec:power_signal}
-If $\mathbb{E}(\mathbf{n})=0$, the power of the original signal is the
-same than the mean of the square of the noisy signal:
+If $\mathbb{E}(\mathbf{n})=0$, the power of the clean signal is the
+same than the power of the noisy signal:
 
 \begin{alignat*}{2}
   P(\mathbf{s}) & = \mathbb{E}(\mathbf{s}^2) \\
                 & = \mathbb{E}\left((\mathbf{n}+\hat{\mathbf{s}})^2\right) \\
                 & = \mathbb{E}(\mathbf{n}^2+2\mathbf{n}\mathbf{s}+\hat{\mathbf{s}}^2) \\
                 & = \mathbb{E}(\mathbf{n}^2) + 2\mathbb{E}(\mathbf{n})\mathbb{E}(\hat{\mathbf{s}}) + \mathbb{E}(\hat{\mathbf{s}}^2) \\
-                & = \mathbb{E}(\hat{\mathbf{s}}^2).
+                & = \mathbb{E}(\hat{\mathbf{s}}^2) = P(\hat{\mathbf{s}}).
 \end{alignat*}
 
-\section{Relation between the power of the noise and the noisy signal}
+\section{If $\mathbb{E}(\mathbf{n})=0$, then $\mathbb{E}(\hat{\mathbf{s}}^2)=\mathbb{E}(\mathbf{s}^2)$}
 \label{sec:power_noise}
 If $\mathbb{E}(\hat{\mathbf{s}})=\mathbb{E}(\mathbf{s})$, i.e.,
 the noise is the random fluctuation arround that mean, then:
