@@ -400,6 +400,7 @@ If we suppose that the mean of signal represents the power of the signal and its
 deviation represents the noise component, we can define
 \begin{equation}
   \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)}{\sqrt{\mathbb{V}(\hat{\mathbf{s}}_i)}}.
+  \label{eq:SNR_mean_deviation}
 \end{equation}
 
 Using Eq.~\ref{eq:E_Poisson} and Eq.~\ref{eq:V_Poisson}, we get that
@@ -445,8 +446,8 @@ of both Poisson and \gls{ZAWG} noise, which is commonly known as
   %\hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
-where $\alpha\in[0,~1]$ controls the ratio between both types of noise
-(Poissonian and Gaussian). Therefore, for
+where the real number $\alpha\in[0,~1]$ controls the ratio between
+both types of noise (Poissonian and Gaussian). Therefore, for
 $\alpha > 0$,\footnote{Notice that if $\sigma=0$ and $\alpha=0$, both
   types of noise vanish and $\hat{\mathbf{s}}=\mathbf{s}$. By default,
   in our experiments, $\alpha=0.5$, i.e. both types of noise are
@@ -454,44 +455,45 @@ $\alpha > 0$,\footnote{Notice that if $\sigma=0$ and $\alpha=0$, both
 it's spectrum resembles in some degree the spectrum of
 $\mathbf{s}$. Notice that, as reported in \cite{foi2008practical},
 this mixing ratio should be described in the datasheet of the imaging
-hardware, or if this information is not known, could be estimated from the
-noisy images.
+hardware, or if this information is not known, could be estimated from
+the noisy images.
 
 \subsection{Expectation of the noisy signal}
 Considering that $\mathbb{E}(\mathbf{n}^{\mathcal{N}(\sigma^2)}_i)=0$
-that
-$\mathbf{E}(\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i)=\gamma\mathbf{s}_i$, and Eq.~\ref{eq:E_constant} (applied to the $i$-pixel),
+and that
+$\mathbf{E}(\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i)=\gamma\mathbf{s}_i$, and Eq.~\ref{eq:MPG_noise_model} boilds down to
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}_i) = (1-\alpha)(\mathbb{E}(\mathbf{s}_i)) + \alpha\gamma\mathbf{s}_i/\gamma = (1-\alpha)\mathbf{s}_i + \alpha\mathbf{s}_i = \mathbf{s}_i.
-\end{equation}
-
-Therefore, the model is unbiases.
-
-Considering the results shown by Equations \ref{eq:E_ZAWG} and
-\ref{eq:E_Poisson}, it should be obvious to determine that
-\begin{equation}
-  \mathbb{E}(\hat{\mathbf{s}}) = \alpha\gamma\mathbf{s}
   \label{eq:E_MPG}
 \end{equation}
-and that
+Therefore, the \gls{MPG} noise model is unbiased.
+
+\subsection{Variance of the noisy signal}
+Taking variances in Eq.~\ref{eq:MPG_noise_model} we obtain
 \begin{equation}
-  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)^2\sigma^2 + \alpha^2\gamma\mathbf{s}.
+  \mathbb{V}(\hat{\mathbf{s}}_i) = (1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma
   \label{eq:V_MPG}
 \end{equation}
-for the \gls{MPG} noise model. Therefore, using 
-Eq.~\ref{eq:SNR_distribution}, we get that
+
+\subsection{\gls{SNR} of the \gls{MPG} noise model}
+Considering that (see Eq.~\ref{eq:SNR_mean_deviation})
 \begin{equation}
-  \text{SNR}_{\mathcal{M}(\alpha,\sigma,\gamma\mathbf{s})} = \frac{\alpha\gamma\mathbf{s}}{\sqrt{(1-\alpha)^2\sigma^2 + \alpha^2\gamma\mathbf{s}}}.
+  \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)^2}{\mathbb{V}(\hat{\mathbf{s}}_i)},
+\end{equation}
+and using Eq.~\ref{eq:E_MPG} and Eq.~\ref{eq:V_MPG}, we obtain that
+\begin{equation}
+  \text{SNR}_i = \frac{\mathbf{s}_i^2}{(1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma}.
+  \label{eq:SNR_MPG}
 \end{equation}
 
 Notice that, if $\alpha=0$ (only Gaussian noise), then
 \begin{equation}
-  \text{SNR}_{\mathcal{M}(\alpha,\sigma,\gamma\mathbf{s})} = \mathbf{0},
+  \text{SNR} = \mathbf{0},
 \end{equation}
 that implies just Gaussian noise, no signal. On the contrary, if
 $\alpha=1$, then
 \begin{equation}
-  \text{SNR}_{\mathcal{M}(\alpha,\sigma,\gamma\mathbf{s})} = \sqrt{\gamma\mathbf{s}},
+  \text{SNR} = \sqrt{\gamma\mathbf{s}},
 \end{equation}
 which matches Eq.~\ref{eq:SNR_Poisson}.
 
