@@ -256,7 +256,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{\gls{SNR} of the \gls{ZAWG} noise model}
+\subsection{SNR of the ZAWG noise model}
 
 The \gls{SNR} is commonly defined as the ratio between the power (see
 Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
@@ -394,7 +394,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{\gls{SNR} of the Poisson noise model}
+\subsection{SNR of the Poisson noise model}
 
 If we suppose that the mean of signal represents the power of the signal and its standard
 deviation represents the noise component, we can define
@@ -475,7 +475,7 @@ Taking variances in Eq.~\ref{eq:MPG_noise_model} we obtain
   \label{eq:V_MPG}
 \end{equation}
 
-\subsection{\gls{SNR} of the \gls{MPG} noise model}
+\subsection{SNR of the MPG noise model}
 Considering that (see Eq.~\ref{eq:SNR_mean_deviation})
 \begin{equation}
   \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)^2}{\mathbb{V}(\hat{\mathbf{s}}_i)},
@@ -643,27 +643,32 @@ When the clean signal $\mathbf{s}$ is not available, it is necessary
 to use a different kind of information that help us to \emph{estimate}
 the characteristics of the noise in the signal $\hat{\mathbf{s}}$.
 
-The following twe metrics included in this section are distortion
-metrics that can help to determine maximum resolution (frequency) of
-$\mathbf{s}$, considering, for example, the maximum spatial resolution
-that a microscope can achieve.\footnote{In microscopy, we use the
-  \emph{resolving power} of the microscope, which is the smallest
-  distance $d$ between two points that can still be distinguished
-  (from a biological perspective) as separate entities
-  \cite{nieuwenhuizen2013measuring}.} The idea is that, any frequency
-above $1/d$ will be dominated by noise (or at least, information that
-is not relevant\footnote{Notice that $d/2$ could be the sampling step
-  size used to digitalize the signal without lossing information.}),
-and therefore, a low-pass filter with a cut-off frequency of $1/d$
-should only remove noise.
+Noise can be characterized attending to different aspects (some of them overlaped):
+\begin{enumerate}
+\item \textbf{The \gls{PDF} of the noise}. The most frequent (probably
+  in this order) noise distributions are Gaussian, Poisson, Rayleigh,
+  Gamma, and Exponential. Obviously, the \gls{PDF} defines the
+  distribution parameters (mean, variance, etc.).
+\item \textbf{Signal-dependency}. We can distinguish between additive
+  noise models and multiplicative noise models. In the first case, the
+  noise does not depends on the clean signal. In the second one, the
+  noise and the clean signal are correlated.
+\item \textbf{Frequency components}: The (\gls{PSD} of the) noise can
+  be white (flat spectrum) or colored (otherwise). Examples of colored
+  noise are: ``pink'' when its power decays as $1/f$, ``brown'' if its
+  power decreases as $i/f^2$, ``blue'' when its power increases with
+  the frequency.
+\item \textbf{Correlated or uncorrelated}: If there is a dependency
+  between noise samples, then the noise is correlated (also called Markovian or
+  auto-regressive), and viceversa (in which case it is said that that
+  the noise is memoryless or i.i.d.).
+\item \textbf{Stationarity}: Whether the noise’s statistical
+  properties change. Stationary noise has constant statistics, and
+  non-stationary noise varies in different regions.
+\end{enumerate}
 
-Therefore, characterization of noise (in terms of power, statistical
-model, and spectral profile, etc.) can provide valuable insights for
-determining the optimal operational parameters of denoising
-algorithms. However, this approach typically necessitates the
-availability of at least two independent noisy realizations of the
-underlying clean signal, $\hat{\mathbf{s}}^{(1)}$ and
-$\hat{\mathbf{s}}^{(2)}$.
+Unfortunately, in most of the practical applications noise never comes
+alone, and this difficults its characterization (and removal).
 
 \begin{comment}
 Noise can be additive or multiplicative. In the first case, noise is
@@ -699,15 +704,32 @@ estudied.
 \label{sec:fourier_correlation}
 %{{{
 
-The
+If we have at least two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$ of the same clean signal, we can characterize
+the noise from a frequency perspective. Concretely, we can determine
+maximum resolution $d$ (frequency) of $\mathbf{s}$, considering, for
+example, the maximum spatial resolution that a microscope can
+achieve.\footnote{In microscopy, we use the \emph{resolving power} of
+  the microscope, which is the smallest distance $d$ between two
+  points that can still be distinguished (from a biological
+  perspective) as separate entities
+  \cite{nieuwenhuizen2013measuring}.} The idea is that, any frequency
+above $1/d$ will be dominated by noise (or at least, information that
+is not relevant\footnote{Notice that $d/2$ could be the sampling step
+  size used to digitalize the signal without lossing information.}),
+and therefore, a low-pass filter with a cut-off frequency of $1/d$
+should only remove noise.
+
+Concretely, the
 \href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{\gls{FSC}}
 curve measures the similarity between two 3D volumes represented in
 the Fourier domain \cite{verbeke2024self} (for the 2D case, the
 equivalent metric is \gls{FRC}). Each point of the curve prepresents
-the normalized cross-correlation between two ``shells'' (``rings'' in
-2D) of Fourier coefficients of both volumes (images). Correlation in
-the Fourier domain has become the universal resolution metric and is
-used to assess the quality of 3D reconstructions
+the normalized cross-correlation (see Section
+\ref{sec:cross-correlation}) between two ``shells'' (``rings'' in 2D)
+of Fourier coefficients of both volumes (images). Correlation in the
+Fourier domain has become the universal resolution metric and is used
+to assess the quality of 3D reconstructions
 \cite{rosenthal2003optimal,scheres2012prevention}.
 
 \begin{comment}
