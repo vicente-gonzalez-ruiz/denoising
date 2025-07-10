@@ -720,9 +720,8 @@ is not relevant\footnote{Notice that $d/2$ could be the sampling step
 and therefore, a low-pass filter with a cut-off frequency of $1/d$
 should only remove noise.
 
-Concretely, the
-\href{https://en.wikipedia.org/wiki/Fourier_shell_correlation}{\gls{FSC}}
-curve measures the similarity between two 3D volumes represented in
+This information can be obtained using the \gls{FSC}
+curve that measures the similarity between two 3D volumes represented in
 the Fourier domain \cite{verbeke2024self} (for the 2D case, the
 equivalent metric is \gls{FRC}). Each point of the curve prepresents
 the normalized cross-correlation (see Section
@@ -749,10 +748,12 @@ basically noise.\footnote{When the SNR is very low, the Fourier
 fields such as single particle electron cryo-microscopy (cryo-EM),
 \end{comment}
 
-A FSC value of the FSC curve is determined\footnote{An similar
+A point of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
 \begin{equation}
-  \text{FSC}(\hat{\mathbf{s}}^{(1)}, \hat{\mathbf{s}}^{(2)}; r) = \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i \hat{{\mathbf{S}}^{(2)}_i}^*}{\sqrt{\sum_{i \in S_r} |\hat{\mathbf{S}}^{(1)}_i|^2 \sum_{i \in S_r} |mathbf{\mathbf{S}}^{(2)}_i|^2}},
+  \text{FSC}(\hat{\mathbf{s}}^{(1)}, \hat{\mathbf{s}}^{(2)}; r) =
+  \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i {\hat{\mathbf{S}}^{(2)}}_i^*}
+  {\sqrt{\sum_{i \in S_r} |{\hat{\mathbf{S}}^{(1)}}_i|^2 \sum_{i \in S_r} |{\mathbf{\mathbf{S}}^{(2)}_i}|^2}},
   \label{eq:FSC}
 \end{equation}
 where $i=(x, y, z)$ is a point (a coordinate of a Fourier coefficient)
