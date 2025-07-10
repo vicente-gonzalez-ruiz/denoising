@@ -639,16 +639,19 @@ and
 \section{Noise characterization}
 %{{{
 
-When the clean signal $\mathbf{s}$ is not available, it is necessary
-to use a different kind of information that help us to \emph{estimate}
-the characteristics of the noise in the signal $\hat{\mathbf{s}}$.
+Noise estimation algorithms are necessary in most denoising algorithms
+to adapt to the type and amount of noise, instead of using fixed
+thresholds \cite{immerkaer1996fast}.
 
-Noise can be characterized attending to different aspects (some of them overlaped):
+Noise in $\hat{\mathbf{s}}$ (remember that both $\mathbf{s}$ and
+$\mathbf{n}$ are unknown) can be characterized attending to different
+aspects (some of them overlaped):
 \begin{enumerate}
-\item \textbf{The \gls{PDF} of the noise}. The most frequent (probably
-  in this order) noise distributions are Gaussian, Poisson, Rayleigh,
-  Gamma, and Exponential. Obviously, the \gls{PDF} defines the
-  distribution parameters (mean, variance, etc.).
+\item \textbf{The \gls{PDF} (tyoe) and parameters (level) of the
+    noise}. The most frequent (probably in this order) noise
+  distributions are Gaussian, Poisson, Rayleigh, Gamma, and
+  Exponential. Obviously, the \gls{PDF} defines the distribution
+  parameters (mean, variance, etc.).
 \item \textbf{Signal-dependency}. We can distinguish between additive
   noise models and multiplicative noise models. In the first case, the
   noise does not depends on the clean signal. In the second one, the
@@ -698,6 +701,21 @@ estudied.
 \end{comment}
 
 %}}}
+
+\section{Noise estimation analyzing $\hat{\mathbf{s}}$ directly}
+Gonzalez and Woods \cite{gonzalez2009digital} proposed to estimate the
+type and statistical parameters of the noise in an image using
+different smooth parts, where, in theory, the variance of the signal
+is much smaller than the variance of the noise, allowing thus to
+estimate $\matb bb{V}(\mathbf{n})$.
+
+A evolution of the previous technique was proposed in
+\cite{immerkaer1996fast} in which using a $3\times 3$ convolution mask
+presented a method for estimating the variance of \gls{ZWAG} noise in
+$\hat{\mathbf{s}}$. In \cite{rank1999estimation}, $\hat{\mathbf{s}}$
+is low-pass filtered to ``to suppress the influence of the (unknown)
+original image'' and then the type and parameters of the noise in the
+filtered image are measured.
 
 \section{Fourier Shell Correlation (FSC) and Fourier Ring
   Correlation (FRC) curves}
