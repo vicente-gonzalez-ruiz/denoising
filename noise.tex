@@ -139,20 +139,22 @@ scalar case, when there exist some doubt.
 %-COM-
 %}}}
 
-\section{Zero-mean Additive White Gaussian (ZAWG) noise}
+\section{Additive White Gaussian (AWG) noise}
 %{{{
 
-\gls{ZAWG} noise is a type of random\footnote{There exist a different
-  type of noise, not random, sometimes called (depending on the
-  context) \emph{coherent noise}, \emph{procedural noise}, and
-  \emph{gradient noise}, etc., that we will not study.} noise
-characterized by:
+Zero-mean \footnote{In most of references, this particularity is
+  ignored because if the mean is not zero, we can subtract to the
+  noisy signal the expectation of the noisy signal.} \gls{AWG} noise
+is a type of random\footnote{There exist a different type of noise,
+  not random, sometimes called (depending on the context)
+  \emph{coherent noise}, \emph{procedural noise}, and \emph{gradient
+    noise}, etc., that we will not study.} noise characterized by:
 \begin{enumerate}
 
 \item \textbf{Additive}: The noise is added to the signal:
   \begin{equation}
     \hat{\mathbf{s}}_i = {\mathbf{s}}_i + {\mathbf{n}}_i,
-    \label{eq:ZAWG_i}
+    \label{eq:AWG_i}
   \end{equation}
   where $\mathbf{s}$ is the clean signal (without noise, ground truth
   usually unknown), $\hat{\mathbf{s}}$ is the noisy signal, and
@@ -192,21 +194,21 @@ characterized by:
 \end{enumerate}
 
 \subsection{Expectation of the noisy signal}
-Considering expectations in Eq.~\ref{eq:ZAWG_i}, we get that
+Considering expectations in Eq.~\ref{eq:AWG_i}, we get that
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbb{E}(\mathbf{s}_i + \mathbf{n}_i) = \mathbb{E}(\mathbf{s}_i) + \mathbb{E}(\mathbf{n}_i) = \mathbb{E}(\mathbf{s}_i) + 0 = \mathbf{s}_i.
-  \label{eq:E_ZAWG_i}
+  \label{eq:E_AWG_i}
 \end{equation}
 This basically implies that if, for example, we take an infinite
 number of noisy instances of the same biological specimen, and these
-instances are affected only by ZAWG noise, then the expected value for each
+instances are affected only by AWG noise, then the expected value for each
 noisy $i$-th pixel is the clean $i$-th pixel. In other words,
 $\hat{\mathbf{s}}$ is an unbiased estimator or $\mathbf{s}$.
 
-Obviously, if Eq.~\ref{eq:E_ZAWG} holds, then
+Obviously, if Eq.~\ref{eq:E_AWG} holds, then
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s}.
-  \label{eq:E_ZAWG}
+  \label{eq:E_AWG}
 \end{equation}
 
 \begin{comment}
@@ -214,20 +216,20 @@ Considering that $\mathbf{s}$ is a constant (the
 clean image is fixed for each adquisition of the image $\hat{\mathbf{s}}$),
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s} + \mathbf{n}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}) = \mathbf{s} + \mathbf{0} = \mathbf{s}.
-  \label{eq:E_ZAWG}
+  \label{eq:E_AWG}
 \end{equation}
 \end{comment}
 
 \subsection{Variance of the noisy signal}
-The variance of the signal described in Eq.~\ref{eq:ZAWG_i} is
+The variance of the signal described in Eq.~\ref{eq:AWG_i} is
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}_i) = \mathbb{V}(\mathbf{s}_i + \mathbf{n}_i) = \mathbb{V}(\mathbf{s}_i) + \mathbb{V}(\mathbf{n}_i) = \mathbb{V}(\mathbf{s}_i) + \sigma^2,
-  \label{eq:V_ZAWG_i}
+  \label{eq:V_AWG_i}
 \end{equation}
 i.e.,
 \begin{equation}
   \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
-  \label{eq:V_ZAWG}
+  \label{eq:V_AWG}
 \end{equation}
 Notice that the variance of the noisy signal depend on the variance of
 the clean signal and the variance of the noise, and there is not a
@@ -236,7 +238,7 @@ charactaristic of signal-independent noisy models.
 
 \begin{comment}
 If $\mathbf{s}=\mathbf{0}$ (a constant signal
-with zeros), Equations \ref{eq:E_ZAWG} and \ref{eq:V_ZAWG}
+with zeros), Equations \ref{eq:E_AWG} and \ref{eq:V_AWG}
 reduce to
 \begin{equation}
   \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
@@ -256,7 +258,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{SNR of the ZAWG noise model}
+\subsection{SNR of the AWG noise model}
 
 The \gls{SNR} is commonly defined as the ratio between the power (see
 Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
@@ -290,18 +292,18 @@ where $\hat{\mathbf{s}}^{(n)}$ is the $n$-th noisy instance of
 $\mathbf{s}$, and using Eq.~\ref{eq:SNR_distribution}, we come to
 \begin{equation}
   \text{SNR} = \frac{\textbf{s}}{\sigma} = \frac{\hat{\textbf{s}}}{\sigma},
-  \label{eq:SNR_ZAWG}
+  \label{eq:SNR_AWG}
 \end{equation}
 and therefore to
 \begin{equation}
   \text{SNR}_i = \frac{\hat{\textbf{s}}_i}{\sigma}.
-  \label{eq:SNR_ZAWG_i}
+  \label{eq:SNR_AWG_i}
 \end{equation}
 \end{comment}
 
 \subsection*{Examples}
 
-See Figure~\ref{fig:ZAWG_examples}.
+See Figure~\ref{fig:AWG_examples}.
 
 \begin{figure}
   \centering
@@ -309,13 +311,13 @@ See Figure~\ref{fig:ZAWG_examples}.
     \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
     \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
     \begin{tabular}{ccc}
-      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian_20.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/ZAWG_2d_gaussian.ipynb}{\includegraphics{ZAWG_2d_gaussian_100.pdf}}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/AWG_2d_gaussian.ipynb}{\includegraphics{AWG_2d_gaussian_20.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/AWG_2d_gaussian.ipynb}{\includegraphics{AWG_2d_gaussian_100.pdf}}
     \end{tabular}
   }
-  \caption{Examples of noisy images corrupted by \gls{ZAWG} noise. On
+  \caption{Examples of noisy images corrupted by \gls{AWG} noise. On
     the left, the clean images. On the center and right, the noisy
     ones (with the corresponding \gls{SNR} in
-    decibels). \label{fig:ZAWG_examples}}
+    decibels). \label{fig:AWG_examples}}
 \end{figure}
 
 %}}}
@@ -438,7 +440,7 @@ See Figure~\ref{fig:Poisson_examples}.
 %{{{
 
 A more realistic noise model in microscopy consists in a combination
-of both Poisson and \gls{ZAWG} noise, which is commonly known as
+of both Poisson and \gls{AWG} noise, which is commonly known as
 \gls{MPG} noise \cite{meiniel2018denoising}. The generation of
 \gls{MPG} noise can be modeled as
 \begin{equation}
@@ -707,11 +709,11 @@ Gonzalez and Woods \cite{gonzalez2009digital} proposed to estimate the
 type and statistical parameters of the noise in an image using
 different smooth parts, where, in theory, the variance of the signal
 is much smaller than the variance of the noise, allowing thus to
-estimate $\matb bb{V}(\mathbf{n})$.
+estimate $\mathbb{V}(\mathbf{n})$.
 
 A evolution of the previous technique was proposed in
 \cite{immerkaer1996fast} in which using a $3\times 3$ convolution mask
-presented a method for estimating the variance of \gls{ZWAG} noise in
+presented a method for estimating the variance of \gls{AWG} noise in
 $\hat{\mathbf{s}}$. In \cite{rank1999estimation}, $\hat{\mathbf{s}}$
 is low-pass filtered to ``to suppress the influence of the (unknown)
 original image'' and then the type and parameters of the noise in the
@@ -770,15 +772,15 @@ A point of the FSC curve is determined\footnote{An similar
   definition there exists for the FRC.} by~\cite{verbeke2024self}
 \begin{equation}
   \text{FSC}(\hat{\mathbf{s}}^{(1)}, \hat{\mathbf{s}}^{(2)}; r) =
-  \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i {\hat{\mathbf{S}}^{(2)}}_i^*}
-  {\sqrt{\sum_{i \in S_r} |{\hat{\mathbf{S}}^{(1)}}_i|^2 \sum_{i \in S_r} |{\mathbf{\mathbf{S}}^{(2)}_i}|^2}},
+  \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i \hat{\mathbf{S}}^{(2)*}_i}
+  {\sqrt{\sum_{i \in S_r} |{\hat{\mathbf{S}}^{(1)}}_i|^2 \sum_{i \in S_r} |{\hat{\mathbf{S}}^{(2)}_i}|^2}}
   \label{eq:FSC}
 \end{equation}
 where $i=(x, y, z)$ is a point (a coordinate of a Fourier coefficient)
 of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$, and
 $\hat{\mathbf{S}}$ is the Fourier transform of $\hat{\mathbf{s}}$. We
 will use the term \gls{FC} to refeer to these metrics when the number
-of dimenssions is not relevant.
+of dimensions is not relevant.
 
 %}}}
 
@@ -789,16 +791,16 @@ Unfortunately, the two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
 $\hat{\mathbf{s}}^{(2)}$ do not always exist (see
 Section~\ref{sec:why_denoising}).  In this case, a workaround is to
 simulate its existence, by distributing the information of the only
-image we have $\hat{\mathbf{s}}^{(1)}$ between two noisy
-(sub-)instances $\hat{\mathbf{s}}^{(1.1)}$ and
-$\hat{\mathbf{s}}^{(1.2)}$. For example, in \cite{verbeke2024self} a
+image we have $\hat{\mathbf{s}}$ between two noisy
+(sub-)instances $\hat{\mathbf{s}}^{(a)}$ and
+$\hat{\mathbf{s}}^{(b)}$. For example, in \cite{verbeke2024self} a
 even/odd signal splitting (see Appendix~\ref{sec:EOS}) in 2D slices is
 proposed to compute the so called \gls{SFC}. In \cite{koho2019fourier}
 a subsampled-chessboard splitting pattern (see
 Appendix~\ref{sec:SCBS}) is used. Other ``splitting'' techniques are
 described in Appendices \ref{sec:ICBS}, \ref{sec:SCBS}, and
 \ref{sec:SPRS}. Unfortunately, the splitting reduces the spatial
-resolution at which the signal/noise parameters can be successfully
+resolution at which the \gls{SNR} can be successfully
 estudied (for example, in \cite{verbeke2024self} the \gls{SFC} that
 resembles the true \gls{FC} only in some specific cases\footnote{Gaussian
   noise distribution must be white, and the power spectrum of the
@@ -807,11 +809,11 @@ must be calibrated depending on the correlation). Therefore, in
 general, we should always consider \gls{SFC} curves as estimations of
 the true \gls{FC} curves.
 
-Finally, notice that, although the \gls{FC} and the \gls{SFC} curves
+Finally, notice that, although both the \gls{FC} and the \gls{SFC} curves
 can be traced using only two signals, more accurate estimations can be
 obtained if more noisy instances are available, plotting the arithmetic mean
-of all the curves. For example, in the case of SCBS the we average 2
-curves, and in the case of SPRS the number of averaged curves can be
+of all the curves. For example, in the case of \gls{SCBS} we average two
+curves, while in the case of \gls{SPRS} the number of averaged curves can be
 choosen by the user.
 
 \begin{comment}
@@ -867,11 +869,11 @@ correlation threshold.
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_clean} shows a comparison between
-several SFRC curves obtained using different techniques for generating
-the instances of a single clean\footnote{Generated by
+several \gls{SFRC} curves obtained using different techniques for generating
+the instances from a single clean\footnote{Generated by
   computing the arithmetic mean of the pixels of several noisy
   instances \cite{zhang2019poisson}.} input image. Ideally, the dynamic
-range of the FC curves should be [0, 1].
+range of the \gls{FC} curves should be [0, 1].
 
 \begin{figure}
   \centering
@@ -907,9 +909,9 @@ range of the FC curves should be [0, 1].
   \caption{More SFRC curves of noisy images.\label{fig:more_noisy_SRFC}}
 \end{figure}
 
-Fig.~\ref{fig:SFC_vs_splitting_noisy} shows a comparison between FRC
-and SFRC curves obtained using different techniques for generating the
-instances of a single input noisy image.
+Fig.~\ref{fig:SFC_vs_splitting_noisy} shows a comparison between \gls{FRC}
+and \gls{SFRC} curves obtained using different techniques for generating the
+instances from a single input noisy image.
 
 \begin{figure}
   \centering
@@ -945,7 +947,7 @@ instances of a single input noisy image.
 \end{figure}
 
 Fig.~\ref{fig:SFC_vs_splitting_artificial} shows a comparison
-between FRC/SFRC curves obtained using different techniques for
+between \gls{FRC} and \gls{SFRC} curves obtained using different techniques for
 generating the instances of a single input \emph{artificially-noisy}
 image.
 
@@ -1246,6 +1248,7 @@ input image.
 
 %}}}
 
+\begin{comment}
 \section{If $\mathbb{E}(\mathbf{n})=0$, then $\mathbb{E}(\mathbf{s}^2)=\mathbb{E}(\hat{\mathbf{s}}^2)$}
 \label{sec:power_signal}
 If $\mathbb{E}(\mathbf{n})=0$, the power of the clean signal is the
@@ -1275,8 +1278,7 @@ the noise is the random fluctuation arround that mean, then:
   & = \mathbb{E}(\hat{\mathbf{s}}^2)-\mathbb{E}(\hat{\mathbf{s}})^2 \\
   & = \mathbb{V}(\hat{\mathbf{s}}).
 \end{align*}
-
-
+\end{comment}
 
 \end{subappendices}
 
