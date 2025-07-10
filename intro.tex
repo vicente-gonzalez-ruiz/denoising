@@ -6,7 +6,7 @@ cannot be seen with the naked eye. For this, some kind of interaction
 between the specimens and a source of energy must exist (the specimen
 must be irradiated), an action that usually degrades the specimen and
 for this reason, the radiation is minimized (in radiation power or
-time) generating low SNR images. In this report, we describe,
+``dwell'' time) generating low SNR images. In this report, we describe,
 evaluate, and compare several image denoising algorithms commonly used
 in microscopy of biological specimens.
 
@@ -23,12 +23,13 @@ There are several tecniques to capture microscopy images:
   have being excited by a source of light. Using \gls{LM} we can
   typical reach a resolution of up to 200 nm.
 
-\item \textbf{\gls{EM}}: We use a beam of electrons that can pass through the
-  sample (\gls{TEM}) or bounce on the sample (\gls{SEM}). X-rays and
-  ions can also be used (the smaller the wavelength of the radiation,
-  the higher the resolution). In general, compared to \gls{LM},
-  \gls{EM} allows much higher resolution (down to sub-nanometer
-  scale).
+\item \textbf{\gls{EM}}: We use a beam of electrons that can pass
+  through the sample to discover the internal structure (\gls{TEM}) or
+  bounce on the sample, in this case to analize the surface topology
+  (\gls{SEM}) \cite{timischl2012statistical}. X-rays and ions can also
+  be used (the smaller the wavelength of the radiation, the higher the
+  resolution). In general, compared to \gls{LM}, \gls{EM} allows much
+  higher resolution (down to sub-nanometer scale).
 
 \item \textbf{\gls{SPM}}: A nano-scale mechanical probe maps the surface of a
   specimen. \gls{SPM} achieves sub-nanometer resolution, allowing for
