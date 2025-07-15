@@ -5,20 +5,42 @@
 \label{sec:CLT}
 %{{{
 
-The Central Limit Theorem (CLT) states that the distribution of the
-sample mean (or sum) of a sufficiently large number $I$ of independent
-and identically distributed (i.i.d.) random variables will approximate
-a normal distribution with mean zero, regardless of the original
-distribution of the individual variables \cite{kendall1968advanced}
-(always that the variance is finite). This implies that, for a hight
-enought large sample size of noisy instances $\hat{\mathbf{s}}^{(i)}$,
-it holds that
+Considering that
+\begin{equation}
+  \hat{\mathbf{s}}^{(n)} = \mathbf{s} + \mathbf{n}^{(n)},
+\end{equation}
+where $\mathbf{s}$ is the clean signal, $\mathbf{n}^{(n)}$ is the
+$n$-th noise sample (an image, for example) of
+$\{\mathbf{n}\}_{n=0}^{N-1}$, and $\hat{\mathbf{n}}^{(n)}$ is the
+$n$-noisy instance of $\{\hat{\mathbf{s}}^{(n)}\}_{n=0}^{N-1}$, the
+Central Limit Theorem (CLT) states that the distribution of the sample
+mean (or sum) of a sufficiently large number $N$ of independent and
+identically distributed (i.i.d.) random variables (noise-signals in
+our case) will approximate a normal distribution, regardless of the
+original distribution of the individual variables
+\cite{kendall1968advanced} (always that the variance is finite). In
+maths,
+\begin{equation}
+  \mathbb{E}(\{\mathbf{n}^{(n)}\}_{n=0}^{N-1}) \sim \mathcal{N}(\mathbb{E}(\{\mathbf{n}^{(n)}\}_{n=0}^{N-1}), \mathbb{V}(\mathbf{n}^{(n)}\}_{n=0}^{N-1})/N).
+\end{equation}
+
+
+\begin{equation}
+  \mathbf{s}_i = \lim_{N \to \infty} \overline{\{\hat{\mathbf s}_i^{(n)}\}_{n=1}^N}  \sim \mathcal{N}(\mathbf{s}_i, sigma^2/I).
+  \label{eq:mean_with_bias}
+\end{equation}
+Notice that if 
+
+
+
+This implies that, for a hight enought large
+sample size of noisy instances $\hat{\mathbf{s}}^{(i)}$, it holds that
 \begin{equation}
   \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},
 \end{equation}
 where $\mathbf{s}$ is the clean signal.
 
-Notice that the even if the noise is signal dependent, for a given
+Notice that even if the noise is signal dependent, for a given
 sample $\hat{\mathbf{s}}^{(i)}_j$, the average (arithmetic mean) for
 all an infinite number of $i$ instances will become
 $\mathbf{s}_j$. Because this is imposible physically, our \emph{clean}
@@ -26,6 +48,8 @@ signal in practice will be always a $\tilde{\mathbf{s}}^{(I)}$ which
 will depends on $I$.
 
 %}}}
+
+\section{Mean of noisy instances}
 
 \section{Experiments}
 %{{{
