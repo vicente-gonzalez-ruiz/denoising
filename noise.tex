@@ -643,7 +643,13 @@ and
 
 Noise estimation algorithms are necessary in most denoising algorithms
 to adapt to the type and amount of noise, instead of using fixed
-thresholds \cite{immerkaer1996fast}.
+thresholds \cite{immerkaer1996fast}. For example, in denoising methods
+based on filtering in a transform domain, if we know the standard
+deviation of the noise we can filter out all those coefficients that
+are smaller than a given threshold which usually depends on the
+standard deviation of the noise. In Gaussian filtering, the length of
+the kernel should be selected depending on the standard deviation of
+the noise.
 
 Noise in $\hat{\mathbf{s}}$ (remember that both $\mathbf{s}$ and
 $\mathbf{n}$ are unknown) can be characterized attending to different
@@ -704,12 +710,13 @@ estudied.
 
 %}}}
 
-\section{Noise estimation analyzing $\hat{\mathbf{s}}$ directly}
-Gonzalez and Woods \cite{gonzalez2009digital} proposed to estimate the
-type and statistical parameters of the noise in an image using
-different smooth parts, where, in theory, the variance of the signal
-is much smaller than the variance of the noise, allowing thus to
-estimate $\mathbb{V}(\mathbf{n})$.
+\section{Estimation of noise statistics}
+One of the first attempt of estimating the noise statistical
+parameters of (in this case \gls{AWG} noise) was performed by Gonzalez
+and Woods \cite{gonzalez1992digital} that proposed to analyze
+different smooth parts of an image, where, in theory, the variance of
+the signal is much smaller than the variance of the noise, allowing
+thus to directly measure $\mathbb{V}(\mathbf{n})$.
 
 A evolution of the previous technique was proposed in
 \cite{immerkaer1996fast} in which using a $3\times 3$ convolution mask
@@ -717,10 +724,18 @@ presented a method for estimating the variance of \gls{AWG} noise in
 $\hat{\mathbf{s}}$. In \cite{rank1999estimation}, $\hat{\mathbf{s}}$
 is low-pass filtered to ``to suppress the influence of the (unknown)
 original image'' and then the type and parameters of the noise in the
-filtered image are measured.
+filtered image are estimated.
 
-\section{Fourier Shell Correlation (FSC) and Fourier Ring
-  Correlation (FRC) curves}
+Noise statistics can be also estimated in a transform domain, such as
+the Wavelet domain. For example, in \cite{donoho1995adapting} and the
+\gls{MAD} of the wavelet coefficients at the highest subbands is used
+to estimate the standard deviation of the noise.\footnote{If one is
+  willing to make the assumption of spatially white noise, then
+  knowledge of the noise variance at the smallest scale allows the one
+  to infer the noise variance at all other scales
+  \cite{de2004training}.}  .
+
+\section{Correlation in the Fourier domain to estimate filtering parameters}
 \label{sec:fourier_correlation}
 %{{{
 
