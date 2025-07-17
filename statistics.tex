@@ -14,15 +14,15 @@ By physical requirements, digital signals are finite in length, and therefore
 $\text{Sup}(\mathbf{x})$ is a finite set.
 
 \section{Discrete signals and random variables}
+\label{sec:DSRV}
 %{{{
 
 Mathematically, we can model discrete signals as \glspl{SRV}. A
-\gls{SRV} can be described as a stochastic process whose statistical
-properties do not change with time or space. This means, basically,
-that the probability distribution of a signal at any given set of
-time/space points is the same as the distribution at those same
+\gls{SRV} can be described as the output of a stochastic process whose
+statistical properties do not change with time or space. This means,
+basically, that the probability distribution of a signal at any given
+set of time/space points is the same as the distribution at those same
 samples shifted by any constant amount in time or space.
-
 
 A digital signal is the results of discretizing a discrete signal in
 amplitude. By physical reasons, a digital signal is finite in length
@@ -69,9 +69,11 @@ signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
 \end{equation}
 
 \section{Mean}
-In statistics, when referring to a random variable, the mean usually
-refers to the expectation. However, when we deal with a digital signal
-(sample data) $\mathbf{x}$, we define
+\label{sec:mean}
+In statistics, when referring to a random variable, the mean (also
+called ``sample mean'' or ``empirical mean'') usually refers to the
+expectation. However, when we deal with a digital signal (sample data)
+$\mathbf{x}$, we define
 \begin{equation}
   \overline{\mathbf{x}} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{x}_i,
   \label{eq:mean}
