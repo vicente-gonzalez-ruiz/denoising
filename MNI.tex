@@ -1,25 +1,70 @@
-\chapter{Mean of Noisy Instances (MNI)}
+\chapter{Denoising using the Mean of Noisy Instances (MNI)}
 %{{{
 
 \section{The central limit theorem}
 \label{sec:CLT}
 %{{{
 
+The \gls{CLT} states that when a set of independent \glspl{SRV} (see
+Section~\ref{sec:DSRV}) are added together, the \gls{SRV} resulting of their normalized sum tends
+toward a normal (Gaussian) distribution, even if the original
+variables themselves are not normally distributed. Let
+$\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ the previous set of independent and
+identically distributed (i.i.d.) \glspl{SRV}, then the \gls{CLT} states that the signal
+\begin{equation}
+  \overline{n} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{n}^{(i)}\sim\mathcal{N}(\mu,\frac{\sigma}{N}),
+\end{equation}
+where $\mu$ is the finite mean and $\sigma$ is the finite variance of
+all $\mathbf{n}^{(i)}$. Notice that
+\begin{equation}
+  \lim_{N\rightarrow\infty}\mathbb{V}(\overline{\mathbf{n}}) = 0.
+\end{equation}
+
+%}}}
+
+\section{Mean of noisy instances}
+Now, consider the additive noisy model (see Section~\ref{sec:AWG})
+\begin{equation}
+  \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},
+  \label{eq:noisy_instances}
+\end{equation}
+which represents the generation of the $i$-th noisy instance of the
+signal $\mathbf{s}$. Assuming that
+\begin{equation}
+  \mathbb{E}(\mathbf{n})=\mathbf{0},
+\end{equation}
+where $\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ is the set of
+random signals, and taking expectations in
+Eq.~\ref{eq:noisy_instances}, we get
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}^{(i)}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}^{(i)}) = \mathbf{s}.
+\end{equation}
+
+, all of them with finite
+mean $\mu$ and finite standard deviation $\sigma$. It holds that
+
+
+then the
+sample mean (see Section~\ref{sec:mean}) 
+\begin{equation}
+  \overline{\{n^{(i)}\}_{i=0}^{N-1}} \rightarrow \mu,
+\end{equation}
+when $N$ grows.
+
 Considering that
 \begin{equation}
   \hat{\mathbf{s}}^{(n)} = \mathbf{s} + \mathbf{n}^{(n)},
 \end{equation}
 where $\mathbf{s}$ is the clean signal, $\mathbf{n}^{(n)}$ is the
-$n$-th noise sample (an image, for example) of
-$\{\mathbf{n}\}_{n=0}^{N-1}$, and $\hat{\mathbf{n}}^{(n)}$ is the
-$n$-noisy instance of $\{\hat{\mathbf{s}}^{(n)}\}_{n=0}^{N-1}$, the
-Central Limit Theorem (CLT) states that the distribution of the sample
-mean (or sum) of a sufficiently large number $N$ of independent and
-identically distributed (i.i.d.) random variables (noise-signals in
-our case) will approximate a normal distribution, regardless of the
-original distribution of the individual variables
-\cite{kendall1968advanced} (always that the variance is finite). In
-maths,
+$n$-th noise sample (a random noiise image, for example) of a total of
+$N$ samples, and $\hat{\mathbf{s}}^{(n)}$ is the $n$-th noisy instance
+of $\mathbf{s}$, the Central Limit Theorem (CLT) states that the
+distribution of the sample mean (or sum) of a sufficiently large
+number $N$ of independent and identically distributed (i.i.d.) random
+variables (noise-signals in our case) will approximate a normal
+distribution, regardless of the original distribution of the
+individual variables \cite{kendall1968advanced} (always that the
+variance is finite). In maths,
 \begin{equation}
   \mathbb{E}(\{\mathbf{n}^{(n)}\}_{n=0}^{N-1}) \sim \mathcal{N}(\mathbb{E}(\{\mathbf{n}^{(n)}\}_{n=0}^{N-1}), \mathbb{V}(\mathbf{n}^{(n)}\}_{n=0}^{N-1})/N).
 \end{equation}
@@ -46,10 +91,6 @@ all an infinite number of $i$ instances will become
 $\mathbf{s}_j$. Because this is imposible physically, our \emph{clean}
 signal in practice will be always a $\tilde{\mathbf{s}}^{(I)}$ which
 will depends on $I$.
-
-%}}}
-
-\section{Mean of noisy instances}
 
 \section{Experiments}
 %{{{
