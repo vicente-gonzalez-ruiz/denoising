@@ -9,20 +9,55 @@ The \gls{CLT} states that when a set of independent \glspl{SRV} (see
 Section~\ref{sec:DSRV}) are added together, the \gls{SRV} resulting of their normalized sum tends
 toward a normal (Gaussian) distribution, even if the original
 variables themselves are not normally distributed. Let
-$\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ the previous set of independent and
-identically distributed (i.i.d.) \glspl{SRV}, then the \gls{CLT} states that the signal
+$\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ such set of independent and
+identically distributed (i.i.d.) \glspl{SRV}, then the \gls{CLT} states that the mean signal
 \begin{equation}
   \overline{n} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{n}^{(i)}\sim\mathcal{N}(\mu,\frac{\sigma}{N}),
 \end{equation}
-where $\mu$ is the finite mean and $\sigma$ is the finite variance of
-all $\mathbf{n}^{(i)}$. Notice that
+where
+\begin{equation}
+  \mathbb{E}(\mathbf{n}^{(i)})=\mu\quad\forall i,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\mathbf{n}^{(i)})=\sigma\quad\forall i.
+\end{equation}
+Notice that
 \begin{equation}
   \lim_{N\rightarrow\infty}\mathbb{V}(\overline{\mathbf{n}}) = 0.
 \end{equation}
 
 %}}}
 
+\section{Generalized Anscombe Transform (GAT)}
+The \gls{GAT} \cite{foi2008practical,makitalo2012optimal} is a
+\gls{VST} that can be applied to \gls{MPG} noise (see
+Section~\ref{sec:MPG}) to make it approximately Gaussian with
+(approximately) constant variance of $1$, so we can apply standard
+Gaussian denoisers (e.g., BM3D, DnCNN, wavelet shrinkage, etc.). It
+consists of converting the noisy samples using the expression
+\begin{equation}
+  y\text{GAT}(\hat{\mathbf{s}}_i)=\frac{2}{\gamma}\sqrt{\gamma\hat{\mathbf{s}}_i+\frac{3}{8}\gamma^2+\sigma^2},
+\end{equation}
+where now
+\begin{equation}
+  \text{GAT}(\hat{\mathbf{s}}_i)\sim\mathcal{N}(\mu',\approx 1).
+\end{equation}
+$\gamma$ is an empirical value that controls the gain of the transform.
+
+Notice that the \gls{GAT} is not a linear transform and that the mean is
+not preserved, in neither of the directions of the transform. This
+basically implies that to recover the original mean by simply
+inversing the forward expression. For this reason, in
+\cite{makitalo2012optimal} (among others) the following approximation
+can be used only if we deal with positive transformed values and $\mu=0$:
+\begin{equation}
+  \hat{\mathbf{s}}_i \approx \frac{1}{4}y^2-\frac{1}{4}\left(1+\frac{8\sigma^2}{y^2} + \frac{1}{32}\left(\frac{i+\frac{8\sigma^2}{y^2}}{y^2}\right)\right).
+\end{equation}
+
 \section{Mean of noisy instances}
+CLT implies that we only need to take into consideration the gaussian additive noise case when we perform NMI.
+
 Now, consider the additive noisy model (see Section~\ref{sec:AWG})
 \begin{equation}
   \hat{\mathbf{s}}^{(i)} = \mathbf{s} + \mathbf{n}^{(i)},

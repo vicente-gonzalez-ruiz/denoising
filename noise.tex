@@ -438,14 +438,15 @@ See Figure~\ref{fig:Poisson_examples}.
 %}}}
 
 \section{Mixed Poisson-Gaussian (MPG) noise}
-%{{{
+\label{sec:MPG}
+% {{{
 
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{AWG} noise, which is commonly known as
 \gls{MPG} noise \cite{meiniel2018denoising}. The generation of
 \gls{MPG} noise can be modeled as
 \begin{equation}
-  \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma,
+  \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma),
   %\hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
   \label{eq:MPG_noise_model} 
 \end{equation}
