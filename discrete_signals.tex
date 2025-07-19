@@ -214,6 +214,30 @@ Notice that we could need to extend $\mathbf{s}$ to convolve.
 
 %}}}
 
+\section{Transfer function of a filter}
+\label{sec:TF_filter}
+
+The \gls{TF} of a (\gls{LTI}) filter describes how the filter modifies
+the amplitude and phase of each frequency component of the input
+signal. In the analog world, it is defined as
+\begin{equation}
+  H(s) = \frac{Y(s)}{X(s)},
+\end{equation}
+where $Y(s)$ is the Laplace transform of the output, $X(s)$ is the
+Laplace transform of the input, and $s$ represents a complex
+frequency. In the digital case, the Laplace-domain is changed by the
+Z-domain, resulting
+\begin{equation}
+  H(z) = \frac{Y(z)}{X(z)} = \frac{b_0 + b_1 z^{-1} + b_2 z^{-2} + \dots + b_M z^{-M}}{1 + a_1 z^{-1} + a_2 z^{-2} + \dots + a_N z^{-N}}
+\end{equation}
+where $Y(z)$ is the Z-transform of the output, $X(z)$ is the
+Z-transform of the input, $\{b_k\}$ are the feedforward coefficients,
+and $\{a_k\}$ are the feedback coefficients.
+
+In both analog and digital cases, evaluating the transfer function on
+the imaginary axis or unit circle, respectively, gives the frequency
+response: $H(j\omega)$ (analog) $H(e^{j\omega})$ (digital).
+
 \section{FFT-based convolution (the convolution theorem)}
 \label{sec:convolution_theorem}
 %{{{
