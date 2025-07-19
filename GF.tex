@@ -1,307 +1,24 @@
-\chapter{Gaussian Filtering (GF)}
-%{{{
+\chapter{Gaussian Filtering}
 
-\section{Fourier transform of a Gaussian function}
-\label{sec:FTGF}
-%{{{
-
-Let the Gaussian function defined by
+\section{Definition}
+\gls{GF} is a signal processing technique for smoothing signals
+(reduce high-frequency components). It is based on the convolution the
+signal to filter and a Gaussian function with $\mu=0$, defined as
 \begin{equation}
-  h(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{{x}^2}{(2\tau^2)}},
-  \label{eq:gaussian_ape}
+  g(x) = \frac{1}{\sqrt{2\pi\tau^2}}e^{-\frac{{x}^2}{2\tau^2}},
+  \label{eq:GK}
 \end{equation}
-(see Eq.~\ref{eq:GF}), the Fourier transform  is
-\begin{equation}
-  H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx,
-\end{equation}
-where
-\begin{equation}
-  w = 2\pi f,
-\end{equation}
-representing $f$ frequency (in the case of working with images, in
-cycles per pixel-size measured in units of distance, or simply, cycles
-per sample) and $w$ angular frequency (radians per unit distance, or
-simply, radians per sample). Therefore,
-\begin{equation*}
-  H(w) = \int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}}e^{-jwx}dx = 
-\end{equation*}
-\begin{equation*}
-  \frac{1}{\sqrt{2\pi}\tau}\int_{-\infty}^{\infty}e^{-\frac{x^2}{2\tau^2}}e^{-jwx}dx = 
-\end{equation*}
-\begin{equation*}
-  \frac{1}{\sqrt{2\pi}\tau}\int_{-\infty}^{\infty}e^{-\frac{x^2}{2\tau^2}-jwx}dx.
-\end{equation*}
-Operating in the exponent
-\begin{equation*}
-  -\frac{x^2}{2\tau^2}-jwx = -\frac{1}{2\tau^2}(x+2j\tau^2wx)
-\end{equation*}
-that after adding and subtracting $(j\tau^2w)^2$
-\begin{equation*}
-  = \frac{1}{2\tau^2}[(x+j\tau^2w)^2-(j\tau^2w)^2]
-\end{equation*}
-and rewriting and operating
-\begin{equation*}
-  = -\frac{(x+j\tau^2w)^2}{2\tau^2} + \frac{\tau^2w^2}{2}.
-\end{equation*}
-Replacing the exponent,
-\begin{equation*}
-  H(w) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{-\frac{(x+j\tau^2w)^2}{2\tau^2}}dx.
-\end{equation*}
-Now define
-\begin{equation*}
-  u = x + j\tau^2w.
-\end{equation*}
-Therefore,
-\begin{equation*}
-  H(w) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du.
-\end{equation*}
-The remaining integral is a standard Gaussian integral,
-\begin{equation*}
-  \int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du = \sqrt{2\pi}\tau.
-\end{equation*}
-Finally, we obtain that
-\begin{equation}
-  H(w) = e^{-\frac{\tau^2w^2}{2}},
-  \label{eq:FTGF}
-\end{equation}
-that corresponds to the transfer function (i.e., the response of
-Eq.~\ref{eq:gaussian_ape} to the impulse signal) of the Gaussian.
+where $\tau$ (known as the \emph{standard deviation of the filter}
+\footnote{Notice that the filter coefficients are also the values that
+  a discrete random variable takes from a normal distribution.})
+determines the bandwidth of the filter, and $x$ represents a distance
+in the signal domain. Notice that the larger the $\tau$, the higher
+the blur.
 
-%}}}
-
-\section{Cut-off frequency of a Gaussian filter}
-\label{sec:tau_VS_eta}
-%{{{
-
-Gaussian filters are low-pass filters. In a low-pass filter we can
-distinguish three subbands: (1) the pass-band, that is defined by
-those range of frequencies that are not attenuated significantly, (2)
-the stop-band, where the frequencies are attenuated (significantly),
-and (3) the transition-band, defined by those frequencies that are not
-included in the previous subbands. Notice that only in an ideal
-filter, the size of the transition-band is zero.
-
-The cut-off frequency of a low-pass filter is defined by those
-frequencies of the transition-band where the response (or gain) of the
-filter decreases by some given factor $\beta\in]0,1[$. In other words,
-if $H$ is the transfer function of the filter,
-\begin{equation}
-  H(\eta) = \beta,
-\end{equation}
-where $\eta$ is the cut-off frequency. In the case of a Gaussian
-filter (see Eq.~\ref{eq:FTGF}), we have that
-\begin{equation*}
-  H(\eta) = e^{-\frac{\tau^2\eta^2}{2}} = \beta.
-\end{equation*}
-Taking the natural logarithm
-\begin{equation*}
-  -\frac{\tau^2\eta^2}{2} = \ln\beta.
-\end{equation*}
-Solving for $\tau$
-\begin{equation}
-  \tau = \frac{\sqrt{-2\ln\beta}}{\eta}.
-  \label{eq:tau_VS_eta}
-\end{equation}
-
-Typically, $\beta=1/\sqrt{2}$ that is equivalent to attenuate the
-input signal in -3dB. Notice that at the frequency 0 (see
-Eq.~\ref{eq:FTGF}),
-\begin{equation*}
-  H(0) = e^0=1.
-\end{equation*}
-
-Eq.~\ref{eq:tau_VS_eta} uses angular frequency. We can obtain the
-corresponding expresión for ``standard'' frequency, knowing that
-\begin{equation}
-  \eta = 2\pi\hat{\eta}.
-  \label{eq:eta_freq}
-\end{equation}
-Using Eq.~\ref{eq:eta_freq} into Eq.~\ref{eq:tau_VS_eta}, we obtain
-\begin{equation}
-  \tau = \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}}.
-  \label{eq:tau_VS_eta_standard}
-\end{equation}
-Operating
-\begin{equation*}
-  \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}} = \frac{\sqrt{2}\sqrt{-\ln\beta}}{2\pi\hat{\eta}} = \frac{\sqrt{2}\sqrt{-\ln\beta}}{2\pi\hat{\eta}}\frac{\sqrt{2}}{\sqrt{2}} = \frac{2\sqrt{-\ln\beta}}{2\sqrt{2}\pi\hat{\eta}} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}},
-\end{equation*}
-and therefore,
-\begin{equation}
-  \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}},
-  \label{eq:ideal_hat_tau}
-\end{equation}
-equation that is valid for continuous signals. In the discrete case,
-where the Gaussian kernel is finite in length, we have that
-\begin{equation}
-  \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
-  \label{eq:kernel_length}
-\end{equation}
-i.e., the filter is truncated at $\pm k\tau$ coefficients. This has
-two effects (obviously, if $\tau$ remains constant):
-\begin{enumerate}
-\item If $k$ is small, the attenuation of the stop-band decreases,
-  i.e., the performance of the filter is worse (see
-  Fig.~\ref{fig:gaussian_leakage}). Therefore, $k$ should be big
-  enought.
-\item But if $k$ is to big, and we desire a $\hat{\eta}$ (the cut-off
-  frequency) high because the SNR is only low above $\hat{\eta}$, we
-  will perform a low of multiplications which results in values very
-  close to zero, increasing the computation time without showing
-\end{enumerate}
-Therefore, a better estimation of the standard deviation for the
-Gaussian kernel is
-\begin{equation}
-  \tau = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
-  \label{eq:ideal_hat_tau}
-\end{equation}
-
-\begin{figure}
-  \centering
-  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/gaussian_leakage.ipynb\#Gaussian_leakage}{\includegraphics[width=0.8\textwidth]{gaussian_leakage}}
-  \caption{Impact of $k$ in the frequency response of a digital
-    Gaussian kernel, when $k$ and $\tau$ are related according
-    to Eq.~\ref{eq:kernel_length}). The lobes in the stop-band are
-    generated by the convolution of the ideal frequency response of a
-    ideal (continous) Gaussian filter (see Eq.~\ref{eq:FTGF}) with the
-    Fourier transform of the square function which mathematically
-    models the truncation in length of the kernel. $f_s$ represents
-    the sampling frequency.\label{fig:gaussian_leakage}}
-\end{figure}
-
-For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
-(see Fig.~\ref{fig:gaussian_leakage}) and the leakage generated by the
-truncation remains low enough.
-
-Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
-have computed the relation between $\tau$ and $\hat{\eta}$ for
-$\beta=1/\sqrt{2}$, and the result has been plotted in the
-Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\tau\propto 1/\hat{\eta}$.
-
-\begin{figure}
-  \centering
-  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/eta_vs_tau.ipynb\#Eta_vs_tau}{\includegraphics[width=0.8\textwidth]{eta_vs_tau}}
-  \caption{Relation between $\hat\eta$ (the digital cut-off frequency
-    of a Gaussian kernel) and $\tau$ (the standard deviation of
-    the kernel), for $\beta=1/\sqrt{2}$.\label{fig:eta_vs_tau}}
-\end{figure}
-
-\begin{comment}
-To convert to normalized frequency, we must divide by $f_s$, the
-sampling frequency. For example, if $f_s=1$, we are supposing one
-sample per unit distance.
-\end{comment}
-
-\begin{comment}
-Now, if we are using digital signals, where the frequency is
-normalized relative to Nyquist frequency, we have that
-
-and continuous signals. In the digital world the Gaussian
-kernel is finite and this must be also considered to find the cut-off
-frequency. In our implementation, that is based on the method
-\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian\_filter1d()},
-\begin{equation}
-  \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
-\end{equation}
-where $k=4$ provides enough accuracy in the
-convolutions.\footnote{Notice that if $k$ grows then the cut-off
-  frequency of the filter decreases, regardless of $\tau$.}
-\end{comment}
-\begin{comment}
-In those denoising algorithms where we can estimate the optimal
-filtering parameters ($\tau^*$ in the case of GF) considering the
-information of the signal in the frequency domain, a relation between
-$\tau$ and the cut-off frequency $\eta$ of the filter is
-required. Such relation can be found after defining an attenuation
-threshold $\beta\in [0,1]$, and determining for which increasing value
-of $\eta$ the gain of the low-pass filter in the frequency domain is
-below $\beta$.
-\end{comment}
-
-%}}}
-
-%{{{
-
-\begin{comment}
-\section{Transfer function of a Gaussian filter}
-%{{{
-
-\label{sec:transfer_function_GK}
-
-The transfer function of a filter (kernel) is the Fourier transform of the
-impulse response of the filter,
-\begin{equation}
-  H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx.
-\end{equation}
-Using the Fourier pair
-\begin{equation}
-  \mathcal{F}\{e^{-\frac{x^2}{2\tau^2}}\} = \tau\sqrt{2\pi}e^{-\frac{\tau^2x^2}{2}},
-\end{equation}
-we get that
-\begin{equation}
-  H(w) = e^{-\frac{\tau^2w^2}{2}}.
-  \label{eq:TFGK}
-\end{equation}
-
-%}}}
-\end{comment}
-
-%}}}
-
-\section{About separability in multidimensional GF}
-\label{sec:GF_separability}
-%{{{
-
-A 2D function $f(x,y)$ is said to be separable if can be expressed as
-the product of 2 1D functions. Thus, a $D$-dimensional Gaussian
-filtering can be computed applying a 1D Gaussian filter along each of
-the $N$ dimensions. This reduces the computational complexity from
-$\mathcal{O}(N^D)$ to $D\mathcal{O}(N)$, where $N$ is the problem
-size.
-
-In the case of 2D Gaussian filtering, the kernel is defined by
-\begin{equation}
-  h(x,y) = \frac{1}{2\pi\tau^2}e^{-\frac{x^2+y^2}{2\tau^2}},
-  \label{eq:2DGF}
-\end{equation}
-where $\tau$ is the standard deviation. Since
-\begin{equation*}
-  e^{-\frac{x^2+y^2}{2\tau^2}} = e^{-\frac{x^2}{2\tau^2}}e^{-\frac{y^2}{2\tau^2}},
-\end{equation*}
-then
-\begin{equation}
-  h(x,y) = \Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}}\Big)\Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{y^2}{2\tau^2}}\Big) = f(x)g(y),
-\end{equation}
-where
-\begin{equation}
-  f(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}},
-\end{equation}
-and equivalently for $g(y)$.
-
-Alternatively, in the Fourier domain
-\begin{equation*}
-  \begin{split}
-    H(u,v) & = \int_\infty^\infty\int_\infty^\infty h(x,y)e^{-2\pi j(ux+vy)}dxdy \\
-           & = \int_\infty^\infty\int_\infty^\infty f(x)g(y)e^{-2\pi j(ux)}e^{-2\pi j(vy)}dxdy \\
-           & = \int_\infty^\infty f(x)e^{-2\pi j(ux)} dx \int_\infty^\infty g(y) e^{-2\pi j(vy)} dy \\
-           & = F(u)G(v).
-  \end{split}
-\end{equation*}
-Therefore, the frequency response of a separable multidimensional
-filter can be found by multipliying the frequency responses in each
-dimension of the corresponding 1D filter. Notice that this is a
-general result, known as The Separability Theorem.
-
-In terms of a 2D digital isotropic filter, if $w$ is its (2D) kernel,
-separability implies that it can be expressed as the outer product
-\cite{gonzalez1992digital}
-\begin{equation}
-  w = vv^T,
-\end{equation}
-where $v$ is a 1D kernel. Notice also that, as a consequence of this,
-the $\text{rank}(w)=1$.
-
-%}}}
-
+\section{Separability}
+It is possible to apply, for example, a 1D \gls{GF} horizontally and
+then vertically (or vice versa) instead of doing a 2D convolution,
+which is faster (see Appendix~\ref{sec:GF_separability}).
 
 \section{Gaussian denoising}
 %{{{
@@ -687,4 +404,307 @@ parameters knowing only the noisy instance $\hat{\mathbf{X}}$.
 
 %}}}
 
+\begin{subappendices}
+
+\section{Fourier transform of a Gaussian function}
+\label{sec:FTGF}
+%{{{
+
+Let the Gaussian function defined by
+\begin{equation}
+  h(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{{x}^2}{(2\tau^2)}},
+  \label{eq:gaussian_ape}
+\end{equation}
+(see Eq.~\ref{eq:GF}), the Fourier transform  is
+\begin{equation}
+  H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx,
+\end{equation}
+where
+\begin{equation}
+  w = 2\pi f,
+\end{equation}
+representing $f$ frequency (in the case of working with images, in
+cycles per pixel-size measured in units of distance, or simply, cycles
+per sample) and $w$ angular frequency (radians per unit distance, or
+simply, radians per sample). Therefore,
+\begin{equation*}
+  H(w) = \int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}}e^{-jwx}dx = 
+\end{equation*}
+\begin{equation*}
+  \frac{1}{\sqrt{2\pi}\tau}\int_{-\infty}^{\infty}e^{-\frac{x^2}{2\tau^2}}e^{-jwx}dx = 
+\end{equation*}
+\begin{equation*}
+  \frac{1}{\sqrt{2\pi}\tau}\int_{-\infty}^{\infty}e^{-\frac{x^2}{2\tau^2}-jwx}dx.
+\end{equation*}
+Operating in the exponent
+\begin{equation*}
+  -\frac{x^2}{2\tau^2}-jwx = -\frac{1}{2\tau^2}(x+2j\tau^2wx)
+\end{equation*}
+that after adding and subtracting $(j\tau^2w)^2$
+\begin{equation*}
+  = \frac{1}{2\tau^2}[(x+j\tau^2w)^2-(j\tau^2w)^2]
+\end{equation*}
+and rewriting and operating
+\begin{equation*}
+  = -\frac{(x+j\tau^2w)^2}{2\tau^2} + \frac{\tau^2w^2}{2}.
+\end{equation*}
+Replacing the exponent,
+\begin{equation*}
+  H(w) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{-\frac{(x+j\tau^2w)^2}{2\tau^2}}dx.
+\end{equation*}
+Now define
+\begin{equation*}
+  u = x + j\tau^2w.
+\end{equation*}
+Therefore,
+\begin{equation*}
+  H(w) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{\tau^2w^2}{2}}\int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du.
+\end{equation*}
+The remaining integral is a standard Gaussian integral,
+\begin{equation*}
+  \int_{-\infty}^{\infty}e^{{-u^2}{2\tau^2}}du = \sqrt{2\pi}\tau.
+\end{equation*}
+Finally, we obtain that
+\begin{equation}
+  H(w) = e^{-\frac{\tau^2w^2}{2}},
+  \label{eq:FTGF}
+\end{equation}
+that corresponds to the transfer function (i.e., the response of
+Eq.~\ref{eq:gaussian_ape} to the impulse signal) of the Gaussian.
+
 %}}}
+
+\section{Cut-off frequency of a Gaussian filter}
+\label{sec:tau_VS_eta}
+%{{{
+
+Gaussian filters are low-pass filters. In a low-pass filter we can
+distinguish three subbands: (1) the pass-band, that is defined by
+those range of frequencies that are not attenuated significantly, (2)
+the stop-band, where the frequencies are attenuated (significantly),
+and (3) the transition-band, defined by those frequencies that are not
+included in the previous subbands. Notice that only in an ideal
+filter, the size of the transition-band is zero.
+
+The cut-off frequency of a low-pass filter is defined by those
+frequencies of the transition-band where the response (or gain) of the
+filter decreases by some given factor $\beta\in]0,1[$. In other words,
+if $H$ is the transfer function of the filter,
+\begin{equation}
+  H(\eta) = \beta,
+\end{equation}
+where $\eta$ is the cut-off frequency. In the case of a Gaussian
+filter (see Eq.~\ref{eq:FTGF}), we have that
+\begin{equation*}
+  H(\eta) = e^{-\frac{\tau^2\eta^2}{2}} = \beta.
+\end{equation*}
+Taking the natural logarithm
+\begin{equation*}
+  -\frac{\tau^2\eta^2}{2} = \ln\beta.
+\end{equation*}
+Solving for $\tau$
+\begin{equation}
+  \tau = \frac{\sqrt{-2\ln\beta}}{\eta}.
+  \label{eq:tau_VS_eta}
+\end{equation}
+
+Typically, $\beta=1/\sqrt{2}$ that is equivalent to attenuate the
+input signal in -3dB. Notice that at the frequency 0 (see
+Eq.~\ref{eq:FTGF}),
+\begin{equation*}
+  H(0) = e^0=1.
+\end{equation*}
+
+Eq.~\ref{eq:tau_VS_eta} uses angular frequency. We can obtain the
+corresponding expresión for ``standard'' frequency, knowing that
+\begin{equation}
+  \eta = 2\pi\hat{\eta}.
+  \label{eq:eta_freq}
+\end{equation}
+Using Eq.~\ref{eq:eta_freq} into Eq.~\ref{eq:tau_VS_eta}, we obtain
+\begin{equation}
+  \tau = \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}}.
+  \label{eq:tau_VS_eta_standard}
+\end{equation}
+Operating
+\begin{equation*}
+  \frac{\sqrt{-2\ln\beta}}{2\pi\hat{\eta}} = \frac{\sqrt{2}\sqrt{-\ln\beta}}{2\pi\hat{\eta}} = \frac{\sqrt{2}\sqrt{-\ln\beta}}{2\pi\hat{\eta}}\frac{\sqrt{2}}{\sqrt{2}} = \frac{2\sqrt{-\ln\beta}}{2\sqrt{2}\pi\hat{\eta}} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}},
+\end{equation*}
+and therefore,
+\begin{equation}
+  \hat{\tau} = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}},
+  \label{eq:ideal_hat_tau}
+\end{equation}
+equation that is valid for continuous signals. In the discrete case,
+where the Gaussian kernel is finite in length, we have that
+\begin{equation}
+  \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
+  \label{eq:kernel_length}
+\end{equation}
+i.e., the filter is truncated at $\pm k\tau$ coefficients. This has
+two effects (obviously, if $\tau$ remains constant):
+\begin{enumerate}
+\item If $k$ is small, the attenuation of the stop-band decreases,
+  i.e., the performance of the filter is worse (see
+  Fig.~\ref{fig:gaussian_leakage}). Therefore, $k$ should be big
+  enought.
+\item But if $k$ is to big, and we desire a $\hat{\eta}$ (the cut-off
+  frequency) high because the SNR is only low above $\hat{\eta}$, we
+  will perform a low of multiplications which results in values very
+  close to zero, increasing the computation time without showing
+\end{enumerate}
+Therefore, a better estimation of the standard deviation for the
+Gaussian kernel is
+\begin{equation}
+  \tau = \frac{\sqrt{-\ln\beta}}{\sqrt{2}\pi\hat{\eta}k}.
+  \label{eq:ideal_hat_tau}
+\end{equation}
+
+\begin{figure}
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/gaussian_leakage.ipynb\#Gaussian_leakage}{\includegraphics[width=0.8\textwidth]{gaussian_leakage}}
+  \caption{Impact of $k$ in the frequency response of a digital
+    Gaussian kernel, when $k$ and $\tau$ are related according
+    to Eq.~\ref{eq:kernel_length}). The lobes in the stop-band are
+    generated by the convolution of the ideal frequency response of a
+    ideal (continous) Gaussian filter (see Eq.~\ref{eq:FTGF}) with the
+    Fourier transform of the square function which mathematically
+    models the truncation in length of the kernel. $f_s$ represents
+    the sampling frequency.\label{fig:gaussian_leakage}}
+\end{figure}
+
+For $k=4$, the attenuation of the stop-band is below $90\text{dB}$
+(see Fig.~\ref{fig:gaussian_leakage}) and the leakage generated by the
+truncation remains low enough.
+
+Finally, to assert the correctness of Eq.~\ref{eq:ideal_hat_tau}, we
+have computed the relation between $\tau$ and $\hat{\eta}$ for
+$\beta=1/\sqrt{2}$, and the result has been plotted in the
+Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\tau\propto 1/\hat{\eta}$.
+
+\begin{figure}
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/eta_vs_tau.ipynb\#Eta_vs_tau}{\includegraphics[width=0.8\textwidth]{eta_vs_tau}}
+  \caption{Relation between $\hat\eta$ (the digital cut-off frequency
+    of a Gaussian kernel) and $\tau$ (the standard deviation of
+    the kernel), for $\beta=1/\sqrt{2}$.\label{fig:eta_vs_tau}}
+\end{figure}
+
+\begin{comment}
+To convert to normalized frequency, we must divide by $f_s$, the
+sampling frequency. For example, if $f_s=1$, we are supposing one
+sample per unit distance.
+\end{comment}
+
+\begin{comment}
+Now, if we are using digital signals, where the frequency is
+normalized relative to Nyquist frequency, we have that
+
+and continuous signals. In the digital world the Gaussian
+kernel is finite and this must be also considered to find the cut-off
+frequency. In our implementation, that is based on the method
+\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian\_filter1d()},
+\begin{equation}
+  \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
+\end{equation}
+where $k=4$ provides enough accuracy in the
+convolutions.\footnote{Notice that if $k$ grows then the cut-off
+  frequency of the filter decreases, regardless of $\tau$.}
+\end{comment}
+\begin{comment}
+In those denoising algorithms where we can estimate the optimal
+filtering parameters ($\tau^*$ in the case of GF) considering the
+information of the signal in the frequency domain, a relation between
+$\tau$ and the cut-off frequency $\eta$ of the filter is
+required. Such relation can be found after defining an attenuation
+threshold $\beta\in [0,1]$, and determining for which increasing value
+of $\eta$ the gain of the low-pass filter in the frequency domain is
+below $\beta$.
+\end{comment}
+
+%}}}
+
+%{{{
+
+\begin{comment}
+\section{Transfer function of a Gaussian filter}
+%{{{
+
+\label{sec:transfer_function_GK}
+
+The transfer function of a filter (kernel) is the Fourier transform of the
+impulse response of the filter,
+\begin{equation}
+  H(w) = \mathcal{F}\{h(x)\} = \int_{-\infty}^{\infty}h(x)e^{-jwx}dx.
+\end{equation}
+Using the Fourier pair
+\begin{equation}
+  \mathcal{F}\{e^{-\frac{x^2}{2\tau^2}}\} = \tau\sqrt{2\pi}e^{-\frac{\tau^2x^2}{2}},
+\end{equation}
+we get that
+\begin{equation}
+  H(w) = e^{-\frac{\tau^2w^2}{2}}.
+  \label{eq:TFGK}
+\end{equation}
+
+%}}}
+\end{comment}
+
+%}}}
+
+\section{About separability in multidimensional GF}
+\label{sec:GF_separability}
+%{{{
+
+A 2D function $f(x,y)$ is said to be separable if can be expressed as
+the product of 2 1D functions. Thus, a $D$-dimensional Gaussian
+filtering can be computed applying a 1D Gaussian filter along each of
+the $N$ dimensions. This reduces the computational complexity from
+$\mathcal{O}(N^D)$ to $D\mathcal{O}(N)$, where $N$ is the problem
+size.
+
+In the case of 2D Gaussian filtering, the kernel is defined by
+\begin{equation}
+  h(x,y) = \frac{1}{2\pi\tau^2}e^{-\frac{x^2+y^2}{2\tau^2}},
+  \label{eq:2DGF}
+\end{equation}
+where $\tau$ is the standard deviation. Since
+\begin{equation*}
+  e^{-\frac{x^2+y^2}{2\tau^2}} = e^{-\frac{x^2}{2\tau^2}}e^{-\frac{y^2}{2\tau^2}},
+\end{equation*}
+then
+\begin{equation}
+  h(x,y) = \Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}}\Big)\Big(\frac{1}{\sqrt{2\pi}\tau}e^{-\frac{y^2}{2\tau^2}}\Big) = f(x)g(y),
+\end{equation}
+where
+\begin{equation}
+  f(x) = \frac{1}{\sqrt{2\pi}\tau}e^{-\frac{x^2}{2\tau^2}},
+\end{equation}
+and equivalently for $g(y)$.
+
+Alternatively, in the Fourier domain
+\begin{equation*}
+  \begin{split}
+    H(u,v) & = \int_\infty^\infty\int_\infty^\infty h(x,y)e^{-2\pi j(ux+vy)}dxdy \\
+           & = \int_\infty^\infty\int_\infty^\infty f(x)g(y)e^{-2\pi j(ux)}e^{-2\pi j(vy)}dxdy \\
+           & = \int_\infty^\infty f(x)e^{-2\pi j(ux)} dx \int_\infty^\infty g(y) e^{-2\pi j(vy)} dy \\
+           & = F(u)G(v).
+  \end{split}
+\end{equation*}
+Therefore, the frequency response of a separable multidimensional
+filter can be found by multipliying the frequency responses in each
+dimension of the corresponding 1D filter. Notice that this is a
+general result, known as The Separability Theorem.
+
+In terms of a 2D digital isotropic filter, if $w$ is its (2D) kernel,
+separability implies that it can be expressed as the outer product
+\cite{gonzalez1992digital}
+\begin{equation}
+  w = vv^T,
+\end{equation}
+where $v$ is a 1D kernel. Notice also that, as a consequence of this,
+the $\text{rank}(w)=1$.
+
+%}}}
+
+\end{subappendices}
