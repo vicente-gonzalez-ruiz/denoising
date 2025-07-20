@@ -15,13 +15,41 @@ determines the bandwidth of the filter, and $x$ represents a distance
 in the signal domain. Notice that the larger the $\tau$, the higher
 the blur.
 
-\section{Separability}
-It is possible to apply, for example, a 1D \gls{GF} horizontally and
-then vertically (or vice versa) instead of doing a 2D convolution,
-which is faster (see Appendix~\ref{sec:GF_separability}).
+In the signal domain, \gls{GF} is described as
+\begin{equation}
+  \text{GF}(\mathbf{s}) = \mathbf{s}\ast\mathbf{g},
+\end{equation}
+where $\mathbf{g}$ is a Gaussian kernel.
 
-\section{Gaussian denoising}
+\section{Separability}
+Multidimensional GF is separable (see
+Appendix~\ref{sec:GF_separability}), which means that we can apply the
+1D filter to the $D$ dimensions of the signal to compute a $D$D
+denoising. De facto, Gaussian kernels are the only circularly
+symmetric kernels that are also separable \cite{gonzalez1992digital}.
+
+to apply, for example, a 1D \gls{GF} horizontally and then vertically
+(or vice versa) instead of doing a 2D convolution, which is
+faster. For example, the speed-up provied by separability in the 2D
+case is (in terms of \gls{NoO})
+\begin{equation}
+  \text{Speed-up} = \frac{\text{NoO~in~the~2D~Convolution}}{\text{NoO~in~1D-convolving~the~rows}+\text{NoO~in~1D-convolving~the~columns}} = \frac{MNK^2}{2MNK} = \frac{K}{2},
+\end{equation}
+where $M$ and $N$ are the width and height of the filtered image, and
+$K$ is the length of the Gaussian kernel.
+
+\section{Denoising using \gls{GF}}
 %{{{
+
+Gaussian kerners are low-pass filters, and the \gls{SNR} is usually
+smaller in the high frequencies. Therefore, when we filter a noisy
+signal using \gls{GF} what we are basically eliminating is noise.
+
+On the other hand, unlike other digital filters, such as an ideal low-pass
+filter, a Gaussian low-pass filter does not generate ringing (the
+transfer function of a Gaussian filter is another Gaussian filter,
+which has not lobes), and the convolution of two Gaussians are Gaussian
+functions also. 
 
 Gaussian denoising is based on the use of low-pass
 (smoothing)\footnote{Because random noise typically consists of sharp
@@ -652,7 +680,7 @@ we get that
 
 %}}}
 
-\section{About separability in multidimensional GF}
+\section{Separability in multidimensional GF}
 \label{sec:GF_separability}
 %{{{
 
