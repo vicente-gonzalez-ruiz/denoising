@@ -74,8 +74,14 @@ random signals, and taking expectations in
 Eq.~\ref{eq:noisy_instances}, we get
 \begin{equation}
   \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}) = \mathbf{s},
+  \label{eq:MNI}
 \end{equation}
-where $\hat{\mathbf{s}}=\{\hat{\mathbf{s}}^{(i)}\}_{i=0}^{N-1}$.
+where
+$\hat{\mathbf{s}}=\{\hat{\mathbf{s}}^{(i)}\}_{i=0}^{N-1}$. Notice,
+however, that Eq.~\ref{eq:MNI} is only true when
+$N\rightarrow\infty$. In practice, where $N$ is finite, we only get an
+approximation $\tilde{\mathbf{s}}^{[N]}$, where $N$ is the number of
+averaged signals.
 
 \section{Experiments}
 %{{{
