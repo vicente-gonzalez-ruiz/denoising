@@ -64,8 +64,8 @@ what we are basically eliminating is noise.
 On the other hand, unlike other digital filters, such as an ideal low-pass
 filter, a Gaussian low-pass filter does not generate ringing (the
 transfer function of a Gaussian filter is another Gaussian filter,
-which has not lobes), and the convolution of two Gaussians are Gaussian
-functions also. 
+which does not have lobes), and the convolution of two Gaussians are Gaussian
+functions as well. 
 
 In \gls{GD} we have that
 \begin{equation}
@@ -153,13 +153,13 @@ noise is close to zero, and (3) that most of the energy (information)
 in the signals are concentrated in the low frequencies. Therefore, we
 should find a cut-off frequency
 \begin{equation}
-  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{X}})_\eta < \alpha\},
+  \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{s}})_\eta < \alpha\},
   \label{eq:search_eta}
 \end{equation}
 where $\alpha$ is the minimun correlation that should reach the SFC to consider that the corresponding ring/shell has a high enough SNR (see
 Appendix~\ref{sec:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
-frequency components of $\hat{\mathbf{X}}$ with the lowest SNR.
+frequency components of $\hat{\mathbf{s}}$ with the lowest SNR.
 
 \begin{figure}
   \centering
@@ -191,8 +191,7 @@ have assumed that an attenuation higher than $1/\sqrt{2}$ (see
 Appendix~\ref{sec:tau_VS_eta}) can be high enought to filter out the
 frequencies higher than $\eta^*$.
 
-Appendix~\ref{sec:results} contains a table with the performance of
-some denoisers.
+%Appendix~\ref{sec:results} contains a table with the performance of some denoisers.
 
 %{\color{red} Podemos comparar diferentes algoritmos de denoising si usamos, para una determinada configuración de ruido, el filtrado óptimo (que es posible encontrar porque tenemos el GT). Nos va a salir una tabla con valores de PCC.}
 
@@ -201,6 +200,23 @@ some denoisers.
 %Eq.~\ref{eq:tau_VS_eta_empirical_EOS} as generic and it will be used
 %to find the optimal value of the different operating parameters of the
 %denoising algorithms.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/barb.ipynb}{\includegraphics{barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/lake.ipynb}{\includegraphics{lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#0MMPG_barb}{\includegraphics{0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/tau_VS_img.ipynb\#GF_0MMPG_barb}{\includegraphics{GF_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GF_0MMPG_lake}{\includegraphics{GF_0MMPG_lake}}
+    \end{tabular}
+  }
+  \caption{Two examples of optimal denoising using GF. On the top, the
+    original images. In the middle, the noisy instances. On the
+    bottom, the denoised images. {\color{red} arreglar PSNRs y elegir
+      tau optimo para ejemplo}\label{fig:GF_tau_optimal}}
+\end{figure}
 
 \begin{comment}
 %{{{
@@ -697,7 +713,7 @@ general result, known as The Separability Theorem.
 
 In terms of a 2D digital isotropic filter, if $w$ is its (2D) kernel,
 separability implies that it can be expressed as the outer product
-\cite{gonzalez1992digital}
+\cite{gonzalez2009digital}
 \begin{equation}
   w = vv^T,
 \end{equation}
