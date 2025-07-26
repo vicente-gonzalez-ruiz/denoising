@@ -49,8 +49,11 @@
 \newacronym{SRV}{SRV}{Stationary Random Variable}
 \newacronym{FTDF}{FTDF}{Fourier Transform of a Discrete Function}
 \newacronym{DTFT}{DTFT}{Discrete Time Fourier Transform}
+\newacronym{IDTFT}{IDTFT}{Inverse Discrete Time Fourier Transform}
 \newacronym{DFT}{DFT}{Discrete Fourier Transform}
+\newacronym{IDFT}{IDFT}{Inverse Discrete Fourier Transform}
 \newacronym{FFT}{FFT}{Fast Fourier Transform}
+\newacronym{IFFT}{IFFT}{Inverse Fast Fourier Transform}
 \newacronym{PS}{PS}{Power Spectrum}
 \newacronym{PSD}{PSD}{Power Spectral Density}
 \newacronym{CPSD}{CPSD}{Cross-Power Spectral Density}
@@ -86,6 +89,7 @@
 \newacronym{MNI}{MNI}{Mean of Noisy Instances}
 
 \newacronym{GF}{GF}{Gaussian Filtering}
+\newacronym{WF}{WF}{Wiener Filtering}
 \newacronym{GD}{GD}{Gaussian Denoising}
 \newacronym{TF}{TF}{Transfer Function}
 \newacronym{LTI}{LTI}{Linear Time-Invariant}
@@ -314,6 +318,121 @@
 
 %}}}
 
+\begin{appendix}
+
+\chapter{Images}
+\label{sec:images}  
+  
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH.ipynb}{\includegraphics{Confocal_FISH.pdf}}
+  \caption{Confocal FISH \cite{zhang2019poisson}.\label{fig:Confocal_FISH}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}}
+  \caption{Confocal FISH noisy \cite{zhang2019poisson}.\label{fig:Confocal_FISH_noisy}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE.ipynb}{\includegraphics{TwoPhoton_MICE.pdf}}
+  \caption{Two-photons MICE\cite{zhang2019poisson}.\label{fig:TwoPhoton_MICE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}}
+  \caption{Two-photons MICE noisy \cite{zhang2019poisson}.\label{fig:TwoPhoton_MICE_noisy}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE.ipynb}{\includegraphics{Confocal_MICE.pdf}}
+  \caption{Confocal MICE \cite{zhang2019poisson}.\label{fig:Confocal_MICE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy.ipynb}{\includegraphics{Confocal_MICE_noisy.pdf}}
+  \caption{Confocal MICE noisy \cite{zhang2019poisson}.\label{fig:Confocal_MICE_noisy}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE.pdf}}
+  \caption{Confocal BPAE\cite{zhang2019poisson}.\label{fig:Confocal_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_R.pdf}}
+  \caption{Confocal BPAE (red channel)\cite{zhang2019poisson}.\label{fig:Confocal_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_G.pdf}}
+  \caption{Confocal BPAE (green channel)\cite{zhang2019poisson}.\label{fig:Confocal_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_B.pdf}}
+  \caption{Confocal BPAE (blue channel)\cite{zhang2019poisson}.\label{fig:Confocal_BPAE_B}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE.pdf}}
+  \caption{TwoPhoton BPAE\cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_R.pdf}}
+  \caption{TwoPhoton BPAE (red channel)\cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_G.pdf}}
+  \caption{TwoPhoton BPAE (green channel)\cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_B.pdf}}
+  \caption{TwoPhoton BPAE (blue channel)\cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_B}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE.pdf}}
+  \caption{WideField BPAE\cite{zhang2019poisson}.\label{fig:WideField_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_R.pdf}}
+  \caption{WideField BPAE (red channel)\cite{zhang2019poisson}.\label{fig:WideField_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_G.pdf}}
+  \caption{WideField BPAE (green channel)\cite{zhang2019poisson}.\label{fig:WideField_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_B.pdf}}
+  \caption{WideField BPAE (blue channel)\cite{zhang2019poisson}.\label{fig:WideField_BPAE_B}}
+\end{figure}
+
+
+\end{appendix}
 
 \printglossary[type=\acronymtype]
 
