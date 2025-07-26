@@ -5,6 +5,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage
 from PIL import Image
+import cv2
+
+def normalize(X):
+    X = cv2.normalize(X, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+    return X
+
+def RGB_normalize(X):
+    X = cv2.cvtColor(X, cv2.COLOR_RGB2YCrCb)
+    Y, Cb, Cr = cv2.split(X)
+    Y = cv2.normalize(Y, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+    X = cv2.merge([Y, Cb, Cr])
+    X = cv2.cvtColor(X, cv2.COLOR_YCrCb2RGB)
+    return X
 
 def imshow(img):
     return plt.imshow(np.clip(a = img, a_min=0, a_max=255), cmap="gray")
