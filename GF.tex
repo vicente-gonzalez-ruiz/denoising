@@ -1,7 +1,6 @@
-\chapter{Gaussian Denoising}
+\chapter{\glsentryfull{GF}}
 
-\section{Gaussian filtering}
-\gls{GF} is a signal processing technique for smoothing signals
+\acrshort{GF} is a signal processing technique for smoothing signals
 (reduce high-frequency components). It is based on the convolution the
 signal to filter and a Gaussian function with $\mu=0$, defined as
 \begin{equation}
@@ -22,7 +21,7 @@ In the signal domain, \gls{GF} is described as
 where $\mathbf{g}$ is a Gaussian kernel.
 
 \section{Separability}
-Multidimensional GF is separable (see
+Multidimensional \gls{GF} is separable (see
 Appendix~\ref{sec:GF_separability}), which means that we can apply the
 1D filter to the $D$ dimensions of the signal to compute a $D$D
 denoising. De facto, Gaussian kernels are the only circularly
@@ -52,7 +51,7 @@ separability in this (2D case) is (in terms of \gls{NoO})
 where $M$ and $N$ are the width and height of the filtered image, and
 $K$ is the length of the Gaussian kernel.
 
-\section{Denoising using \gls{GF}}
+\section{Denoising using \acrshort{GF}}
 %{{{
 
 Gaussian kerners are low-pass filters\footnote{We can distinguish this
