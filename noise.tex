@@ -397,7 +397,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{SNR of the Poisson noise model}
+\subsection{\acrshort{SNR} of the Poisson noise model}
 
 If we suppose that the mean of signal represents the power of the signal and its standard
 deviation represents the noise component, we can define
@@ -437,13 +437,13 @@ See Figure~\ref{fig:Poisson_examples}.
 
 %}}}
 
-\section{Mixed Poisson-Gaussian (MPG) noise}
+\section{\glsentryfull{MPG} noise}
 \label{sec:MPG}
 % {{{
 
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{AWG} noise, which is commonly known as
-\gls{MPG} noise \cite{meiniel2018denoising}. The generation of
+\acrshort{MPG} noise \cite{meiniel2018denoising}. The generation of
 \gls{MPG} noise can be modeled as
 \begin{equation}
   \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma),
@@ -479,7 +479,7 @@ Taking variances in Eq.~\ref{eq:MPG_noise_model} we obtain
   \label{eq:V_MPG}
 \end{equation}
 
-\subsection{SNR of the MPG noise model}
+\subsection{\acrshort{SNR} of the \acrshort{MPG} noise model}
 Considering that (see Eq.~\ref{eq:SNR_mean_deviation})
 \begin{equation}
   \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)^2}{\mathbb{V}(\hat{\mathbf{s}}_i)},
@@ -801,7 +801,7 @@ of dimensions is not relevant.
 
 %}}}
 
-\section{Self Fourier Correlation (SFC) curve}
+\section{\glsentryfull{SFC} curve}
 %{{{
 
 Unfortunately, the two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
@@ -1045,11 +1045,11 @@ the 3D case (and we only have two instances)
 
 \begin{subappendices}
 
-\section{Even-Odd Splitting (EOS)}
+\section{\glsentryfull{EOS}}
 \label{sec:EOS}
 %{{{
 
-In the 2D case, \gls{EOS} generates
+In the 2D case, \acrshort{EOS} generates
 \begin{equation}
   \mathrm{EOS}(\mathbf{X})=\{\mathbf{X}^{(\text{VE})}, \mathbf{X}^{(\text{VO})}, \mathbf{X}^{(\text{HE})}, \mathbf{X}^{(\text{HO})}\},
 \end{equation}
@@ -1066,7 +1066,7 @@ where $\mathbf{X}$ is the input image, and $\{\mathbf{X}^{(i)}\}_{i=\{\text{VE},
   
 %}}}
 
-\section{ChessBoard Splitting (CBS)}
+\section{\glsentryfull{CBS}}
 \label{sec:CBS}
 %{{{
 
@@ -1118,11 +1118,11 @@ the CBS algorithm consists of:
 
 %}}}
 
-\section{Interpolated ChessBoard Splitting (ICBS)}
+\section{\glsentryfull{ICBS}}
 \label{sec:ICBS}
 %{{{
 
-\gls{ICBS} is an extension of \gls{CBS} (which must be run first, see
+\acrshort{ICBS} is an extension of \gls{CBS} (which must be run first, see
 Appendix~\ref{sec:CBS}) where the $\{w\}$ (``white'') pixels involved
 in Eq.~\ref{eq:copy_blacks} are interpolated using the $\{b\}$
 (``black'') pixels (see Eq.~\ref{eq:black_pixels}), and
@@ -1143,11 +1143,11 @@ and
 
 %}}}
 
-\section{Subsampled ChessBoard Splitting (SCBS)}
+\section{\glsentryfull{SCBS}}
 \label{sec:SCBS}
 %{{{
 
-\gls{SCBS} \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
+\acrshort{SCBS} \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
 into four distinct sub-images
 \begin{equation}
   \mathrm{SCS}(\mathbf{X}) = \{\mathbf{X}^{(\text{OO})}, \mathbf{X}^{(\text{EE})}, \mathbf{X}^{(\text{OE})}, \mathbf{X}^{(\text{EO})} \},
@@ -1173,11 +1173,11 @@ $\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
 
 %}}}
 
-\section{TriS-D Random Pixel Resampling (TRPR)}
+\section{\glsentryfull{TRPR}}
 \label{sec:TRPR}
 %{{{
 
-\gls{TRPR} divides one noisy image into overlaping $2\times 2$ patches
+\acrshort{TRPR} divides one noisy image into overlaping $2\times 2$ patches
 and randomly samples two pixels from each patch, to obtain a pair of
 noisy images \cite{ma2025spatiotemporal}. The number $S$ of
 \gls{TRPR}-images with shape $(H-1)\times (W-1)$ is bounded by
@@ -1196,11 +1196,11 @@ and the shape of the \gls{TRPR}-volumes is $(H-1)(W-1)(D-1)$.
 
 %}}}
 
-\section{Structure Preserving Random Shuffling (SPRS)}
+\section{\glsentryfull{SPRS}}
 \label{sec:SPRS}
 %{{{
 
-\gls{SPRS} can be used to generate similar instances of an image or volume
+\acrshort{SPRS} can be used to generate similar instances of an image or volume
 $\mathbf{s}$. We deonote this as
 \begin{equation}
   \mathrm{SPRS}(\mathbf{s}; n, \sigma) = \{\mathbf{s}, \mathbf{s}^{(i)}\}_{i=1}^n,

@@ -7,10 +7,10 @@ denoising algorithm preserved important signal features while removing
 noise. Notice however, that in practice the \gls{GT} is rarely
 available.
 
-\section{Mean Square Error (MSE) and Root MSE (RMSE)}
+\section{\glsentryfull{MSE} and \glsentryfull{RMSE}}
 %{{{
 
-The \gls{MSE} is a distortion metric that quantifies the mean square
+The \acrshort{MSE} is a distortion metric that quantifies the mean square
 difference between the values of corresponding samples in two digital
 signals, usually with the same shape. The \gls{MSE} is simple and fast to
 compute, but is very sensitive to shifts or misalignments. We define
@@ -21,7 +21,7 @@ compute, but is very sensitive to shifts or misalignments. We define
 Notice that the \gls{MSE} is always positive, and the lower
 \gls{MSE} values, the bettet.
 
-In the case of the \gls{RMSE}, we have that
+In the case of the \acrshort{RMSE}, we have that
 \begin{equation}
   \text{RMSE}(\mathbf{s},\tilde{\mathbf{s}}) = \sqrt{\text{MSE}(\mathbf{s},\tilde{\mathbf{s}})}.
   \label{eq:RMSE}
@@ -31,10 +31,10 @@ input samples.
 
 %}}}
 
-\section{Signal-to-Noise Ratio (SNR)}
+\section{\glsentryfull{SNR}}
 %{{{
 
-The \gls{SNR} compares the energy of a desired signal (\gls{GT})
+The \acrshort{SNR} compares the energy of a desired signal (\gls{GT})
 $\mathbf{s}$ to the energy of \emph{background} noise
 $\mathbf{s}-\tilde{\mathbf{s}}$. It is defined as the ratio of average signal
 power
@@ -74,10 +74,10 @@ noise. Therefore, a high SNR implies better quality (less noise).
 
 %}}}
 
-\section{\href{https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio}{PSNR (Peak SNR)}}
+\section{\glsentryfull{PSNR}}
 %{{{
 
-The PSNR measures the ratio between the maximum possible signal power
+The \acrshort{PSNR} measures the ratio between the maximum possible signal power
 value ($\text{Peak}$) and the noise power, and it is defined as
 \begin{equation}
   \text{PSNR} = \frac{\text{Peak}^2}{\text{MSE}}
@@ -87,18 +87,16 @@ For example, for 8 bits/pixel images, $\text{Peak}=2^8-1=255$.
 
 %}}}
 
-\section{\href{https://en.wikipedia.org/wiki/Structural_similarity_index_measure}{Structural
-    Similarity Index Measure (SSIM)} and
-  \href{https://en.wikipedia.org/wiki/Structural_similarity_index_measure\#Multi-scale_SSIM}{MS-SSIM
-    (Multi-Scale SSIM)}}
+\section{\glsentryfull{SSIM} and \glsentryfull{MS-SSIM}}
 %{{{
 
-The SSIM \cite{wang2004image} try to model the human perception of the
-differences between two images (or volumes) $\mathbf{x}$ and
-$\mathbf{y}$. The metric returns a real number between $[-1, 1]$, $-1$
-representing the perfect dis-similarity case, $0$ no similarity, and
-$1$ perfect similarity. The SSIM index is determined (splitting the
-input images into $M$ non-overlapping blocks) with
+The \acrshort{SSIM} \cite{wang2004image} try to model the human
+perception of the differences between two images (or volumes)
+$\mathbf{x}$ and $\mathbf{y}$. The metric returns a real number
+between $[-1, 1]$, $-1$ representing the perfect dis-similarity case,
+$0$ no similarity, and $1$ perfect similarity. The \gls{SSIM} index is
+determined (splitting the input images into $M$ non-overlapping
+blocks) with
 \begin{equation}
   \text{SSIM}(\mathbf{x}, \mathbf{y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
 \end{equation}
@@ -112,10 +110,10 @@ samples, $k_1=0.01$, and $k_2=0.03$, and where the default
 size\footnote{See
   \href{https://scikit-image.org/docs/stable/api/skimage.metrics.html\#skimage.metrics.structural_similarity}{\texttt{skimage.metrics.structural\_similarity}}.}
 of the local blocks is $7^D$, where $D$ is the number of signal
-dimensions. When evaulating, SSIM values below $0$ do not make
+dimensions. When evaulating, \gls{SSIM} values below $0$ do not make
 sense.
 
-MS-SSIM \cite{wang2003multiscale} is an extension of SSIM computed at
+\acrshort{MS-SSIM} \cite{wang2003multiscale} is an extension of SSIM computed at
 multiple image scales. It is more suitable to capture structural
 similarities across different levels of detail, which can be useful in
 microscopy where both fine and coarse features matter. It is defned as
@@ -135,10 +133,10 @@ importance of each term at the $j\text{-th}$ scale/block.
 
 %}}}
 
-\section{Pearson Correlation Coefficient (PCC)}
+\section{\glsentryfull{PCC}}
 %{{{
 
-The \gls{PCC} is
+The \acrshort{PCC} is
 \href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{given
   by}
 \begin{equation}
@@ -157,16 +155,16 @@ $O(N^2)$, we can determine the \gls{PCC} in $O(N)$.
 
 %}}}
 
-\section{LPIPS (Learned Perceptual Image Patch Similarity)}
+\section{\glsentryfull{LPIPS}}
 %{{{
 
-LPIPS \cite{zhang2018unreasonable} is a deep learning-based metric that
-uses a pretrained neural network (e.g., AlexNet and VGG) to assess
-perceptual similarity, providing a better correlation with the human
-perfection of the distortion. The idea is to use the feature maps
-(intermediate activations) from various layers of a pre-trained CNN to
-extract features from the input images. These feature maps capture
-important perceptual information, such as textures, edges, and
+\acrshort{LPIPS} \cite{zhang2018unreasonable} is a deep learning-based
+metric that uses a pretrained neural network (e.g., AlexNet and VGG)
+to assess perceptual similarity, providing a better correlation with
+the human perfection of the distortion. The idea is to use the feature
+maps (intermediate activations) from various layers of a pre-trained
+\gls{CNN} to extract features from the input images. These feature maps
+capture important perceptual information, such as textures, edges, and
 high-level structures. Then, the similarity is computed in terms of
 feature differences between corresponding patches of the
 images. Concretelly,
@@ -179,7 +177,7 @@ $f_i(\mathbf{x})$ are the weights of the feature map at layer $i$, and
 $||f_i(\mathbf{x}) - f_i(\mathbf{y})||_2$ measures the distance (see
 Appendix \ref{sec:L2_norm}) between the features at that layer.
 
-LPIPS is trained using a large dataset of human judgments for image
+\gls{LPIPS} is trained using a large dataset of human judgments for image
 similarity, where human observers are asked to rate the perceptual
 similarity between pairs of images. The network is trained to find the
 $w_i$ which minimize the difference between predicted perceptual
@@ -187,7 +185,7 @@ similarity and human ratings.
 
 %}}}
 
-\section{Natural Image Quality Evaluator (NIQE)}
+\section{\glsentryfull{NIQE}}
 
 To do.
 
@@ -195,8 +193,8 @@ To do.
 % blind” image quality analyzer,” IEEE Signal Processing Letters, vol. 20,
 % no. 3, pp. 209–212, 2013.
 
-\section{Cosine similarity}
-Cosine similarity is a metric used to measure the similarity between
+\section{\glsentryfull{CS}}
+The \acrshort{CS} is a metric used to measure the similarity between
 two non-zero vectors in a multi-dimensional space. It quantifies how
 similar two vectors are in their direction or orientation, rather than
 their magnitude or length.
