@@ -108,11 +108,11 @@ $S$, even if $s$ is real.
 
 %}}}
 
-\section{Discrete Fourier Transform (DFT)}
+\section{\glsentryfull{DFT}}
 \label{sec:DFT}
 %{{{
 
-The \gls{DFT} is the Fourier transform of a discrete finite signal $\mathbf{s}$ is
+The \acrshort{DFT} is the Fourier transform of a discrete finite signal $\mathbf{s}$ is defined as
 \begin{equation}
   \mathcal{F}(\mathbf{s}) = \mathbf{S} = \{\mathbf{S}_f\}_{f=0}^{N-1} \quad \text{with} \quad \mathbf{S}_f=\sum_{n=0}^{N-1}\mathbf{s}_ne^{-2\pi jf\frac{n}{N}},
   \label{eq:DFT}
@@ -173,14 +173,14 @@ arctangent function.
 
 %}}}
 
-\section{Power spectrum (PS)}
+\section{Power spectrum}
 \label{sec:power_spectrum}
 %{{{
 
-The power spectrum $\text{PS}()$ of finite-length discrete signal
-$\mathbf{s}$ shows how much power (see Section~\ref{sec:power_signal})
-a signal has at its different frequency bins. Let $\mathbf{S}$ the
-Fourier transform of $\mathbf{s}$. Then,
+The \gls{PS} of finite-length discrete signal $\mathbf{s}$ shows how
+much power (see Section~\ref{sec:power_signal}) a signal has at its
+different frequency bins. Let $\mathbf{S}$ the Fourier transform of
+$\mathbf{s}$. Then,
 \begin{equation}
   \text{PS}(\mathbf{s}) = \{\text{PS}(\mathbf{s})_f\}_{f=0}^{N-1} \quad \text{where} \quad \text{PS}(\mathbf{s})_f = \frac{1}{N}|\mathbf{S}_f|^2,
 \end{equation}
@@ -243,7 +243,7 @@ In both analog and digital cases, evaluating the transfer function on
 the imaginary axis or unit circle, respectively, gives the frequency
 response: $H(j\omega)$ (analog) $H(e^{j\omega})$ (digital).
 
-\section{FFT-based convolution (the convolution theorem)}
+\section{Fourier-based convolution (the convolution theorem)}
 \label{sec:convolution_theorem}
 %{{{
 
@@ -292,7 +292,7 @@ convolution if we use \gls{FFT} algorithms.
 
 %}}}
 
-\section{Cross-correlation (CC)}
+\section{Cross-correlation}
 \label{sec:cross-correlation}
 %{{{
 
@@ -318,11 +318,11 @@ The \gls{CC} can be normalized between 0 and 1 (\gls{NCC}) using
 
 %}}}
 
-\section{Cross-Power Spectral Density (CPSD)}
+\section{\glsentryfull{CPSD}}
 \label{sec:CPSD}
 %{{{
 
-The \gls{CPSD}, also known as cross-spectrum, analyzes the
+The \acrshort{CPSD}, also known as cross-spectrum, analyzes the
 relationship between two different signals in the Fourier
 domain. Therefore, the \gls{CPSD} quantifies the degree to which two
 signals are correlated or ``statistically connected'' at specific
@@ -348,7 +348,7 @@ signals:
 
 %}}}
 
-\section{FFT-based cross-correlation (the cross-correlation theorem)}
+\section{Fourier-based cross-correlation (the cross-correlation theorem)}
 %{{{
 
 See the convolution in the Fourier fomain (Section~\ref{sec:convolution_theorem}):
@@ -421,11 +421,11 @@ lag values, Eq.~\ref{eq:FFT_CC} offers an efficient technique.
 
 %}}}
 
-\section{Power Spectral Density (PSD)}
+\section{\glsentryfull{PSD}}
 \label{sec:PSD}
 %{{{
 
-As happens with the \gls{CC} and the \gls{AC}, the \gls{PSD} of a
+As happens with the \gls{CC} and the \gls{AC}, the \acrshort{PSD} of a
 signal $\mathbf{x}$ is the Fourier transform of its \gls{AC}:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(\mathbf{x}\circledast\mathbf{x}).
