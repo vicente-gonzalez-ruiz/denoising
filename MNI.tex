@@ -29,13 +29,14 @@ Notice that
 
 %}}}
 
-\section{Generalized Anscombe Transform (GAT)}
-The \gls{GAT} \cite{foi2008practical,makitalo2012optimal} is a
+\section{\glsentryfull{GAT}}
+The \acrshort{GAT} \cite{foi2008practical,makitalo2012optimal} is a
 \gls{VST} that can be applied to \gls{MPG} noise (see
 Section~\ref{sec:MPG}) to make it approximately Gaussian with
 (approximately) constant variance of $1$, so we can apply standard
-Gaussian denoisers (e.g., BM3D, DnCNN, wavelet shrinkage, etc.). It
-consists of converting the noisy samples using the expression
+Gaussian denoisers (e.g., \gls{BM3D}, \gls{DnCNN}, wavelet shrinkage,
+etc.). It consists of converting the noisy samples using the
+expression
 \begin{equation}
   y = \text{GAT}(\hat{\mathbf{s}}_i)=\frac{2}{\gamma}\sqrt{\gamma\hat{\mathbf{s}}_i+\frac{3}{8}\gamma^2+\sigma^2},
 \end{equation}
@@ -55,7 +56,7 @@ can be used only if we deal with positive transformed values and $\mu=0$:
   \hat{\mathbf{s}}_i \approx \frac{1}{4}y^2-\frac{1}{4}\left(1+\frac{8\sigma^2}{y^2} + \frac{1}{32}\left(\frac{i+\frac{8\sigma^2}{y^2}}{y^2}\right)\right).
 \end{equation}
 
-\section{Mean of Noisy Instances (MNI)}
+\section{\glsentryfull{MNI}}
 Under a high enough number of noisy instancces, the \gls{CLT} allows
 us to take into consideration only the \gls{AWG} noise case (see
 Section~\ref{sec:AWG}) when we perform denoising throught computing
