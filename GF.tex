@@ -138,12 +138,16 @@ the Fig.~\ref{fig:3DGF_imple}.
       \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_GF_optimal_tau.ipynb\#Confocal_FISH_GF_optimal_tau}{\includegraphics{Confocal_FISH_GF_optimal_tau.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_GF_optimal_tau.ipynb\#TwoPhoton_MICE_GF_optimal_tau}{\includegraphics{TwoPhoton_MICE_GF_optimal_tau.pdf}}
     \end{tabular}
   }
-  \caption{Optimal $\tau$ values in GF.\label{fig:optimal_GF_tau}}
+  \caption{Optimal $\tau$ values in GF. These curves have been
+    determined by filtering images with different levels of
+    (artificial, see Eq,~\ref{eq:MPG_noise_model}) MPG noise and
+    comparing (see Eq.~\ref{eq:PCC}) the result with the
+    \gls{GT}.\label{fig:optimal_GF_tau}}
 \end{figure}
 
 As can be seen in Eq.~\ref{eq:GK}, the denoising result depends on
-$\tau$. An optimal value for the standard deviation, $\tau^*$, can be
-found if $\mathbf{s}$ were known(see
+$\tau$. An optimal value for the standard deviation of the kernel,
+$\tau^*$, can be found if $\mathbf{s}$ were known(see
 Fig.~\ref{fig:optimal_GF_tau}). Unfortunately, $\mathbf{s}$ is usually
 unknown and we only can estimate $\tau^*$. Ideally, $\tau^*$ should
 increase the \gls{SNR} as much as possible, considering also that: (1)
@@ -155,7 +159,7 @@ should find a cut-off frequency
   \eta^* = \text{min}\{\eta|\text{SFC}(\hat{\mathbf{s}})_\eta < \alpha\},
   \label{eq:search_eta}
 \end{equation}
-where $\alpha$ is the minimun correlation that should reach the SFC to consider that the corresponding ring/shell has a high enough SNR (see
+where $\alpha$ is the minimun correlation that should reach the SFC to consider that the corresponding ring/shell has a high enough \gls{SNR} (see
 Appendix~\ref{sec:tau_VS_eta}). Once we have already estimated
 $\eta^*$, we can use the corresponding $\tau^*$ to filter out those
 frequency components of $\hat{\mathbf{s}}$ with the lowest SNR.
@@ -173,21 +177,21 @@ frequency components of $\hat{\mathbf{s}}$ with the lowest SNR.
 \end{figure}
 
 In the Fig.~\ref{fig:tau_GF_estimation} there is a comparison between
-the true $\tau^*$ values and their estimations, using the EOS
-technique (see Appendix~\ref{sec:EOS}) to compute the SFC curves (see
+the true $\tau^*$ values and their estimations, using the \gls{EOS}
+technique (see Appendix~\ref{sec:EOS}) to compute the \gls{SFC} curves (see
 Section~\ref{sec:fourier_correlation}). Specifically, we have used
 (see Eq.~\ref{eq:ideal_hat_tau} and Fig.~\ref{fig:eta_vs_tau})
 \begin{equation}
   \tau^*_{\text{EOS}} = \frac{0.141}{2\eta^*},
   \label{eq:tau_VS_eta_empirical_EOS}
 \end{equation}
-(and not exactly the fitting expression shown in the
-Fig.~\ref{fig:gaussian_leakage}) because using signal splitting to
-compute the SFC, only the first half of the frequencies provide
-reliable information. Notice that, to determine $\eta^*$ (the
-estimated ``optimal'' cut-off frequency of the Gaussian filter) we
-have assumed that an attenuation higher than $1/\sqrt{2}$ (see
-Appendix~\ref{sec:tau_VS_eta}) can be high enought to filter out the
+(and not exactly the fitting expression approximated in the
+Fig.~\ref{fig:eta_vs_tau}) because using signal splitting to compute
+the \gls{SFC}, only the first half of the frequencies provide reliable
+information. Notice that, to determine $\eta^*$ (the estimated
+``optimal'' cut-off frequency of the Gaussian filter) we have assumed
+that an attenuation higher than $1/\sqrt{2}$ (see
+Appendix~\ref{sec:tau_VS_eta}) can be high enought to remove the
 frequencies higher than $\eta^*$.
 
 %Appendix~\ref{sec:results} contains a table with the performance of some denoisers.
@@ -601,7 +605,7 @@ Fig.~\ref{fig:eta_vs_tau}. As can be seen, $\tau\propto 1/\hat{\eta}$.
   \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/eta_vs_tau.ipynb\#Eta_vs_tau}{\includegraphics[width=0.8\textwidth]{eta_vs_tau}}
   \caption{Relation between $\hat\eta$ (the digital cut-off frequency
     of a Gaussian kernel) and $\tau$ (the standard deviation of
-    the kernel), for $\beta=1/\sqrt{2}$.\label{fig:eta_vs_tau}}
+    the kernel), for $\beta=1/\sqrt{2}$. As it can be seen, $\hat\eta\approx 0.141/\tau$. \label{fig:eta_vs_tau}}
 \end{figure}
 
 \begin{comment}
