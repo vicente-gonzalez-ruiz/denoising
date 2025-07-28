@@ -1,16 +1,18 @@
-\chapter{Denoising using the Mean of Noisy Instances (MNI)}
+\chapter{\glsentryfull{MNI}}
 %{{{
 
-\section{The central limit theorem}
+\section{The \glsentryfull{CLT}}
 \label{sec:CLT}
 %{{{
 
-The \gls{CLT} states that when a set of independent \glspl{SRV} (see
-Section~\ref{sec:DSRV}) are added together, the \gls{SRV} resulting of their normalized sum tends
-toward a normal (Gaussian) distribution, even if the original
-variables themselves are not normally distributed. Let
-$\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ such set of independent and
-identically distributed (i.i.d.) \glspl{SRV}, then the \gls{CLT} states that the mean signal
+The \acrshort{CLT} states that when a set of independent \glspl{SRV}
+(see Section~\ref{sec:DSRV}) are added together, the \gls{SRV}
+resulting of their normalized sum tends toward a normal (Gaussian)
+distribution, even if the original variables themselves are not
+normally distributed. Let
+$\mathbf{n}=\{\mathbf{n}^{(i)}\}_{i=0}^{N-1}$ such set of independent
+and identically distributed (i.i.d.) \glspl{SRV}, then the
+\acrshort{CLT} asserts that the mean signal
 \begin{equation}
   \overline{n} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{n}^{(i)}\sim\mathcal{N}(\mu,\frac{\sigma}{N}),
 \end{equation}
@@ -56,7 +58,7 @@ can be used only if we deal with positive transformed values and $\mu=0$:
   \hat{\mathbf{s}}_i \approx \frac{1}{4}y^2-\frac{1}{4}\left(1+\frac{8\sigma^2}{y^2} + \frac{1}{32}\left(\frac{i+\frac{8\sigma^2}{y^2}}{y^2}\right)\right).
 \end{equation}
 
-\section{\glsentryfull{MNI}}
+\section{Simplification provided by the \acrshort{CLT}}
 Under a high enough number of noisy instancces, the \gls{CLT} allows
 us to take into consideration only the \gls{AWG} noise case (see
 Section~\ref{sec:AWG}) when we perform denoising throught computing
