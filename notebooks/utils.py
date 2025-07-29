@@ -109,7 +109,7 @@ def normalize_image_to_255(image_float):
 
     return normalized_image
 
-def equalize_grayscale_image(input_image_array):
+def equalize(input_image_array):
     """
     Performs histogram equalization on a grayscale image provided as a NumPy array.
 

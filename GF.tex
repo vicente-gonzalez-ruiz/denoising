@@ -204,6 +204,7 @@ frequencies higher than $\eta^*$.
 %to find the optimal value of the different operating parameters of the
 %denoising algorithms.
 
+\begin{comment}
 \begin{figure}
   \centering
   \resizebox{1.0\textwidth}{!}{
@@ -219,6 +220,22 @@ frequencies higher than $\eta^*$.
     original images. In the middle, the noisy instances. On the
     bottom, the denoised images. {\color{red} arreglar PSNRs y elegir
       tau optimo para ejemplo}\label{fig:GF_tau_optimal}}
+\end{figure}
+\end{comment}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy__GF.ipynb}{\includegraphics{Confocal_FISH_noisy}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#0MMPG_lake}{\includegraphics{0MMPG_lake}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy__GF.ipynb}{\includegraphics{Confocal_FISH_denoised__GD.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/tau_VS_img.ipynb\#GF_0MMPG_lake}{\includegraphics{GF_0MMPG_lake}}
+    \end{tabular}
+  }
+  \caption{Two examples of optimal denoising using optimal \gls{GD}. On the top, the
+    noisy instances (see Appendix~\ref{sec:images} to see the \glspl{GT}). At the
+    bottom, the denoised versions.\label{fig:optimal_GD}}
 \end{figure}
 
 \begin{comment}
