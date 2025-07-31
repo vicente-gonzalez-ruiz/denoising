@@ -1,4 +1,4 @@
-\chapter{Wiener Filtering (WF)}
+\chapter{\glsentrylong{WF}}
 %{{{
 
 The Wiener filter \cite{wiener1942extrapolation} is an adaptive linear
@@ -24,7 +24,7 @@ Under these assumptions, \gls{WF} minimizes the \gls{MSE} between the
 output of the filter $\tilde{\mathbf{s}}$ and $\mathbf{s}$, i.e.,
 minimizes $\mathbb{E}\big((\tilde{\mathbf{x}} -
 \mathbf{x})^2\big)$. Because $\mathbf{s}$ is seldom known, \gls{WF}
-uses the statistics of $\hat{\mathbf{s}}$ (the noisy signal) to
+uses the statistics of $\hat{\mathbf{s}}$ (the noisy signal) to try to
 minimize the error. Using the \gls{IDFT}, it can be demonstrated
 \cite{wiener1942extrapolation} that the signal reconstruction provided
 by
@@ -35,7 +35,7 @@ by
 minimizes such error, where $\hat{\mathbf{S}}$ is the \gls{DFT} of
 $\hat{\mathbf{s}}$, and using the \gls{PSD},
 \begin{equation}
-  \mathbf{W} = \frac{\text{PSD}(\hat{\mathbf{x}})}{\text{PSD}(\hat{\mathbf{s}}) + \text{PSD}(\mathbf{n})}
+  \mathbf{W} = \frac{\text{PSD}(\hat{\mathbf{s}})}{\text{PSD}(\hat{\mathbf{s}}) + \text{PSD}(\mathbf{n})}
   \label{eq:WF_frequency_response}
 \end{equation}
 is the frequency response of the Wiener filter (its transfer
@@ -77,10 +77,10 @@ requires two arguments:
     power of the noise is the same in all the windows, on average.}
   could be estimated as
   \begin{equation}
-    {\sigma^2}_{\mathbf{n}} = \mathbb{E}\big(\mathbb{V}(\hat{\mathbf{s}}-\mathbf{s})\big).
+    {\sigma^2_{\mathbf{n}}} = \mathbb{E}\big(\mathbb{V}(\hat{\mathbf{s}}-\mathbf{s})\big).
   \end{equation}
 \end{enumerate}
-Concretelly, the \texttt{scipy.signal.wiener} (\texttt{SSW} in short) implements
+Concretelly, the \texttt{scipy.signal.wiener} (\texttt{WF-SS} in short) implements
 \begin{equation}
   \tilde{\mathbf{s}}_i = \left\{
     \begin{array}{ll}
