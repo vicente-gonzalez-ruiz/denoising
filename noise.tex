@@ -713,6 +713,11 @@ estudied.
 %}}}
 
 \section{Estimation of noise statistics}
+
+A significative number of denoising techniques (see for example the
+Chapter~\ref{cha:WF}) require to know the variance of the noise to
+select their working parameters.
+
 One of the first attempt of estimating the noise statistical
 parameters of (in this case \gls{AWG} noise) was performed by Gonzalez
 and Woods \cite{gonzalez1992digital} that proposed to analyze
@@ -735,7 +740,7 @@ to estimate the standard deviation of the noise.\footnote{If one is
   willing to make the assumption of spatially white noise, then
   knowledge of the noise variance at the smallest scale allows the one
   to infer the noise variance at all other scales
-  \cite{de2004training}.}  .
+  \cite{de2004training}.}
 
 \section{Correlation in the Fourier domain to estimate filtering parameters}
 \label{sec:fourier_correlation}
@@ -1042,6 +1047,9 @@ the 3D case (and we only have two instances)
 
 %}}}
 \end{comment}
+
+\section{Estimation of the variance of the noise using the \gls{SFC} curve}
+\label{sec:variance_SFC}
 
 \begin{subappendices}
 

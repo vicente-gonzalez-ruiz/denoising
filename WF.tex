@@ -1,4 +1,5 @@
 \chapter{\glsentrylong{WF}}
+\label{cha:WF}
 %{{{
 
 The Wiener filter \cite{wiener1942extrapolation} is an adaptive linear
@@ -41,7 +42,7 @@ $\hat{\mathbf{s}}$, and using the \gls{PSD},
 is the frequency response of the Wiener filter (its transfer
 function), where $\mathbf{n}$ represents the noise. If the noise is
 \gls{AWG}, the \gls{PSD} can be approximated by the
-variance. Therefore, Eq.~\ref{eq:WF_frequency_response} becomes
+variance, and Eq.~\ref{eq:WF_frequency_response} becomes
 \begin{equation}
   \mathbf{W}_k = \frac{\mathbb{V}(\hat{\mathbf{S}}_k)}{\mathbb{V}(\hat{\mathbf{S}}_k) + \sigma^2_{\mathbf{n}}},
   \label{eq:WF_coeffs}
@@ -72,10 +73,10 @@ requires two arguments:
   \begin{equation}
     {\sigma^2_{\mathbf{n}}}=\mathbb{E}\left(\mathbb{V}(\hat{\mathbf{s}}_{[i]})\right).
   \end{equation}
-  If the \gls{GT} signal were known, the noise power\footnote{Remember that
-    the noise isuncorrelated with the GT signal, and therefore the
-    power of the noise is the same in all the windows, on average.}
-  could be estimated as
+  If the \gls{GT} signal were known, the noise power\footnote{Remember
+    that we are supposing that the noise is uncorrelated with the GT
+    signal, and therefore, the power of the noise is the same in all
+    the windows, on average.}  could be estimated as
   \begin{equation}
     {\sigma^2_{\mathbf{n}}} = \mathbb{E}\big(\mathbb{V}(\hat{\mathbf{s}}-\mathbf{s})\big).
   \end{equation}
@@ -113,3 +114,14 @@ We will refer to this filter as ``Wiener-SFC''.
 \end{comment}
 
 %}}}
+
+\begin{subappendices}
+
+\section{Variance of the noise VS the optimal window size in \texttt{WF-SS}}
+\label{sec:WF_window_size__VS__variance_noise}
+
+Experimentally, we can determine that there is a linear relationship between the variance of the noise and the optimal window size $w^*$ (see Fig~\ref{fig:optimal_w__VS__variance_noise}), and estimate this relationship using a noisy instance. We can also estimate the variance of the noise using the \gls{SFC} (see Section~\ref{sec:variance_SFC}). 
+
+Sabiendo que hay una relación lineal entre la varianza del ruido y $w^*$ (conocemos la ecuación de la recta), si estimamos la varianza del ruido podemos determinar $w^*$.
+
+\end{subappendices}

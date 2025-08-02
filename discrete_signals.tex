@@ -231,7 +231,7 @@ Z-domain, resulting (\gls{IIR} filter)
 \begin{equation}
   H(z) = \frac{Y(z)}{X(z)} = \frac{b_0 + b_1 z^{-1} + b_2 z^{-2} + \dots + b_M z^{-M}}{1 + a_1 z^{-1} + a_2 z^{-2} + \dots + a_N z^{-N}}
 \end{equation}
-where $Y(z)$ is the Z-transform of the output, $X(z)$ is the
+where $z=e^{jw}$, $Y(z)$ is the Z-transform of the output, $X(z)$ is the
 Z-transform of the input, $\{b_k\}$ are the feedforward coefficients,
 and $\{a_k\}$ are the feedback coefficients. In the \gls{FIR} case,
 all $a_k=0$ for $k\ge 1$, and therefore
@@ -241,7 +241,7 @@ all $a_k=0$ for $k\ge 1$, and therefore
 
 In both analog and digital cases, evaluating the transfer function on
 the imaginary axis or unit circle, respectively, gives the frequency
-response: $H(j\omega)$ (analog) $H(e^{j\omega})$ (digital).
+response: $H(j\omega)$ (analog), $H(e^{j\omega})$ (digital).
 
 \section{Fourier-based convolution (the convolution theorem)}
 \label{sec:convolution_theorem}
