@@ -762,16 +762,16 @@ is not relevant\footnote{Notice that $d/2$ could be the sampling step
 and therefore, a low-pass filter with a cut-off frequency of $1/d$
 should only remove noise.
 
-This information can be obtained using the \gls{FSC}
-curve that measures the similarity between two 3D volumes represented in
-the Fourier domain \cite{verbeke2024self} (for the 2D case, the
-equivalent metric is \gls{FRC}). Each point of the curve prepresents
-the normalized cross-correlation (see Section
-\ref{sec:cross-correlation}) between two ``shells'' (``rings'' in 2D)
-of Fourier coefficients of both volumes (images). Correlation in the
-Fourier domain has become the universal resolution metric and is used
-to assess the quality of 3D reconstructions
-\cite{rosenthal2003optimal,scheres2012prevention}.
+This information can be obtained using the \gls{FSC} curve that
+measures the similarity between two 3D volumes represented in the
+Fourier domain \cite{harauz1986exact,verbeke2024self} (for the 2D
+case, the equivalent metric is \gls{FRC}
+\cite{van1982arthropod}). Each point of the curve prepresents the
+normalized cross-correlation (see Section \ref{sec:cross-correlation})
+between two ``shells'' (``rings'' in 2D) of Fourier coefficients of
+both volumes (images). Correlation in the Fourier domain has become
+the universal resolution metric and is used to assess the quality of
+3D reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
 
 \begin{comment}
 An advantage of correlation in the Fourier domain (FC\footnote{When
