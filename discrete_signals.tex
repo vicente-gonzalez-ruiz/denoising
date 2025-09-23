@@ -108,11 +108,11 @@ $S$, even if $s$ is real.
 
 %}}}
 
-\section{Discrete Fourier Transform (DFT)}
+\section{\glsentryfull{DFT}}
 \label{sec:DFT}
 %{{{
 
-The \gls{DFT} is the Fourier transform of a discrete finite signal $\mathbf{s}$ is
+The \acrshort{DFT} is the Fourier transform of a discrete finite signal $\mathbf{s}$ is defined as
 \begin{equation}
   \mathcal{F}(\mathbf{s}) = \mathbf{S} = \{\mathbf{S}_f\}_{f=0}^{N-1} \quad \text{with} \quad \mathbf{S}_f=\sum_{n=0}^{N-1}\mathbf{s}_ne^{-2\pi jf\frac{n}{N}},
   \label{eq:DFT}
@@ -123,7 +123,7 @@ where $f$ denotes (discrete) frequency bins. The inverse \gls{DFT} is
 \end{equation}
 
 The \gls{DFT} can be interpreted as sampling the \gls{FTDF} (see
-Appendix~\ref{ape:FTDF}) at $N$ evenly spaced points over
+Appendix~\ref{sec:FTDF}) at $N$ evenly spaced points over
 $[-\pi, \pi)$. So, the \gls{DFT} is a discrete approximation of the
 \gls{FTDF} for finite-length signals. If $N$ were infinite, what
 happens is that the frequency bins would be infinitesimally narrow,
@@ -173,14 +173,14 @@ arctangent function.
 
 %}}}
 
-\section{Power spectrum (PS)}
+\section{Power spectrum}
 \label{sec:power_spectrum}
 %{{{
 
-The power spectrum $\text{PS}()$ of finite-length discrete signal
-$\mathbf{s}$ shows how much power (see Section~\ref{sec:power_signal})
-a signal has at its different frequency bins. Let $\mathbf{S}$ the
-Fourier transform of $\mathbf{s}$. Then,
+The \gls{PS} of finite-length discrete signal $\mathbf{s}$ shows how
+much power (see Section~\ref{sec:power_signal}) a signal has at its
+different frequency bins. Let $\mathbf{S}$ the Fourier transform of
+$\mathbf{s}$. Then,
 \begin{equation}
   \text{PS}(\mathbf{s}) = \{\text{PS}(\mathbf{s})_f\}_{f=0}^{N-1} \quad \text{where} \quad \text{PS}(\mathbf{s})_f = \frac{1}{N}|\mathbf{S}_f|^2,
 \end{equation}
@@ -208,13 +208,42 @@ $\mathbf{h}$ (the filter coefficients), the convolution is defined as
 (\mathbf{s}\ast\mathbf{h})_{n}=\sum_{k=0}^{K-1}\mathbf{s}_{n-k}\mathbf{h}_{k},
 \label{eq:convolution}
 \end{equation}
-where $K$ is the number of coefficients (of the filter), and $n$ is known as the \emph{lag} (where the filter is applied in $\mathbf{s}$).
+where $K$ is the number of coefficients (of the filter), and $n$ is
+known as the \emph{lag} (where the filter is applied in $\mathbf{s}$).
 
 Notice that we could need to extend $\mathbf{s}$ to convolve.
 
 %}}}
 
-\section{FFT-based convolution (the convolution theorem)}
+\section{Transfer function of a filter}
+\label{sec:TF_filter}
+
+The \gls{TF} of a (\gls{LTI}) filter describes how the filter modifies
+the amplitude and phase of each frequency component of the input
+signal. In the analog world, it is defined as
+\begin{equation}
+  H(s) = \frac{Y(s)}{X(s)},
+\end{equation}
+where $Y(s)$ is the Laplace transform of the output, $X(s)$ is the
+Laplace transform of the input, and $s$ represents a complex
+frequency. In the digital case, the Laplace-domain is changed by the
+Z-domain, resulting (\gls{IIR} filter)
+\begin{equation}
+  H(z) = \frac{Y(z)}{X(z)} = \frac{b_0 + b_1 z^{-1} + b_2 z^{-2} + \dots + b_M z^{-M}}{1 + a_1 z^{-1} + a_2 z^{-2} + \dots + a_N z^{-N}}
+\end{equation}
+where $z=e^{jw}$, $Y(z)$ is the Z-transform of the output, $X(z)$ is the
+Z-transform of the input, $\{b_k\}$ are the feedforward coefficients,
+and $\{a_k\}$ are the feedback coefficients. In the \gls{FIR} case,
+all $a_k=0$ for $k\ge 1$, and therefore
+\begin{equation}
+  H(z) = b_0 + b_1 z^{-1} + b_2 z^{-2} + \dots + b_M z^{-M}.
+\end{equation}
+
+In both analog and digital cases, evaluating the transfer function on
+the imaginary axis or unit circle, respectively, gives the frequency
+response: $H(j\omega)$ (analog), $H(e^{j\omega})$ (digital).
+
+\section{Fourier-based convolution (the convolution theorem)}
 \label{sec:convolution_theorem}
 %{{{
 
@@ -263,7 +292,7 @@ convolution if we use \gls{FFT} algorithms.
 
 %}}}
 
-\section{Cross-correlation (CC)}
+\section{Cross-correlation}
 \label{sec:cross-correlation}
 %{{{
 
@@ -289,11 +318,11 @@ The \gls{CC} can be normalized between 0 and 1 (\gls{NCC}) using
 
 %}}}
 
-\section{Cross-Power Spectral Density (CPSD)}
+\section{\glsentryfull{CPSD}}
 \label{sec:CPSD}
 %{{{
 
-The \gls{CPSD}, also known as cross-spectrum, analyzes the
+The \acrshort{CPSD}, also known as cross-spectrum, analyzes the
 relationship between two different signals in the Fourier
 domain. Therefore, the \gls{CPSD} quantifies the degree to which two
 signals are correlated or ``statistically connected'' at specific
@@ -319,7 +348,7 @@ signals:
 
 %}}}
 
-\section{FFT-based cross-correlation (the cross-correlation theorem)}
+\section{Fourier-based cross-correlation (the cross-correlation theorem)}
 %{{{
 
 See the convolution in the Fourier fomain (Section~\ref{sec:convolution_theorem}):
@@ -392,11 +421,11 @@ lag values, Eq.~\ref{eq:FFT_CC} offers an efficient technique.
 
 %}}}
 
-\section{Power Spectral Density (PSD)}
+\section{\glsentryfull{PSD}}
 \label{sec:PSD}
 %{{{
 
-As happens with the \gls{CC} and the \gls{AC}, the \gls{PSD} of a
+As happens with the \gls{CC} and the \gls{AC}, the \acrshort{PSD} of a
 signal $\mathbf{x}$ is the Fourier transform of its \gls{AC}:
 \begin{equation}
   \text{PSD}(\mathbf{x}) = \mathcal{F}(\mathbf{x}\circledast\mathbf{x}).

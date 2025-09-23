@@ -13,7 +13,7 @@ using a finite number of bits.
 By physical requirements, digital signals are finite in length, and therefore
 $\text{Sup}(\mathbf{x})$ is a finite set.
 
-\section{Discrete signals and random variables}
+\section{Discrete signals and discrete random variables}
 \label{sec:DSRV}
 %{{{
 
@@ -31,35 +31,47 @@ amplitude. By physical reasons, a digital signal is finite in length
 represented). Therefore, digital signals are discrete and finite.
 
 A random variable is a mathematical formalization of a quantity or
-object which depends on random events. When more than one value (a
-vector) is generated in one of these events, we can establish a
-similar connection between multicomponent signals and random
-vectors. Statistically, random variables can be described throught the
-mean and the variance and the corresponding distribution. In the case
-of random vectors, a mean for each component, a covariance matrix, and
-a multivariate distribution are required.
+object which depends on random events. A \gls{DRV} is a random
+variable that only can take a finite number of different values. When
+more than one value (a vector) is generated in one of these events, we
+can establish a similar connection between multicomponent signals and
+random vectors. Statistically, random variables can be described
+throught the corresponding probability
+distribution. In the case of (discrete) random vectors, a mean for each
+component, a covariance matrix, and a multivariate distribution are
+required.
 
-In this document, monocomponent (discrete) signals (and therefore
-random variables) will be denoted with lower-case bold-faced symbols,
-such as $\mathbf{x}$. Multicomponent (discrete) signals (random
+In this document, monocomponent (digital) signals (and therefore
+\glspl{DRV}) will be denoted with lower-case bold-faced symbols,
+such as $\mathbf{x}$. Multicomponent (digital) signals (random
 vectors) will be denoted as $\overrightarrow{\mathbf{x}}$.
 
 %}}}
 
-\section{Expectation}
+\section{Expectation of \glspl{DRV}}
 The expected value (or expectation, mathematical expectation,
-expectancy) of a random variable $X$, $\mathbb{E}(X)$, is a
-theoretical concept representing the long-run average value of the
-variable if the experiment were to be repeated an infinite number of
-times. It's a weighted average of all possible values the random
-variable can take, where the weights are the probabilities of those
-values occurring.
+expectancy) of a \gls{DRV} $\mathbf{x}$, denoted as
+$\mathbb{E}(\mathbf{x})$, is a theoretical concept representing the
+long-run average value of the variable if the experiment were to be
+repeated an infinite number of times. It is ddefined as the weighted
+average of all possible values the random variable can take, where the
+weights are the probabilities of those values occurring.
 
 For a digital signal $\mathbf{x}$, it is defined as
 \begin{equation}
   \mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
   \label{eq:expectation}
 \end{equation}
+
+The expectation is a linear operator and satisfies
+\begin{equation}
+  \mathbb{E}(\mathbf{x}+\mathbf{y}) = \mathbb{E}(\mathbf{x}) + \mathbb{E}(\mathbf{y}),
+\end{equation}
+and
+\begin{equation}
+  \mathbb{E}(c\mathbf{x}) = c\mathbb{E}(\mathbf{x}),
+\end{equation}
+where $c$ is a scalar constant.
 
 Notice that using the expectation operator, the power of a digital
 signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
@@ -68,8 +80,23 @@ signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
   \label{eq:power_as_expectation}
 \end{equation}
 
+\section{Expectation of the function of a discrete random variable}
+\begin{equation}
+  \mathbb{E}[f(\mathbf{x})]=\sum_if(\mathbf{x}_i)\Pr(\mathbf{x}=\mathbf{x}_i).
+  \label{eq:expectation_of_function}
+\end{equation}
+
+\section{$n$-th moment of a discrete random variable}
+\begin{equation}
+  \mathbb{E}(\mathbf{x}^n) = \sum_i\mathbf{x}_i^n\Pr(\mathbf{x}=\mathbf{x}_i).
+\end{equation}
+  
 \section{Mean}
 \label{sec:mean}
+The mean of a discrete random variable is the first moment of the  
+
+\section{Average}
+\label{sec:average}
 In statistics, when referring to a random variable, the mean (also
 called ``sample mean'' or ``empirical mean'') usually refers to the
 expectation. However, when we deal with a digital signal (sample data)
@@ -84,6 +111,7 @@ $\mu$ to denote the mean value.
 Notice that Eq.~\ref{eq:mean} is equivalent to
 Ed.~\ref{eq:expectation} when all the samples have the same
 probability.
+
 
 \section{Variance}
 \label{sec:variance}

@@ -139,13 +139,13 @@ scalar case, when there exist some doubt.
 %-COM-
 %}}}
 
-\section{Additive White Gaussian (AWG) noise}
+\section{\glsentryfull{AWG} noise}
 \label{sec:AWG}
 %{{{
 
 Zero-mean \footnote{In most of references, this particularity is
   ignored because if the mean is not zero, we can subtract to the
-  noisy signal the expectation of the noisy signal.} \gls{AWG} noise
+  noisy signal the expectation of the noisy signal.} \acrshort{AWG} noise
 is a type of random\footnote{There exist a different type of noise,
   not random, sometimes called (depending on the context)
   \emph{coherent noise}, \emph{procedural noise}, and \emph{gradient
@@ -259,7 +259,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{SNR of the AWG noise model}
+\subsection{\acrshort{SNR} of the \acrshort{AWG} noise model}
 
 The \gls{SNR} is commonly defined as the ratio between the power (see
 Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
@@ -397,7 +397,7 @@ and
 \end{equation}
 \end{comment}
 
-\subsection{SNR of the Poisson noise model}
+\subsection{\acrshort{SNR} of the Poisson noise model}
 
 If we suppose that the mean of signal represents the power of the signal and its standard
 deviation represents the noise component, we can define
@@ -437,13 +437,13 @@ See Figure~\ref{fig:Poisson_examples}.
 
 %}}}
 
-\section{Mixed Poisson-Gaussian (MPG) noise}
+\section{\glsentryfull{MPG} noise}
 \label{sec:MPG}
 % {{{
 
 A more realistic noise model in microscopy consists in a combination
 of both Poisson and \gls{AWG} noise, which is commonly known as
-\gls{MPG} noise \cite{meiniel2018denoising}. The generation of
+\acrshort{MPG} noise \cite{meiniel2018denoising}. The generation of
 \gls{MPG} noise can be modeled as
 \begin{equation}
   \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma),
@@ -479,7 +479,7 @@ Taking variances in Eq.~\ref{eq:MPG_noise_model} we obtain
   \label{eq:V_MPG}
 \end{equation}
 
-\subsection{SNR of the MPG noise model}
+\subsection{\acrshort{SNR} of the \acrshort{MPG} noise model}
 Considering that (see Eq.~\ref{eq:SNR_mean_deviation})
 \begin{equation}
   \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)^2}{\mathbb{V}(\hat{\mathbf{s}}_i)},
@@ -713,6 +713,11 @@ estudied.
 %}}}
 
 \section{Estimation of noise statistics}
+
+A significative number of denoising techniques (see for example the
+Chapter~\ref{cha:WF}) require to know the variance of the noise to
+select their working parameters.
+
 One of the first attempt of estimating the noise statistical
 parameters of (in this case \gls{AWG} noise) was performed by Gonzalez
 and Woods \cite{gonzalez1992digital} that proposed to analyze
@@ -735,7 +740,7 @@ to estimate the standard deviation of the noise.\footnote{If one is
   willing to make the assumption of spatially white noise, then
   knowledge of the noise variance at the smallest scale allows the one
   to infer the noise variance at all other scales
-  \cite{de2004training}.}  .
+  \cite{de2004training}.}
 
 \section{Correlation in the Fourier domain to estimate filtering parameters}
 \label{sec:fourier_correlation}
@@ -757,16 +762,16 @@ is not relevant\footnote{Notice that $d/2$ could be the sampling step
 and therefore, a low-pass filter with a cut-off frequency of $1/d$
 should only remove noise.
 
-This information can be obtained using the \gls{FSC}
-curve that measures the similarity between two 3D volumes represented in
-the Fourier domain \cite{verbeke2024self} (for the 2D case, the
-equivalent metric is \gls{FRC}). Each point of the curve prepresents
-the normalized cross-correlation (see Section
-\ref{sec:cross-correlation}) between two ``shells'' (``rings'' in 2D)
-of Fourier coefficients of both volumes (images). Correlation in the
-Fourier domain has become the universal resolution metric and is used
-to assess the quality of 3D reconstructions
-\cite{rosenthal2003optimal,scheres2012prevention}.
+This information can be obtained using the \gls{FSC} curve that
+measures the similarity between two 3D volumes represented in the
+Fourier domain \cite{harauz1986exact,verbeke2024self} (for the 2D
+case, the equivalent metric is \gls{FRC}
+\cite{van1982arthropod}). Each point of the curve prepresents the
+normalized cross-correlation (see Section \ref{sec:cross-correlation})
+between two ``shells'' (``rings'' in 2D) of Fourier coefficients of
+both volumes (images). Correlation in the Fourier domain has become
+the universal resolution metric and is used to assess the quality of
+3D reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
 
 \begin{comment}
 An advantage of correlation in the Fourier domain (FC\footnote{When
@@ -801,7 +806,7 @@ of dimensions is not relevant.
 
 %}}}
 
-\section{Self Fourier Correlation (SFC) curve}
+\section{\glsentryfull{SFC} curve}
 %{{{
 
 Unfortunately, the two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
@@ -903,13 +908,11 @@ range of the \gls{FC} curves should be [0, 1].
     \end{tabular}
   }
   \caption{SFRC (Self Fourier Ring Correlation) of three noisy
-    images \cite{zhang2019poisson} using different
+    images (see Appendix~\ref{sec:images}) using different
     data-splitting/shuffling algoritms (see
     Fig.~\ref{fig:SFC_vs_splitting_noisy}). For the purpose of
     comparison, it has also been show the FRC using another noisy
-    instance of $\mathbf{s}$ (concretelly, we have shown
-    FSC($\mathbf{s}^{(1)}$,
-    $\mathbf{s}^{(2)}$)).\label{fig:SFC_vs_splitting_noisy}}
+    instance of $\mathbf{s}$.\label{fig:SFC_vs_splitting_noisy}}
 \end{figure}
 
 \begin{figure}
@@ -1045,13 +1048,16 @@ the 3D case (and we only have two instances)
 %}}}
 \end{comment}
 
+\section{Estimation of the variance of the noise using the \gls{SFC} curve}
+\label{sec:variance_SFC}
+
 \begin{subappendices}
 
-\section{Even-Odd Splitting (EOS)}
+\section{\glsentryfull{EOS}}
 \label{sec:EOS}
 %{{{
 
-In the 2D case, \gls{EOS} generates
+In the 2D case, \acrshort{EOS} generates
 \begin{equation}
   \mathrm{EOS}(\mathbf{X})=\{\mathbf{X}^{(\text{VE})}, \mathbf{X}^{(\text{VO})}, \mathbf{X}^{(\text{HE})}, \mathbf{X}^{(\text{HO})}\},
 \end{equation}
@@ -1068,7 +1074,7 @@ where $\mathbf{X}$ is the input image, and $\{\mathbf{X}^{(i)}\}_{i=\{\text{VE},
   
 %}}}
 
-\section{ChessBoard Splitting (CBS)}
+\section{\glsentryfull{CBS}}
 \label{sec:CBS}
 %{{{
 
@@ -1120,11 +1126,11 @@ the CBS algorithm consists of:
 
 %}}}
 
-\section{Interpolated ChessBoard Splitting (ICBS)}
+\section{\glsentryfull{ICBS}}
 \label{sec:ICBS}
 %{{{
 
-\gls{ICBS} is an extension of \gls{CBS} (which must be run first, see
+\acrshort{ICBS} is an extension of \gls{CBS} (which must be run first, see
 Appendix~\ref{sec:CBS}) where the $\{w\}$ (``white'') pixels involved
 in Eq.~\ref{eq:copy_blacks} are interpolated using the $\{b\}$
 (``black'') pixels (see Eq.~\ref{eq:black_pixels}), and
@@ -1145,11 +1151,11 @@ and
 
 %}}}
 
-\section{Subsampled ChessBoard Splitting (SCBS)}
+\section{\glsentryfull{SCBS}}
 \label{sec:SCBS}
 %{{{
 
-\gls{SCBS} \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
+\acrshort{SCBS} \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
 into four distinct sub-images
 \begin{equation}
   \mathrm{SCS}(\mathbf{X}) = \{\mathbf{X}^{(\text{OO})}, \mathbf{X}^{(\text{EE})}, \mathbf{X}^{(\text{OE})}, \mathbf{X}^{(\text{EO})} \},
@@ -1175,11 +1181,11 @@ $\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
 
 %}}}
 
-\section{TriS-D Random Pixel Resampling (TRPR)}
+\section{\glsentryfull{TRPR}}
 \label{sec:TRPR}
 %{{{
 
-\gls{TRPR} divides one noisy image into overlaping $2\times 2$ patches
+\acrshort{TRPR} divides one noisy image into overlaping $2\times 2$ patches
 and randomly samples two pixels from each patch, to obtain a pair of
 noisy images \cite{ma2025spatiotemporal}. The number $S$ of
 \gls{TRPR}-images with shape $(H-1)\times (W-1)$ is bounded by
@@ -1198,11 +1204,11 @@ and the shape of the \gls{TRPR}-volumes is $(H-1)(W-1)(D-1)$.
 
 %}}}
 
-\section{Structure Preserving Random Shuffling (SPRS)}
+\section{\glsentryfull{SPRS}}
 \label{sec:SPRS}
 %{{{
 
-\gls{SPRS} can be used to generate similar instances of an image or volume
+\acrshort{SPRS} can be used to generate similar instances of an image or volume
 $\mathbf{s}$. We deonote this as
 \begin{equation}
   \mathrm{SPRS}(\mathbf{s}; n, \sigma) = \{\mathbf{s}, \mathbf{s}^{(i)}\}_{i=1}^n,
