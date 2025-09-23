@@ -1,0 +1,84 @@
+Non-Local Means (NLM)
+
+Key idea:
+Instead of averaging only nearby pixels (like Gaussian blur) or applying frequency filtering, NLM denoises each pixel by taking a weighted average of similar patches across the whole image.
+
+How it works:
+
+For each pixel 
+i
+i, take a small patch 
+Pi
+P
+i
+	​
+
+ around it.
+
+Search for other patches 
+Pj
+P
+j
+	​
+
+ in a large search window.
+
+Compute similarity between 
+Pi
+P
+i
+	​
+
+ and 
+Pj
+P
+j
+	​
+
+ (typically using a Gaussian-weighted Euclidean distance).
+
+Assign higher weights to more similar patches.
+
+The denoised value of pixel 
+i
+i is a weighted average of the central pixels of all candidate patches.
+
+Properties:
+
+Preserves textures and repetitive structures well (since it leverages patch self-similarity).
+
+Computationally heavy (many patch comparisons).
+
+Sensitive to parameter choices (patch size, search window, filtering parameter).
+
+BM3D (Block-Matching and 3D Filtering)
+
+Key idea:
+BM3D improves upon NLM by grouping similar patches and performing collaborative filtering in a transform domain (like wavelet/DCT).
+
+How it works:
+
+Block Matching: For a reference patch, find a group of similar patches across the image.
+
+Stacking: Arrange them into a 3D block (a stack of similar patches).
+
+Collaborative Filtering: Apply a 3D transform (2D spatial transform + 1D transform along the stack dimension), shrink small coefficients (thresholding or Wiener filtering), and invert the transform.
+
+Aggregation: Place filtered patches back into the image and average overlapping contributions.
+
+Properties:
+
+More advanced than NLM, because it not only averages but also filters in a sparse transform domain.
+
+Produces state-of-the-art denoising results among classical methods.
+
+Computationally intensive, but usually faster than brute-force NLM with large search windows.
+
+Key Differences: NLM vs. BM3D
+Aspect	NLM	BM3D
+Similarity search	Finds similar patches, averages them	Finds similar patches, groups them
+Filtering	Weighted averaging in image domain	Transform-domain shrinkage (sparsity-based)
+Denoising strength	Good, but limited	Superior, one of the best classical methods
+Texture preservation	Decent, but may blur fine details	Excellent (keeps sharp edges & textures)
+Computation	Heavy (all-pair comparisons)	Also heavy, but more efficient due to grouping
+Output quality	Can leave residual noise / oversmooth	Produces cleaner, sharper results
