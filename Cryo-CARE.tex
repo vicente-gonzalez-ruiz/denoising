@@ -1,11 +1,81 @@
-\chapter{Cryo-CARE}
+\chapter{Content-Aware image REstoration (CARE) ... Trainable denoisers?}
+
+Image restoration is the problem of reconstructing an image from a corrupted version of itself. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+\chapter{Supervised training}
+
+Supervised CARE networks compute
+\begin{equation}
+  y^* = E(x)
+\end{equation}
+where $x$ is a noisy (in general, distorted) image, and $y^*$ is the restored image, and the networks are trained by minimizing
+\begin{equation}
+  \matchcal{L}(E(x), y),
+\end{equation}
+where $\mathcal L}$ represents some distortion metric (a loss
+function). % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+Supervised training can be used only is we good quality GT images $y$
+are
+available. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+\section{Unsupervised training}
+
+Unsupervised methods do not require high-quality, low-noise data
+(ground-truth).  Such approaches try to utilize internal statistics of
+the presented data to perform image
+restoration % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+\section{Noise2Noise training}
+% Lehtinen, J., Munkberg, J., Hasselgren, J., Laine, S., Karras, T., Aittala, M., et al. (2018). Noise2Noise: Learning image restoration without clean data. arXiv, Retrieved from http://arxiv.org/abs/1803.04189.
+
+Minimizes
+\begin{equation}
+  {\mathcal L}(E(x_1),x_2),
+\end{equation}
+where $x_1$ and $x_2$ are two true-noisy instances of $x$, the clean
+image. As long as pairs of images with independent noise can be
+acquired, Noise2-Noise enables CARE network training even in the
+absence of ground-truth. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+$x_1$ and $x_2$ should be registered, in order to avoid blured
+reconstructions. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+% Dividir en imágenes pares e impares, pero usar ME para conseguir que se parezcan más.
+
+\section{Noise2Void training}
+% Krull, A., Buchholz, T.-O., & Jug, F. (2018). Noise2Void—Learning denoising from single noisy images. arXiv. Retrieved from http://arxiv.org/abs/1811.10980.
+
+This training regime requires to derive both, the input and the target
+data, from single noisy images. Motivated by the non-existing target
+image, this training approach is called Noise2Void. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+
+The fundamental idea of Noise2Void is to take out a single pixel in
+the center of a receptive field, thereby creating a “blind-spot.” We
+can then use this removed pixel value as target for learning a network
+that will predict the value hidden in the blind-spot. Note, this
+target is not the ground-truth pixel value, since it is itself only
+taken from the noisy input image. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+Two conditions must be fulfilled for Noise2Void training to
+succeed. The data must be statistically interdependent, meaning that
+knowing the surrounding of one pixel allows an observer to predict
+that pixel’s value. Additionally, the noise in the image needs to be
+pixel-wise independent (given the signal). % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
+
+\section{Noise2Self training}
+
 %{{{
+
+Cryo-CARE \cite{buchholz2019cryo} uses a denoising U-Net for
+tomographic reconstruction according to the Noise2Noise (N2N)
+\cite{lehtinen2018noise2noise} training paradigm
+\url{https://github.com/juglab/cryoCARE_pip}.
 
 CARE (Content-Aware image REstoration) methods leverage available
 knowledge about the data at hand ought to yield superior restoration
-results \cite{weigert2018content}. Concretely, Cryo-CARE
-\cite{buchholz2019cryo} is an implementation of Noise2Noise (N2N)
-\cite{lehtinen2018noise2noise}.
+results \cite{weigert2018content}.
 
 % Spatiotemporal-Aware Self-Supervised Fluorescence Microscopy Image Denoising
 \begin{quote}
