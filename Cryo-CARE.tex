@@ -29,6 +29,7 @@ restoration % https://www.sciencedirect.com/science/article/abs/pii/S0091679X193
 \section{Noise2Noise training}
 % Lehtinen, J., Munkberg, J., Hasselgren, J., Laine, S., Karras, T., Aittala, M., et al. (2018). Noise2Noise: Learning image restoration without clean data. arXiv, Retrieved from http://arxiv.org/abs/1803.04189.
 
+
 Minimizes
 \begin{equation}
   {\mathcal L}(E(x_1),x_2),
@@ -50,8 +51,54 @@ N2N if based on the law of total expectation:
 &= \sum_{x}\left(\sum_{y}L(f_{\theta}(x),y) p(y|x)\right) p(x). \\
 \intertext{The inner sum is exactly $\mathbb{E}_{Y|X=x}[L(f_{\theta}(x),Y)]$. The outer sum is then the expectation over $X$:}
 &= \sum_{x} \mathbb{E}_{Y|X=x}[L(f_{\theta}(x),Y)] p(x) \\
-&= \mathbb{E}_{X}[\mathbb{E}_{Y|X}[L(f_{\theta}(X),Y)]].
+                                       &= \mathbb{E}_{X}[\mathbb{E}_{Y|X}[L(f_{\theta}(X),Y)]].
+                                         \label{eq:5}
 \end{align*}
+
+The usual process of training regressors by
+Eq.~\ref{eq:supervised_learning} over a finite number of input-target
+pairs (xi, yi) hides a subtle point: instead of the 1:1 mapping
+between inputs and tar- gets (falsely) implied by that process, in
+reality the mapping is multiple-valued. For example, in a superresolution task
+(Ledig et al., 2017) over all natural images, a low-resolution
+image x can be explained by many different high-resolution
+images y, as knowledge about the exact positions and orientations of the edges and texture is lost in decimation. In
+other words, $p(y|x)$ is the highly complex distribution of
+natural images consistent with the low-resolution $x$. Train-
+ing a neural network regressor using training pairs of low-
+and high-resolution images using the L2 loss, the network
+learns to output the average of all plausible explanations
+(e.g., edges shifted by different amounts), which results in
+spatial blurriness for the network’s predictions.
+
+Our observation is that for certain problems this tendency
+has an unexpected benefit. A trivial, and, at first sight, use-
+less, property of L2 minimization is that on expectation, the
+estimate remains unchanged if we replace the targets with
+random numbers whose expectations match the targets. Consequently, the
+optimal network parameters $\Theta$ of Equation (\ref{eq:5}) also remain
+unchanged, if input-conditioned target distributions $p(y|x)$
+are replaced with arbitrary distributions that have the same
+conditional expected values. This implies that we can, in
+principle, corrupt the training targets of a neural network
+with zero-mean noise without changing what the network
+learns. Combining this with the corrupted inputs from Equa-
+tion \ref{eq:supervised_learning}, we are left with the empirical risk minimization task
+\begin{equation}
+  \underset{\theta}{\operatorname{arg\,min}} \, \sum_i L \big(f_\theta(\hat{\mathbf x}_i), \hat{\mathbf y}_i\big),
+\end{equation}
+where both the inputs and the targets are now drawn from a corrupted
+distribution (not necessarily the same), condi- tioned on the
+underlying, unobserved clean target $y_i$ such that
+$E{\hat{y}_i|\hat{x}_i} = y_i$. Given infinite data, the solution is
+the same as that of \ref{eq:supervised_learning} . For finite data,
+the variance is the average variance of the corruptions in the
+targets, divided by the number of training samples (see
+appendix). Inter- estingly, none of the above relies on a likelihood
+model of the corruption, nor a density model (prior) for the under-
+lying clean image manifold. That is, we do not need an explicit
+p(noisy|clean) or p(clean), as long as we have data distributed
+according to them.
 
 \section{Noise2Void training}
 % Krull, A., Buchholz, T.-O., & Jug, F. (2018). Noise2Void—Learning denoising from single noisy images. arXiv. Retrieved from http://arxiv.org/abs/1811.10980.
