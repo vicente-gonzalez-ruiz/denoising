@@ -1,5 +1,24 @@
 \chapter{Statistics for digital data}
 
+\section{Random variable}
+A random variable is a function
+\begin{equation}
+  X:\Omega\rightarrow \mathcal{X}
+\end{equation}
+that maps outcomes $\omega\in\Omega$ (the sample space) to numerical values in some set $\mathcal{X}$ (usually $\mathbb{R}$, or a countable/continuos subset). For example, if we toss a coin, $X$ is a random variable that numerically represents the coin flip, $\omega=\{\text{Heads},\text{Tails}\}$, by definition $X(\omega)=1$ if $\omega=\text{Heads}$, and $X(\omega)=0$ if $\omega=\text{Tails}$.
+
+Notice that a randon variable is not random itself (it's a deterministic function of the underlying outcome). The ``randomness'' comes from the fact that the outcome $\omega$ is random (governed by $P$).
+
+\section{Probability mass function}
+The \gls{PMF} of a random variable $X$, defined as
+\begin{equation}
+  p(x) = \Pr(X=x), \quad x\in\mathcal{x},
+\end{equation}
+describes the probability with which a random variable $X$ takes values in a countable set $\mathcal{X}$, where
+\begin{equation*}
+  p(x)\ge 0,\quad\sum_{x\in\mathcal{X}}p(x)=1.
+\end{equation*}
+
 % We will assume that discrete signals are stationary (discrete) random processes
 
 Discrete data only can take countable values (like 0, 1, 2, ...).
@@ -59,9 +78,13 @@ weights are the probabilities of those values occurring.
 
 For a digital signal $\mathbf{x}$, it is defined as
 \begin{equation}
-  \mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
+  \mathbb{E}_{\mathbf{x}}(\mathbf{x})=\mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
   \label{eq:expectation}
 \end{equation}
+
+The subscripts in expectations (like $\mathbb{E}(X,Y)_{(X,Y)}$) are
+there to indicate with respect to which probability distribution the
+expectation is being taken.
 
 The expectation is a linear operator and satisfies
 \begin{equation}
@@ -85,6 +108,109 @@ signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
   \mathbb{E}[f(\mathbf{x})]=\sum_if(\mathbf{x}_i)\Pr(\mathbf{x}=\mathbf{x}_i).
   \label{eq:expectation_of_function}
 \end{equation}
+
+\section*{Example:}
+Suppose we want to compute the expected winnings of a simple betting game tossing a coin, where if Heads, you win \$2, but if Tails, you lose \$1. We define the payoff as a function of $X$:
+
+\begin{equation*}
+  f(X)=2X-1
+\end{equation*}
+
+Therefore, if $X=1$ (Heads): $f(1)=2(1)-1=1$ (dollar net gain), but if $X=0$ (Tails): $f(0)=2(0)-1=-1$ (dollar loss). The expectation of the payoff is
+
+\begin{equation*}
+\mathbb{E}[f(X)]=f(1)\Pr(X=1)+f(0)\Pr(X=0) = (1)(12)+(-1)(12)=0.
+\end{equation*}
+
+So your expected profit in this game is zero.
+
+\section{Marginal of a random variable}
+The marginal of a variable is its probability distribution, ignoring
+the other variables. For example, imagine we survey a neighborhood and
+record the type of pet (cat or dog) and its color (brown or
+black). The marginal of pet type considers just the number of cat and
+dogs, not their color.
+
+\section{Conditional distribution}
+
+The conditional probability mass function is
+$$ p(y \mid x) = \frac{p(x,y)}{p(x)} \quad \text{if } p(x) > 0, $$
+where $p(x) = \sum_{y} p(x,y)$ is the marginal of $X$.
+
+The conditional expectation of $h(x,Y)$ given $X=x$ is then
+$$ E_{Y \mid X=x}[h(x,Y)] = \sum_{y} h(x,y) p(y \mid x). $$
+
+\section{Low of total expectation}
+The expectation with respect to the joint distribution is
+\begin{equation}
+  \mathbb{E}_{(X,Y)}[h(X,Y)]=\mathbb{E}_{X}[\mathbb{E}_{Y\mid X}[h(X,Y)]].
+\end{equation}
+
+\section*{Example: Coin + Die}
+
+Toss a fair coin and roll a fair die simultaneously.
+
+\subsection*{Random Variables}
+\[
+C = 
+\begin{cases}
+1 & \text{if Heads} \\
+0 & \text{if Tails}
+\end{cases}, 
+\qquad
+D \in \{1,2,3,4,5,6\}.
+\]
+
+The coin and die are independent, so the joint distribution is
+\[
+p(c,d) = p(c)\,p(d) = \frac{1}{2} \cdot \frac{1}{6} = \frac{1}{12}.
+\]
+
+\subsection*{Function of Interest}
+Suppose the payoff is
+\[
+h(C,D) = C \cdot D,
+\]
+i.e., you get the die roll if the coin shows Heads, and 0 if Tails.
+
+\subsection*{Expectation w.r.t. the joint distribution}
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] 
+= \sum_{c=0}^{1} \sum_{d=1}^{6} h(c,d) \, p(c,d).
+\]
+
+Plugging in:
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] 
+= \sum_{d=1}^{6} (1 \cdot d) \cdot \frac{1}{12} + \sum_{d=1}^{6} (0 \cdot d) \cdot \frac{1}{12}
+= \frac{1}{12} (1+2+3+4+5+6) = \frac{21}{12} = 1.75.
+\]
+
+\subsection*{Law of Total Expectation}
+We can also write
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] = \mathbb{E}_C \Big[ \mathbb{E}_{D|C}[h(C,D)] \Big].
+\]
+
+Compute the inner conditional expectation:
+\[
+\mathbb{E}_{D|C=1}[h(1,D)] = \mathbb{E}_D[D] = 3.5, \quad 
+\mathbb{E}_{D|C=0}[h(0,D)] = \mathbb{E}_D[0] = 0.
+\]
+
+Then average over $C$:
+\[
+\mathbb{E}_C \Big[ \mathbb{E}_{D|C}[h(C,D)] \Big] 
+= 0.5 \cdot 3.5 + 0.5 \cdot 0 = 1.75.
+\]
+
+\subsection*{Conclusion}
+The subscripts in $\mathbb{E}_{(\cdot)}$ clarify which distribution is used for averaging:
+\begin{itemize}
+    \item $\mathbb{E}_{(C,D)}$: joint distribution,
+    \item $\mathbb{E}_{D|C}$: conditional distribution of $D$ given $C$,
+    \item $\mathbb{E}_C$: marginal distribution of $C$.
+\end{itemize}
 
 \section{$n$-th moment of a discrete random variable}
 \begin{equation}

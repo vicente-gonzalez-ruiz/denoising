@@ -10,9 +10,9 @@ Supervised CARE networks compute
 \end{equation}
 where $x$ is a noisy (in general, distorted) image, and $y^*$ is the restored image, and the networks are trained by minimizing
 \begin{equation}
-  \matchcal{L}(E(x), y),
+  \mathcal{L}(E(x), y),
 \end{equation}
-where $\mathcal L}$ represents some distortion metric (a loss
+where $\mathcal{L}$ represents some distortion metric (a loss
 function). % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
 
 Supervised training can be used only is we good quality GT images $y$
@@ -41,7 +41,17 @@ absence of ground-truth. % https://www.sciencedirect.com/science/article/abs/pii
 $x_1$ and $x_2$ should be registered, in order to avoid blured
 reconstructions. % https://www.sciencedirect.com/science/article/abs/pii/S0091679X19300706?via%3Dihub
 
-% Dividir en imágenes pares e impares, pero usar ME para conseguir que se parezcan más.
+N2N if based on the law of total expectation:
+\begin{align*}
+\mathbb{E}_{(X,Y)}[L(f_{\theta}(X),Y)] &= \sum_{x}\sum_{y}L(f_{\theta}(x),y) p(x,y). \\
+\intertext{Factor the joint pmf:}
+&= \sum_{x}\sum_{y}L(f_{\theta}(x),y) p(y|x) p(x). \\
+\intertext{Group terms by $x$:}
+&= \sum_{x}\left(\sum_{y}L(f_{\theta}(x),y) p(y|x)\right) p(x). \\
+\intertext{The inner sum is exactly $\mathbb{E}_{Y|X=x}[L(f_{\theta}(x),Y)]$. The outer sum is then the expectation over $X$:}
+&= \sum_{x} \mathbb{E}_{Y|X=x}[L(f_{\theta}(x),Y)] p(x) \\
+&= \mathbb{E}_{X}[\mathbb{E}_{Y|X}[L(f_{\theta}(X),Y)]].
+\end{align*}
 
 \section{Noise2Void training}
 % Krull, A., Buchholz, T.-O., & Jug, F. (2018). Noise2Void—Learning denoising from single noisy images. arXiv. Retrieved from http://arxiv.org/abs/1811.10980.
