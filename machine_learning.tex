@@ -16,10 +16,11 @@ variables.
 
 %}}}
 
-\section{Training of a regression model for denoising} % https://arxiv.org/pdf/1803.04189
+\section{Training of a regression model for denoising} % Noise2Noise: Learning Image Restoration without Clean Data https://arxiv.org/pdf/1803.04189
 A regression model, e.g., a \gls{CNN} can be trained using a number of pairs $(\hat{{\mathbf x}}_i, {\mathbf y}_i)$ of corrupted inputs $\hat{{\mathbf x}}_i$ and clean targets ${\mathbf y}_i$, and minimizing the empirical risk
 \begin{equation}
   \underset{\theta}{\operatorname{arg\,min}} \, \sum_i L \big(f_\theta(\hat{\mathbf x}_i), {\mathbf y}_i\big)
+  \label{eq:supervised_learning}
 \end{equation}
 where $f_\theta$ is a parametric family of mappings (e.g., CNNs) under the loss function $L$.
 
