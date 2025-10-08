@@ -1,6 +1,51 @@
 \chapter{Denoising auto-encoders (DAEs)}
 
-An autoencoder is a type of artificial neural network trained to generate an output related in some way with the input. For example, in image compression, the input and the output are identical, and the network tries to reproduce such behaviour. In image denoising, the network is trained to remove the noise, i.e., to generate a clean version of the input.
+An autoencoder is a type of artificial neural network trained to
+generate an output related in some way with the input. For example, in
+image compression, the input and the output are identical, and the
+network tries to reproduce such behaviour. In image denoising, the
+network is trained to remove the noise, i.e., to generate a clean
+version of the input.
+
+\section{Data-driven VS zero-shot methods}
+Data-driven approaches rely on large datasets with high-quality
+labels. Zero-shot methods avoid this limitation but remain effective
+only for independent and identically distributed (i.i.d.) noise. % Median2Median: Zero-shot Suppression of Structured Noise in Images, J Wang, G Wang - arXiv preprint arXiv:2510.01666, 2025
+
+In contrast to supervised methods, zero-shot denoising offers a
+compelling alternative by training a network directly on a single
+noisy input, without requiring any external dataset. % https://arxiv.org/pdf/2510.01666
+
+Zero-shot denoising methods learn to denoise directly from a single
+noisy image without requiring any external dataset, making them
+particularly advantageous in data-limited settings. Unlike supervised (DnCNN and FFDNet)
+and self-supervised methods (N2V and Ne2Ne), zero-shot methods are not sensitive to
+any distribution shift of test data, allowing superior
+generalizability across noise types and image domains, since training
+and inference occur on the same image.
+
+\section{Supervised VS unsupervised methods}
+Unsupervised are also called blind methods. % https://arxiv.org/pdf/2510.01666
+
+Supervised denoising methods use paired datasets to train neural
+networks to recover clean images from noisy inputs (N2C).  Early methods
+such as DnCNN [4] and FFDNet [11] use clean–noisy image pairs to
+learn a denoising mapping. % https://arxiv.org/pdf/2510.01666
+
+[4] Kai Zhang, Wangmeng Zuo, Yunjin Chen, Deyu Meng, and Lei Zhang. Beyond a gaussian denoiser: Residual
+learning of deep cnn for image denoising. IEEE transactions on image processing, 26(7):3142–3155, 2017.
+
+[11] Kai Zhang, Wangmeng Zuo, and Lei Zhang. Ffdnet: Toward a fast and flexible solution for cnn-based image
+denoising. IEEE Transactions on Image Processing, 27(9):4608–4622, 2018.
+
+N2C training offers a strong performance benchmark and makes no
+assumption about the underlying noise characteristics, whether the
+noise is structured or unstructured, following any statistical
+distribution. In the supervised learning mode, the network is guided
+by training data to suppress whatever noise in the dataset. However,
+acquiring clean–noisy image pairs is often labor-intensive, expensive,
+and even infeasible in practice, particularly in medical imaging
+tasks.  % https://arxiv.org/pdf/2510.01666
 
 \section{Compressing AEs VS denoising AEs (U-nets)}
 
@@ -31,6 +76,63 @@ used by the encoder, allows the decoder to keep the details of the
 image that in a compressing AE are lost.
 
 \section{Noise2Clean (N2C) training}
+N2C methods train neural networks to learn end-to-end mappings
+from noisy observations to clean images. % https://arxiv.org/pdf/2510.01666
+
+Noise2Noise (N2N) [6] introduced a new training framework that learns
+from pairs of noisy observations of the same underlying image, under
+the assumption that the noise is zero-mean and i.i.d. This relaxation
+removes the need for clean ground truth while achieving performance
+comparable to N2C. % https://arxiv.org/pdf/2510.01666
+
+[6] Jaakko Lehtinen, Jacob Munkberg, Jon Hasselgren, Samuli Laine, Tero Karras, Miika Aittala, and Timo Aila.
+Noise2noise: Learning image restoration without clean data. arXiv preprint arXiv:1803.04189, 2018.
+
+However, the requirement of obtaining two acquisitions with
+i.i.d. noise remains a serious hurdle, especially when repeated
+imaging is costly, risky, or unstable due to misregistration of
+subsequent images. % https://arxiv.org/pdf/2510.01666
+
+\section{Noise2Noise (N2N) training}
+N2N performs denoising using pairs of noisy observations of the same
+clean image, each corrupted by independent and identically distributed
+(i.d.d.) zero-mean noise. % https://arxiv.org/pdf/2510.01666
+
+\section{Noise2Void (N2V) and Noise2Self (N2S)}
+Noise2Void [7] and Noise2Self [8] adopt blind-spot networks that
+exclude the central pixel during training, so the model learns to
+infer the underlying signal from contextual information rather than
+fitting the noise. % https://arxiv.org/pdf/2510.01666
+
+[7] Alexander Krull, Tim-Oliver Buchholz, and Florian Jug. Noise2void-learning denoising from single noisy images.
+In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pages 2129–2137, 2019.
+
+[8] Joshua Batson and Loic Royer. Noise2self: Blind denoising by self-supervision. In International conference on
+machine learning, pages 524–533. PMLR, 2019.
+
+Self-supervised denoising methods remove the need for paired
+images. Noise2Void [ 7] masks target pixels and trains the network to
+predict them using only the surrounding context. % https://arxiv.org/pdf/2510.01666
+
+\section{Neighbor2Neighbor (Ne2Ne) [9] and Noise2Fast (N2F) [10]}
+Use checkerboard downsampling to efficiently construct noisy pairs.
+
+Neighbor2Neighbor [9] creates pseudo pairs from adjacent pixels
+within the same image. Despite these innovations, self-supervised
+denoising still depends on access to large datasets of noisy
+images. These data-demanding methods, including both supervised and
+self-supervised approaches, often fail to generalize well. That is,
+they may degrade in performance when test data deviates from training
+data distribution-wise. % https://arxiv.org/pdf/2510.01666
+
+[9] Tao Huang, Songjiang Li, Xu Jia, Huchuan Lu, and Jianzhuang Liu. Neighbor2neighbor: Self-supervised
+denoising from single noisy images. In Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition, pages 14781–14790, 2021.
+
+[10] Jason Lequyer, Reuben Philip, Amit Sharma, Wen-Hsin Hsu, and Laurence Pelletier. A fast blind zero-shot
+denoiser. Nature Machine Intelligence, 4(11):953–963, 2022.
+
+\section{Median2Median (M2M)}
 
 \chapter{Content-Aware image REstoration (CARE) ... Trainable denoisers?}
 
