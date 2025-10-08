@@ -4,6 +4,25 @@ Image denosing if a restoration is the problem in which an image is
 reconstructed from a corrupted version of itself
 \cite{BUCHHOLZ2019277}.
 
+Iqmage noise primarily arises during data acquisition, stemming from
+sensor electronics, photon statistics, and variations in imaging
+conditions such as illumination and scene dynamics. The resulting
+degradations can be stochastic (e.g., Poisson or Gaussian) or
+structured (e.g., speckle or banding), both of which reduce the
+signal-to-noise ratio, impair visual quality, and hinder downstream
+analysis. Denoising methods are therefore needed to recover the
+underlying clean image, either by modeling the corruption process or
+by exploiting image priors such as self-similarity and
+sparsity. % https://arxiv.org/pdf/2510.01666
+
+Conventional denoising methods typically assume that noise follows a
+known statistical model, such as a Gaussian distribution or a mixture
+of well-characterized distributions. These assumptions allow
+classical methods to perform noise removal in a principled
+manner. However, most real-world noise is considerably more complex,
+being neither independent nor accurately represented by analytic
+models.  % https://arxiv.org/pdf/2510.01666
+
 \section{Why microscopy?}
 Microscopy of biological specimens is used in biotechnology to
 visualize small specimens (including their internal structures) that
@@ -86,7 +105,7 @@ tomography technique.
 % }}}
 
 \section{Distortion microscopy images}
-ypical distortions can include the effects of camera and
+Typical distortions can include the effects of camera and
 photon/electron noise, the blur of the optical point-spread-function,
 resolution loss due to sampling, or aberrations induced by the sample
 itself. Although we have a very detailed understanding of the nature

@@ -1,0 +1,19 @@
+\chapter{Median filtering}
+
+Median filtering is a non-linear digital filtering technique used to
+remove noise from signals. It's particularly effective at removing
+``salt and pepper'' noise, which appears as random black and white
+pixels in an image. 
+
+The median filter works by moving a "window" or "kernel" (typically a
+small square) over each pixel of the image. For each position of the
+window, the filter gathers the brightness values of all the pixels
+within that window, sorts them, and replaces the central pixel's value
+with the median value from that sorted list.
+
+\section{Generalized median filter}
+Extends the median filter to vectors of data (for example, RGB
+pixels). For each pixel, it considers the color vectors of its
+neighbors. It then calculates the distance between each vector and all
+the others. The vector with the smallest total distance to all other
+vectors is chosen as the ``generalized median''.
