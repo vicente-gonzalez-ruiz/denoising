@@ -1,4 +1,4 @@
-'''Random Shaking Volume Denoising.'''
+'''Volume denoising using Random Shuffling Means (RSM)'''
 #'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
 #'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
@@ -32,7 +32,7 @@ PYRAMID_LEVELS = 3  # Number of pyramid layers
 ITERATIONS = 5      # Number of iterations at each pyramid level
 PYRAMID_SCALE = 0.5
 
-class Random_Shaking_Denoising(OF_Estimation, Projection):
+class Random_Shuffling_Means(OF_Estimation, Projection):
 #class Random_Shaking_Denoising:
     def __init__(
         self,
@@ -83,9 +83,9 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
             self.max = 0
             self.min = 0
         print(f"{'iter':>5s}", end='')
-        print(f"{'min_shaking':>16s}", end='')
-        print(f"{'avg_abs_shaking':>16s}", end='')
-        print(f"{'max_shaking':>16s}", end='')
+        print(f"{'min_shuffling':>16s}", end='')
+        print(f"{'avg_abs_shuffling':>16s}", end='')
+        print(f"{'max_shuffling':>16s}", end='')
         print(f"{'min_flow':>16s}", end='')
         print(f"{'avg_abs_flow':>16s}", end='')
         print(f"{'max_flow':>16s}", end='')
@@ -119,12 +119,12 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
             self.stop_event.clear()
             self.time_0 = time.perf_counter()
 
-    def shake_vector(self, x, mean=0.0, std_dev=1.0):
+    def shuffling_vector(self, x, mean=0.0, std_dev=1.0):
         y = np.arange(len(x))
         self.displacements = np.random.normal(mean, std_dev, len(x))
         return np.stack((y + self.displacements, x), axis=1)
 
-    def shake_volume(self, volume, mean=0.0, std_dev=1.0):
+    def shuffle_volume(self, volume, mean=0.0, std_dev=1.0):
 
         if self.logging_level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -137,35 +137,35 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
                 else:
                     print(f"{arg}: {values[arg]}")
 
-        shaked_volume = np.empty_like(volume)
+        shuffled_volume = np.empty_like(volume)
 
-        # Shaking in Z
+        # Shuffling in Z
         values = np.arange(volume.shape[0]).astype(np.int16)
         for y in range(volume.shape[1]):
             for x in range(volume.shape[2]):
-                pairs = self.shake_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
+                pairs = self.shuffle_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
                 pairs = pairs[pairs[:, 0].argsort()]
-                shaked_volume[values, y, x] = volume[pairs[:, 1], y , x]
-        volume = shaked_volume
+                shuffled_volume[values, y, x] = volume[pairs[:, 1], y , x]
+        volume = shuffled_volume
     
-        # Shaking in Y
+        # Shuffling in Y
         values = np.arange(volume.shape[1]).astype(np.int16)
         for z in range(volume.shape[0]):
             for x in range(volume.shape[2]):
-                pairs = self.shake_vector(values, mean=mean, std_dev=std_dev).astype(np.int16)
+                pairs = self.shuffle_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
                 pairs = pairs[pairs[:, 0].argsort()]
-                shaked_volume[z, values, x] = volume[z, pairs[:, 1], x]
-        volume = shaked_volume
+                shuffled_volume[z, values, x] = volume[z, pairs[:, 1], x]
+        volume = shuffled_volume
 
-        # Shaking in X
+        # Shuffing in X
         values = np.arange(volume.shape[2]).astype(np.int16)
         for z in range(volume.shape[0]):
             for y in range(volume.shape[1]):
-                pairs = self.shake_vector(values, mean=mean, std_dev=std_dev).astype(np.int16)
+                pairs = self.shuffle_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
                 pairs = pairs[pairs[:, 0].argsort()]
-                shaked_volume[z, y, values] = volume[z, y, pairs[:, 1]]
+                shuffled_volume[z, y, values] = volume[z, y, pairs[:, 1]]
                 
-        return shaked_volume
+        return shuffled_volume
 
     def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
 
@@ -247,13 +247,13 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
         for i in range(N_iters):
             self.iter = i
             denoised_volume = acc_volume/(i+1)
-            shaked_noisy_volume = self.shake_volume(noisy_volume, mean=mean, std_dev=std_dev)
-            shaked_and_compensated_noisy_volume = self.project_volume_reference_to_target(
+            shuffled_noisy_volume = self.shuffle_volume(noisy_volume, mean=mean, std_dev=std_dev)
+            shaffled_and_compensated_noisy_volume = self.project_volume_reference_to_target(
                 reference=denoised_volume,
-                target=shaked_noisy_volume,
+                target=shuffled_noisy_volume,
                 OF_estimator=OF_estimator,
                 projector=projector)
-            acc_volume += shaked_and_compensated_noisy_volume
+            acc_volume += shuffled_and_compensated_noisy_volume
 
             if self.quality_index != None:
                 denoised = acc_volume/(i + 2)
@@ -300,10 +300,10 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
         for i in range(N_iters):
             self.iter = i
             denoised_volume = acc_volume/(i+1)
-            shaked_noisy_volume = self.shake_volume(noisy_volume, mean=mean, std_dev=std_dev)
-            shaked_and_compensated_noisy_volume = self.project_volume_reference_to_target(
+            shuffled_noisy_volume = self.shuffle_volume(noisy_volume, mean=mean, std_dev=std_dev)
+            shuffled_and_compensated_noisy_volume = self.project_volume_reference_to_target(
                 reference=denoised_volume,
-                target=shaked_noisy_volume,
+                target=shuffled_noisy_volume,
                 pyramid_levels=pyramid_levels,
                 spatial_size=spatial_size,
                 iterations=iterations,
@@ -311,7 +311,7 @@ class Random_Shaking_Denoising(OF_Estimation, Projection):
                 filter_type=filter_type,
                 filter_size=filter_size,
                 presmoothing=presmoothing)
-            acc_volume += shaked_and_compensated_noisy_volume
+            acc_volume += shuffled_and_compensated_noisy_volume
 
             if self.quality_index != None:
                 denoised = acc_volume/(i + 2)
@@ -331,34 +331,34 @@ from motion_estimation._2D.farneback_OpenCV import OF_Estimation as _2D_OF_Estim
 from motion_estimation._2D.project import Projection as Slice_Projection
 import cv2
 
-class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estimation, Slice_Projection):
+class Random_Shuffling_Means_by_Slices(Random_Shuffling_Means, _2D_OF_Estimation, Slice_Projection):
     def __init__(
         self,
         logging_level=logging.INFO
     ):
-        Random_Shaking_Denoising.__init__(self, logging_level)
+        Random_Shuffing_Denoising.__init__(self, logging_level)
         _2D_OF_Estimation.__init__(self, logging_level)
         Slice_Projection.__init__(self, logging_level)
 
-    def shake_slice(self, slc, mean=0.0, std_dev=1.0):
-        shaked_slice = np.empty_like(slc)
+    def shuffle_slice(self, slc, mean=0.0, std_dev=1.0):
+        shuffled_slice = np.empty_like(slc)
     
-        # Shaking in Y
+        # Shuffling in Y
         values = np.arange(slc.shape[0]).astype(np.int16)
         for x in range(slc.shape[1]):
-            pairs = self.shake_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
+            pairs = self.shuffle_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
             pairs = pairs[pairs[:, 0].argsort()]
-            shaked_slice[values, x] = slc[pairs[:, 1], x]
-        slc = shaked_slice
+            shuffled_slice[values, x] = slc[pairs[:, 1], x]
+        slc = shuffled_slice
     
-        # Shaking in X
+        # Shuffling in X
         values = np.arange(slc.shape[1]).astype(np.int16)
         for y in range(slc.shape[0]):
-            pairs = self.shake_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
+            pairs = self.shuffle_vector(x=values, mean=mean, std_dev=std_dev).astype(np.int16)
             pairs = pairs[pairs[:, 0].argsort()]
-            shaked_slice[y, values] = slc[y, pairs[:, 1]]
+            shuffled_slice[y, values] = slc[y, pairs[:, 1]]
     
-        return shaked_slice
+        return shuffled_slice
 
     def project_slice_reference_to_target(self, reference, target, pyramid_levels, window_side, iterations, N_poly, interpolation_mode, extension_mode):
         self.flow = _2D_OF_Estimation.pyramid_get_flow(self,
@@ -373,18 +373,18 @@ class Random_Shaking_Denoising_by_Slices(Random_Shaking_Denoising, _2D_OF_Estima
         return projection
 
     def filter_slice(self, noisy_slice, denoised_slice, mean, std_dev, pyramid_levels, window_side, iterations, N_poly, interpolation_mode, extension_mode):
-        shaked_noisy_slice = self.shake_slice(slc=noisy_slice, mean=mean, std_dev=std_dev)
+        shuffled_noisy_slice = self.shuffle_slice(slc=noisy_slice, mean=mean, std_dev=std_dev)
         
-        shaked_and_compensated_noisy_slice = self.project_slice_reference_to_target(
+        shuffled_and_compensated_noisy_slice = self.project_slice_reference_to_target(
             reference=denoised_slice,
-            target=shaked_noisy_slice,
+            target=shuffled_noisy_slice,
             pyramid_levels=pyramid_levels,
             window_side=window_side,
             iterations=iterations,
             N_poly=N_poly,
             interpolation_mode=interpolation_mode,
             extension_mode=extension_mode)
-        return shaked_and_compensated_noisy_slice
+        return shuffled_and_compensated_noisy_slice
 
     def filter_volume(
         self,

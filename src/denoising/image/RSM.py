@@ -30,7 +30,7 @@ WINDOW_SIDE = 7
 NUM_ITERATIONS = 3
 FLAGS = 0
 
-class Monochrome_Denoiser:
+class Monochrome_Denoing:
 
     def __init__(
         self, logger,
@@ -191,7 +191,7 @@ class Monochrome_Denoiser:
         else:
             return denoised_image, None
 
-class Filter_Color_Image(Monochrome_Denoiser):
+class RGB_denoising(Monochrome_Denoising):
 
     def __init__(
             self,
