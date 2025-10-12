@@ -1,4 +1,4 @@
-'''Volume denoising using Suffle, Register, and Average (SRaA)'''
+'''Volume denoising using Suffle, Register, and Average (SRA)'''
 #'''Optical Flow-based Random Shaking Iterative Volume Denoising.'''
 #'''Optical Flow-Compensated Random-Shaking Iterative Volume Denoising (RandomDenoising).'''
 
@@ -11,12 +11,12 @@ import inspect
 N_ITERS = 25
 STD_DEV = 1.5
 
-SPATIAL_SIZE = 9    # Side of the Gaussian applicability window used
+SPATIAL_SIDE = 9    # Side of the Gaussian applicability window used
                     # during the polynomial expansion. Applicability (that is, the relative importance of the points in the neighborhood) size should match the scale of the structures we wnat to estimate orientation for (page 77). However, small applicabilities are more sensitive to noise.
 SIGMA_K = 0.15      # Scaling factor used to calculate the standard
                     # deviation of the Gaussian applicability. The
                     # formula to calculate the standard deviation is
-                    # sigma = sigma_k*(spatial_size - 1).
+                    # sigma = sigma_k*(spatial_side - 1).
 
 # OF estimation
 FILTER_TYPE = "box" # Shape of the filer used to average the flow. It
@@ -27,7 +27,7 @@ PYRAMID_LEVELS = 3  # Number of pyramid layers
 ITERATIONS = 5      # Number of iterations at each pyramid level
 PYRAMID_SCALE = 0.5
 
-class Suffle_Register_and_Average:
+class SRA:
     def __init__(
         self,
         OF_estimator,
@@ -45,7 +45,7 @@ class Suffle_Register_and_Average:
         self.show_image = show_image
         self.get_quality = get_quality
 
-        if logger.get_logging_level() <= logging.INFO:
+        if logger.level <= logging.INFO:
             self.max = 0
             self.min = 0
 
@@ -91,9 +91,9 @@ class Suffle_Register_and_Average:
         return np.stack((y + self.displacements, x), axis=1)
 
     def shuffle_volume(self, volume, mean=0.0, std_dev=1.0):
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -132,10 +132,10 @@ class Suffle_Register_and_Average:
                 
         return shuffled_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
-        if self.logging_level <= logging.INFO:
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_side, iterations, sigma_k, filter_type, filter_size, presmoothing):
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -148,7 +148,7 @@ class Suffle_Register_and_Average:
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            spatial_size=spatial_size,
+            spatial_side=spatial_side,
             iterations=iterations,
             sigma_k=sigma_k,
             filter_type=filter_type,
@@ -164,16 +164,17 @@ class Suffle_Register_and_Average:
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        spatial_size=SPATIAL_SIZE,
+        spatial_side=SPATIAL_SIDE,
         iterations=ITERATIONS,
         sigma_k=SIGMA_K,
         filter_type=FILTER_TYPE,
         filter_size=FILTER_SIZE,
         presmoothing=None
     ):
-        if self.logging_level <= logging.INFO:
+        
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -192,7 +193,7 @@ class Suffle_Register_and_Average:
                 reference=denoised_volume,
                 target=shuffled_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                spatial_size=spatial_size,
+                spatial_side=spatial_side,
                 iterations=iterations,
                 sigma_k=sigma_k,
                 filter_type=filter_type,
