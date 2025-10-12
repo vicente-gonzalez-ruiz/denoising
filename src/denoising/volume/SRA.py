@@ -11,12 +11,12 @@ import inspect
 N_ITERS = 25
 STD_DEV = 1.5
 
-SPATIAL_SIDE = 9    # Side of the Gaussian applicability window used
+WINDOW_SIDE = 9     # Side of the Gaussian applicability window used
                     # during the polynomial expansion. Applicability (that is, the relative importance of the points in the neighborhood) size should match the scale of the structures we wnat to estimate orientation for (page 77). However, small applicabilities are more sensitive to noise.
 SIGMA_K = 0.15      # Scaling factor used to calculate the standard
                     # deviation of the Gaussian applicability. The
                     # formula to calculate the standard deviation is
-                    # sigma = sigma_k*(spatial_side - 1).
+                    # sigma = sigma_k*(window_side - 1).
 
 # OF estimation
 FILTER_TYPE = "box" # Shape of the filer used to average the flow. It
@@ -132,7 +132,18 @@ class SRA:
                 
         return shuffled_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_side, iterations, sigma_k, filter_type, filter_size, presmoothing):
+    def project_volume_reference_to_target(
+            self,
+            reference,
+            target,
+            pyramid_levels,
+            window_side,
+            iterations,
+            #sigma_k,
+            #filter_type,
+            #filter_size,
+            #presmoothing
+    ):
         if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
         if self.logger.level < logging.INFO:
@@ -148,12 +159,13 @@ class SRA:
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            spatial_side=spatial_side,
+            window_side=window_side,
             iterations=iterations,
-            sigma_k=sigma_k,
-            filter_type=filter_type,
-            filter_size=filter_size,
-            presmoothing=presmoothing)
+            #sigma_k=sigma_k,
+            #filter_type=filter_type,
+            #filter_size=filter_size,
+            #presmoothing=presmoothing
+        )
         projection = self.projector.remap(volume=reference, flow=self.flow)
         return projection
 
@@ -164,12 +176,12 @@ class SRA:
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        spatial_side=SPATIAL_SIDE,
+        window_side=WINDOW_SIDE,
         iterations=ITERATIONS,
-        sigma_k=SIGMA_K,
-        filter_type=FILTER_TYPE,
-        filter_size=FILTER_SIZE,
-        presmoothing=None
+        #sigma_k=SIGMA_K,
+        #filter_type=FILTER_TYPE,
+        #filter_size=FILTER_SIZE,
+        #presmoothing=None
     ):
         
         if self.logger.level <= logging.INFO:
@@ -193,12 +205,13 @@ class SRA:
                 reference=denoised_volume,
                 target=shuffled_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                spatial_side=spatial_side,
+                window_side=window_side,
                 iterations=iterations,
-                sigma_k=sigma_k,
-                filter_type=filter_type,
-                filter_size=filter_size,
-                presmoothing=presmoothing)
+                #sigma_k=sigma_k,
+                #filter_type=filter_type,
+                #filter_size=filter_size,
+                #presmoothing=presmoothing
+            )
             acc_volume += shuffled_and_compensated_noisy_volume
 
             if self.quality_index != None:
