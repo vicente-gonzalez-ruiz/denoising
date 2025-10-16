@@ -522,7 +522,7 @@ from motion_estimation._2D.farneback_OpenCV import OF_Estimation as _2D_OF_Estim
 from motion_estimation._2D.project import Projection as Slice_Projection
 import cv2
 
-class Random_Shuffling_Means_by_Slices(Random_Shuffling_Means, _2D_OF_Estimation, Slice_Projection):
+class Random_Shuffling_Means_by_Slices(Shuffle_Register_and_Average, _2D_OF_Estimation, Slice_Projection):
     def __init__(
         self,
         logging_level=logging.INFO
