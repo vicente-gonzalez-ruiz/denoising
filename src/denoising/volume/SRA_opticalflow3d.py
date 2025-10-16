@@ -49,7 +49,7 @@ class Shuffle_Register_and_Average:
         self.show_image = show_image
         self.get_quality = get_quality
 
-        if logger.get_logging_level() <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             self.max = 0
             self.min = 0
 
@@ -95,9 +95,9 @@ class Shuffle_Register_and_Average:
         return np.stack((y + self.displacements, x), axis=1)
 
     def shuffle_volume(self, volume, mean=0.0, std_dev=1.0):
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -137,9 +137,9 @@ class Shuffle_Register_and_Average:
         return shuffled_volume
 
     def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -175,9 +175,9 @@ class Shuffle_Register_and_Average:
         filter_size=FILTER_SIZE,
         presmoothing=None
     ):
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -241,7 +241,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         #OF_Estimation.__init__(self, logging_level)
         #self.logger = logging.getLogger(__name__)
         #self.logger.setLevel(logging_level)
-        self.logging_level = logging_level
+        self.logger.level = logging_level
 
         #if self.logging_level <= logging.INFO:
         #    print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -270,7 +270,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         self.get_quality = get_quality
         self.quality_index = 0.0
 
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             self.max = 0
             self.min = 0
         print(f"{'iter':>5s}", end='')
@@ -317,9 +317,9 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
 
     def shuffle_volume(self, volume, mean=0.0, std_dev=1.0):
 
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -360,9 +360,9 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
 
     def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
 
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger._level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -392,9 +392,9 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         projector
     ):
 
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -420,9 +420,9 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         std_dev=STD_DEV
     ):
         
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
@@ -475,9 +475,9 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         presmoothing=None
     ):
 
-        if self.logging_level <= logging.INFO:
+        if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
-        if self.logging_level < logging.INFO:
+        if self.logger.level < logging.INFO:
             args, _, _, values = inspect.getargvalues(inspect.currentframe())
             for arg in args:
                 if isinstance(values[arg], np.ndarray):
