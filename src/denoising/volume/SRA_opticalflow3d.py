@@ -31,7 +31,7 @@ PYRAMID_LEVELS = 3  # Number of pyramid layers
 ITERATIONS = 5      # Number of iterations at each pyramid level
 PYRAMID_SCALE = 0.5
 
-class Suffle_Register_and_Average:
+class Shuffle_Register_and_Average:
     def __init__(
         self,
         OF_estimator,
