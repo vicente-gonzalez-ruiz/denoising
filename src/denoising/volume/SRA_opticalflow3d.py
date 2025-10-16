@@ -15,12 +15,12 @@ import inspect
 N_ITERS = 25
 STD_DEV = 1.5
 
-SPATIAL_SIZE = 9    # Side of the Gaussian applicability window used
+GAUSS_SIZE = 9    # Side of the Gaussian applicability window used
                     # during the polynomial expansion. Applicability (that is, the relative importance of the points in the neighborhood) size should match the scale of the structures we wnat to estimate orientation for (page 77). However, small applicabilities are more sensitive to noise.
 SIGMA_K = 0.15      # Scaling factor used to calculate the standard
                     # deviation of the Gaussian applicability. The
                     # formula to calculate the standard deviation is
-                    # sigma = sigma_k*(spatial_size - 1).
+                    # sigma = sigma_k*(gauss_size - 1).
 
 # OF estimation
 FILTER_TYPE = "box" # Shape of the filer used to average the flow. It
@@ -136,7 +136,7 @@ class Shuffle_Register_and_Average:
                 
         return shuffled_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, gauss_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
         if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
         if self.logger.level < logging.INFO:
@@ -152,7 +152,7 @@ class Shuffle_Register_and_Average:
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            spatial_side=spatial_size,
+            gauss_size=gauss_size,
             iterations=iterations,
             sigma_k=sigma_k,
             filter_type=filter_type,
@@ -168,7 +168,7 @@ class Shuffle_Register_and_Average:
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        spatial_size=SPATIAL_SIZE,
+        gauss_size=GAUSS_SIZE,
         iterations=ITERATIONS,
         sigma_k=SIGMA_K,
         filter_type=FILTER_TYPE,
@@ -196,7 +196,7 @@ class Shuffle_Register_and_Average:
                 reference=denoised_volume,
                 target=shuffled_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                spatial_size=spatial_size,
+                gauss_size=gauss_size,
                 iterations=iterations,
                 sigma_k=sigma_k,
                 filter_type=filter_type,
@@ -358,7 +358,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
                 
         return shuffled_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, spatial_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
+    def project_volume_reference_to_target(self, reference, target, pyramid_levels, gauss_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
 
         if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
@@ -375,7 +375,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            spatial_size=spatial_size,
+            gauss_size=gauss_size,
             iterations=iterations,
             sigma_k=sigma_k,
             filter_type=filter_type,
@@ -467,7 +467,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         mean=0.0,
         std_dev=1.0,
         pyramid_levels=PYRAMID_LEVELS,
-        spatial_size=SPATIAL_SIZE,
+        gauss_size=GAUSS_SIZE,
         iterations=ITERATIONS,
         sigma_k=SIGMA_K,
         filter_type=FILTER_TYPE,
@@ -496,7 +496,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
                 reference=denoised_volume,
                 target=shuffled_noisy_volume,
                 pyramid_levels=pyramid_levels,
-                spatial_size=spatial_size,
+                gauss_size=gauss_size,
                 iterations=iterations,
                 sigma_k=sigma_k,
                 filter_type=filter_type,
