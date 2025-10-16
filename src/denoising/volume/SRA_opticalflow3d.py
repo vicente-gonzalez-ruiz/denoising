@@ -152,7 +152,7 @@ class Shuffle_Register_and_Average:
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            spatial_size=spatial_size,
+            spatial_side=spatial_size,
             iterations=iterations,
             sigma_k=sigma_k,
             filter_type=filter_type,
