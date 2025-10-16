@@ -218,7 +218,11 @@ class Suffle_Register_and_Average:
 
         return denoised_volume
 
-'''        
+from motion_estimation._3D.farneback_opticalflow3d import OF_Estimation # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
+from motion_estimation._3D.project_opticalflow3d import Projection
+import information_theory
+from matplotlib import pyplot as plt
+
 class Registered_Shuffling_Means(OF_Estimation, Projection):
 #class Random_Shaking_Denoising:
     def __init__(
@@ -513,7 +517,6 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
         denoised_volume = acc_volume/(N_iters + 1)
 
         return denoised_volume
-'''
 
 from motion_estimation._2D.farneback_OpenCV import OF_Estimation as _2D_OF_Estimation 
 from motion_estimation._2D.project import Projection as Slice_Projection
