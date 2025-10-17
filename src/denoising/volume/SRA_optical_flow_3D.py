@@ -205,7 +205,7 @@ class Shuffle_Register_and_Average:
                 presmoothing=presmoothing)
             acc_volume += shuffled_and_compensated_noisy_volume
 
-            if self.quality_index != None:
+            if self.get_quality != None:
                 denoised = acc_volume/(i + 2)
                 self.quality_index = self.get_quality(noisy_volume, denoised)
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
