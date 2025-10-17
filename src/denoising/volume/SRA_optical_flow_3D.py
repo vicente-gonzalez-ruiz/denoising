@@ -223,7 +223,7 @@ from motion_estimation._3D.project_optical_flow_3D import Project
 import information_theory
 from matplotlib import pyplot as plt
 
-class Registered_Shuffling_Means(OF_Estimation, Projection):
+class Registered_Shuffling_Means(OF_Estimation, Project):
 #class Random_Shaking_Denoising:
     def __init__(
         self,
@@ -264,7 +264,7 @@ class Registered_Shuffling_Means(OF_Estimation, Projection):
             use_gpu = use_gpu,
             device_id = device_id)
 
-        Projection.__init__(self, logging_level)
+        Project.__init__(self, logging_level)
 
         self.show_image = show_image
         self.get_quality = get_quality
