@@ -60,7 +60,7 @@ class Shuffle_Register_and_Average:
         print(f"{'avg_abs_flow':>16s}", end='')
         print(f"{'max_flow':>16s}", end='')
         print(f"{'time':>16s}", end='')
-        if Q_estimator != None:
+        if self.Q_estimator != None:
             print(f"{'quality_index':>16s}", end='')
         print()
 
