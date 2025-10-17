@@ -43,7 +43,7 @@ class Shuffle_Register_and_Average:
     ):
 
         self.estimator = OF_estimator
-        self.proyector = projector
+        self.projector = projector
         self.logger = logger
         self.Q_estimator = quality_estimator
         self.show_image = show_image
