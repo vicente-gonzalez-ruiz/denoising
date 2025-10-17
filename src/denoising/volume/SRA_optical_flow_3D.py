@@ -209,7 +209,7 @@ class Shuffle_Register_and_Average:
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
             else:
                 title = ''
-            if self.show_image != None:
+            if self.show_image:
                 self.show_image(denoised, title)
 
             self.stop_event.set()
