@@ -219,7 +219,7 @@ class Shuffle_Register_and_Average:
         return denoised_volume
 
 from motion_estimation._3D.farneback_optical_flow_3D import OF_Estimation # pip install "motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation"
-from motion_estimation._3D.project_optical_flow_3D import Projection
+from motion_estimation._3D.project_optical_flow_3D import Project
 import information_theory
 from matplotlib import pyplot as plt
 
