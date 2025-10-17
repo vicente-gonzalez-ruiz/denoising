@@ -54,9 +54,9 @@ class Shuffle_Register_and_Average:
             self.min = 0
 
         print(f"{'iter':>5s}", end='')
-        print(f"{'min_shuffling':>16s}", end='')
-        print(f"{'avg_abs_shuffling':>16s}", end='')
-        print(f"{'max_shuffling':>16s}", end='')
+        print(f"{'min':>16s}", end='')
+        print(f"{'avg_abs':>16s}", end='')
+        print(f"{'max':>16s}", end='')
         print(f"{'min_flow':>16s}", end='')
         print(f"{'avg_abs_flow':>16s}", end='')
         print(f"{'max_flow':>16s}", end='')
@@ -152,7 +152,7 @@ class Shuffle_Register_and_Average:
             target=target,
             reference=reference,
             pyramid_levels=pyramid_levels,
-            gauss_size=gauss_size,
+            spatial_size=gauss_size,
             iterations=iterations,
             sigma_k=sigma_k,
             filter_type=filter_type,
