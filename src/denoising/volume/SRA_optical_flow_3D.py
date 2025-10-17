@@ -48,6 +48,7 @@ class Shuffle_Register_and_Average:
         self.Q_estimator = quality_estimator
         self.show_image = show_image
         self.get_quality = get_quality
+        self.quality_index = 0.0
 
         if self.logger.level <= logging.INFO:
             self.max = 0
