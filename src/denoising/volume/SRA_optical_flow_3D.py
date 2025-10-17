@@ -39,7 +39,7 @@ class Shuffle_Register_and_Average:
         logger,
         quality_estimator,
         show_image=False,
-        get_quality=False
+        get_quality=None
     ):
 
         self.estimator = OF_estimator
