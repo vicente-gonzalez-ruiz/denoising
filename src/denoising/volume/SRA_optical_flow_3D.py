@@ -135,7 +135,18 @@ class Shuffle_Register_and_Average:
                 
         return shuffled_volume
 
-    def project_volume_reference_to_target(self, reference, target, pyramid_levels, gauss_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
+    def project_volume_reference_to_target(
+        self,
+        reference,
+        target,
+        pyramid_levels,
+        gauss_size,
+        iterations,
+        sigma_k,
+        filter_type,
+        filter_size,
+        presmoothing
+    ):
         if self.logger.level <= logging.INFO:
             print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
         if self.logger.level < logging.INFO:
@@ -157,7 +168,7 @@ class Shuffle_Register_and_Average:
             filter_type=filter_type,
             filter_size=filter_size,
             presmoothing=presmoothing)
-        projection = self.projector.remap(vol=reference, flow=self.flow)
+        projection = self.projector.remap(volume=reference, flow=self.flow)
         return projection
 
     def filter(
@@ -209,6 +220,7 @@ class Shuffle_Register_and_Average:
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
             else:
                 title = ''
+
             if self.show_image:
                 self.show_image(denoised, title)
 
@@ -232,8 +244,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
         threads_per_block=(8, 8, 8),
         use_gpu=True,
         device_id=0,
-        show_image=None,
-        get_quality=None
+        show_image=False
         #estimator="opticalflow3d"
     ):
         #self.estimator = estimator
@@ -451,7 +462,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
             else:
                 title = ''
-            if self.show_image != None:
+            if self.show_image:
                 self.show_image(denoised, title)
 
             self.stop_event.set()
@@ -509,7 +520,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
             else:
                 title = ''
-            if self.show_image != None:
+            if self.show_image:
                 self.show_image(denoised, title)
 
             self.stop_event.set()
