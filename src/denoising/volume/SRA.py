@@ -33,31 +33,30 @@ class SRA:
         OF_estimator,
         projector,
         logger,
-        quality_estimator,
-        show_image=False,
-        get_quality=False
+        quality_estimator = None,
+        show_image=False
     ):
 
         self.estimator = OF_estimator
-        self.proyector = projector
+        self.projector = projector
         self.logger = logger
         self.Q_estimator = quality_estimator
         self.show_image = show_image
-        self.get_quality = get_quality
+        self.quality_index = 0.0
 
         if logger.level <= logging.INFO:
             self.max = 0
             self.min = 0
 
         print(f"{'iter':>5s}", end='')
-        print(f"{'min_shuffling':>16s}", end='')
-        print(f"{'avg_abs_shuffling':>16s}", end='')
-        print(f"{'max_shuffling':>16s}", end='')
+        print(f"{'min':>16s}", end='')
+        print(f"{'avg_abs':>16s}", end='')
+        print(f"{'max':>16s}", end='')
         print(f"{'min_flow':>16s}", end='')
         print(f"{'avg_abs_flow':>16s}", end='')
         print(f"{'max_flow':>16s}", end='')
         print(f"{'time':>16s}", end='')
-        if get_quality!=None:
+        if self.Q_estimator != None:
             print(f"{'quality_index':>16s}", end='')
         print()
 
@@ -79,7 +78,7 @@ class SRA:
             print(f"{np.average(np.abs(self.flow)):>16.2f}", end='')
             print(f"{np.max(self.flow):>16.2f}", end='')
             print(f"{running_time:>16.2f}", end='')
-            if self.get_quality!=None:
+            if self.Q_estimator != None:
                 print(f"{self.quality_index:>16.4f}", end='')
             print()
             self.stop_event.clear()
@@ -166,7 +165,7 @@ class SRA:
             #filter_size=filter_size,
             #presmoothing=presmoothing
         )
-        projection = self.projector.remap(volume=reference, flow=self.flow)
+        projection = self.projector.remap(vol=reference, flow=self.flow)
         return projection
 
     def filter(
@@ -214,14 +213,14 @@ class SRA:
             )
             acc_volume += shuffled_and_compensated_noisy_volume
 
-            if self.quality_index != None:
+            if self.Q_estimator != None:
                 denoised = acc_volume/(i + 2)
-                self.quality_index = self.get_quality(noisy_volume, denoised)
+                self.quality_index = self.Q_estimator(noisy_volume, denoised)
                 title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
             else:
                 title = ''
 
-            if self.show_image != None:
+            if self.show_image:
                 self.show_image(denoised, title)
 
             self.stop_event.set()
