@@ -63,14 +63,14 @@ class Shuffle_Register_and_Average:
             print(f"{'quality_index':>16s}", end='')
         print()
 
-        self.stop_event = threading.Event()
+        self.show_event = threading.Event()
         self.logger_daemon = threading.Thread(target=self.show_log)
         self.logger_daemon.daemon = True
         self.time_0 = time.perf_counter()
         self.logger_daemon.start()
 
     def show_log(self):
-        while self.stop_event.wait():
+        while self.show_event.wait():
             time_1 = time.perf_counter()
             running_time = time_1 - self.time_0
             print(f"{self.iter:>5d}", end='')
@@ -84,7 +84,7 @@ class Shuffle_Register_and_Average:
             if self.Q_estimator != None:
                 print(f"{self.quality_index:>16.4f}", end='')
             print()
-            self.stop_event.clear()
+            self.show_event.clear()
             self.time_0 = time.perf_counter()
 
     def shuffle_vector(self, x, mean=0.0, std_dev=1.0):
@@ -223,7 +223,7 @@ class Shuffle_Register_and_Average:
             if self.show_image:
                 self.show_image(denoised, title)
 
-            self.stop_event.set()
+            self.show_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
         return denoised_volume
@@ -294,15 +294,15 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
             print(f"{'quality_index':>16s}", end='')
         print()
 
-        self.stop_event = threading.Event()
+        self.show_event = threading.Event()
         self.logger_daemon = threading.Thread(target=self.show_log)
         self.logger_daemon.daemon = True
         self.time_0 = time.perf_counter()
         self.logger_daemon.start()
 
     def show_log(self):
-        #while not self.stop_event.is_set():
-        while self.stop_event.wait():
+        #while not self.show_event.is_set():
+        while self.show_event.wait():
             time_1 = time.perf_counter()
             running_time = time_1 - self.time_0
             print(f"{self.iter:>5d}", end='')
@@ -316,7 +316,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
             if self.get_quality!=None:
                 print(f"{self.quality_index:>16.4f}", end='')
             print()
-            self.stop_event.clear()
+            self.show_event.clear()
             self.time_0 = time.perf_counter()
 
     def shuffling_vector(self, x, mean=0.0, std_dev=1.0):
@@ -464,7 +464,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
             if self.show_image:
                 self.show_image(denoised, title)
 
-            self.stop_event.set()
+            self.show_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
         return denoised_volume
@@ -522,7 +522,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
             if self.show_image:
                 self.show_image(denoised, title)
 
-            self.stop_event.set()
+            self.show_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
 
         return denoised_volume
@@ -617,7 +617,7 @@ class Random_Shuffling_Means_by_Slices(Shuffle_Register_and_Average, _2D_OF_Esti
                     N_poly=N_poly,
                     interpolation_mode=interpolation_mode,
                     extension_mode=extension_mode)
-            self.stop_event.set()
+            self.show_event.set()
 
             for y in range(noisy_vol.shape[1]):
                 acc_vol[:, y, :] += self.filter_slice(
@@ -631,7 +631,7 @@ class Random_Shuffling_Means_by_Slices(Shuffle_Register_and_Average, _2D_OF_Esti
                     N_poly=N_poly,
                     interpolation_mode=interpolation_mode,
                     extension_mode=extension_mode)
-            self.stop_event.set()
+            self.show_event.set()
 
             for x in range(noisy_vol.shape[2]):
                 acc_vol[:, :, x] += self.filter_slice(
@@ -645,7 +645,7 @@ class Random_Shuffling_Means_by_Slices(Shuffle_Register_and_Average, _2D_OF_Esti
                     N_poly=N_poly,
                     interpolation_mode=interpolation_mode,
                     extension_mode=extension_mode)
-            self.stop_event.set()
+            self.show_event.set()
 
         denoised_vol = acc_vol/(N_iters + 1)
         return denoised_vol
