@@ -425,6 +425,13 @@ Notice that the SNR is signal dependent and grows with $\mathbf{s}_i$ and with
 $\gamma$. Therefore, considering the Eq.~\ref{eq:SNR_Poisson}, we should increase
 $\gamma$ to reduce the noise.
 
+\subsection{Simulation using Gaussian noise generators}
+Considering Eq.~\ref{eq:E_Poisson} and Eq.~\ref{eq:V_Poisson}, it should be clear that we can simulate the generation of a Poisson sequence using
+\begin{equation}
+  \hat{\mathbf{s}}_i \approx \mathbf{s}_i + \mathbf{n}_i^{\mathcal{N}(\mu=\mathbf{s}_i, \sigma=\mathbf{s}_i/\gamma)}.
+  \label{eq:Poisson_simulation}
+\end{equation}
+
 \subsection*{Examples}
 
 See Figure~\ref{fig:Poisson_examples}.
@@ -648,6 +655,13 @@ and
 % cessing, 17(10):1737–1754, 2008.
 
 %}}}
+
+\subsection{Noise simulation}
+\gls{MPG} noise can be generated with
+\begin{equation}
+  \hat{\mathbf{s}}_i \approx \mathbf{s}_i + \mathbf{n}_i^{\mathcal{N}(\mu=\mathbf{s}_i, \sigma= (1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma)}.
+  \label{eq:Poisson_simulation}
+\end{equation}
 
 \section{Noise characterization}
 %{{{
