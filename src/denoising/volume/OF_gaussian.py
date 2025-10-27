@@ -1,7 +1,5 @@
 '''Gaussian volume denoising (SPGD) using optical flow (OpenCV version).'''
 
-import threading
-import time
 import numpy as np
 import cv2
 from . import gaussian
@@ -31,25 +29,6 @@ class Monochrome_Denoising(gaussian.Monochrome_Denoising):
         self.N_poly = N_poly
         for attr, value in vars(self).items():
             self.logger.info(f"{attr}: {value}")
-
-
-        self.stop_event = threading.Event()
-        self.logger_daemon = threading.Thread(target=self.show_log)
-        self.logger_daemon.daemon = True
-        self.time_0 = time.perf_counter()
-        self.logger_daemon.start()
-
-    def show_log(self):
-        while self.stop_event.wait():
-            time_1 = time.perf_counter()
-            running_time = time_1 - self.time_0
-            print(f"{self.iter:>5d}", end='')
-            print(f"{running_time:>16.2f}", end='')
-            if self.Q_estimator != None:
-                print(f"{self.quality_index:>16.4f}", end='')
-            print()
-            self.stop_event.clear()
-            self.time_0 = time.perf_counter()
 
     def warp_slice(self, slice, flow):
         height, width = flow.shape[:2]
