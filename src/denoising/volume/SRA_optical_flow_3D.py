@@ -40,7 +40,6 @@ class Shuffle_Register_and_Average:
         quality_estimator,
         show_image=False
     ):
-
         self.estimator = OF_estimator
         self.projector = projector
         self.logger = logger
