@@ -1,0 +1,1 @@
+ffmpeg -r 30 -start_number 1 -i 'SRA_empiar10311.ipynb_%d.png' -c:v libx264 -qp 0 -pix_fmt gray video.mp4
