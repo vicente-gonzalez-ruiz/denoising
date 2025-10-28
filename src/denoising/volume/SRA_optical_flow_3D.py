@@ -167,7 +167,7 @@ class Shuffle_Register_and_Average:
             filter_type=filter_type,
             filter_size=filter_size,
             presmoothing=presmoothing)
-        projection = self.projector.remap(volume=reference, flow=self.flow)
+        projection = self.projector.remap(vol=reference, flow=self.flow)
         return projection
 
     def filter(
@@ -221,7 +221,7 @@ class Shuffle_Register_and_Average:
                 title = ''
 
             if self.show_image:
-                self.show_image(denoised, title)
+                self.show_image(denoised_volume, title)
 
             self.show_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
