@@ -221,7 +221,7 @@ class Shuffle_Register_and_Average:
                 title = ''
 
             if self.show_image:
-                self.show_image(denoised_volume, title)
+                self.show_image(denoised_volume)
 
             self.show_event.set()
         denoised_volume = acc_volume/(N_iters + 1)
