@@ -1,14 +1,50 @@
 \chapter{SRA (Shuffle, Register and Average)}
 
 \begin{verbatim}
-  filter(noisy_vol, N_iters):
-    acc_vol = copy(noisy_vol)
-    iter = 0
-    for i in range(N_iters):
-      denoised_vol = acc_vol/(i+1)
-      acc_vol += project(shuffle(noise_vol), denoised_vol)
-    denoised_vol = acc_vol = acc_vol / (N_iters + )
-    return denoised_vol
+  filter_volume(noisy, N_iters):
+    acc = copy(noisy)
+    for iter in range(N_iters):
+      denoised = acc/(iter+1)
+      shuffled = shuffle(noisy)
+      acc += project(denoised, shuffled)
+    denoised = acc/(N_iters + 1)
+    return denoised
 
-  project(vol_to_project, reference_vol):
-    remap(reference_vol
+  project_volume(reference, target):
+    flow = estimate_3D_dense_optical_flow(reference, target)
+    projection = remap(reference, flow)
+    return projection
+
+  shuffle_volume(v):
+    tmp = empty_like(v)
+    /* Shuffling in Z */
+    values = arange(x.shape[0])
+    for y in range(v.shape[1]):
+      for x in range(v.shape[2]):
+        pairs = shuffle_vector(values)
+        pairs = pairs[pairs[:, 0].argshort()]
+        tmp[values, y, x] = v[pairs[:, 1], y, x]
+    v = tmp
+    /* Shuffling in Y */
+    values = arange(x.shape[1])
+    for y in range(v.shape[0]):
+      for x in range(v.shape[2]):
+        pairs = shuffle_vector(values)
+        pairs = pairs[pairs[:, 0].argshort()]
+        tmp[z, values, x] = v[z, pairs[:, 1], x]
+    v = tmp
+    /* Shuffling in X */
+    values = arange(x.shape[2])
+    for y in range(v.shape[0]):
+      for x in range(v.shape[1]):
+        pairs = shuffle_vector(values)
+        pairs = pairs[pairs[:, 0].argshort()]
+        tmp[z, y, values] = v[z, y, pairs[:, 1]]
+    return tmp
+    
+    shuffle_vector(v):
+      values = arange(len(v))
+      displacements = normal()
+      shuffled = stack((values + displacements, v), axis=1)
+      return shuffled
+\end{verbatim}
