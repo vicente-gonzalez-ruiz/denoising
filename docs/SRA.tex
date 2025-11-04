@@ -1,0 +1,14 @@
+\chapter{SRA (Shuffle, Register and Average)}
+
+\begin{verbatim}
+  filter(noisy_vol, N_iters):
+    acc_vol = copy(noisy_vol)
+    iter = 0
+    for i in range(N_iters):
+      denoised_vol = acc_vol/(i+1)
+      acc_vol += project(shuffle(noise_vol), denoised_vol)
+    denoised_vol = acc_vol = acc_vol / (N_iters + )
+    return denoised_vol
+
+  project(vol_to_project, reference_vol):
+    remap(reference_vol
