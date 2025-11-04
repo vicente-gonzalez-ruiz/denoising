@@ -1,0 +1,208 @@
+\chapter{Distortion metrics}
+In microscopy image denoising, overall distortion metrics are used to
+quantify the difference between a original (``clean'' or \gls{GT})
+signal $\mathbf{s}$ and its denoised version $\tilde{\mathbf{s}}$,
+both with $N$ samples. These metrics help assess how well the
+denoising algorithm preserved important signal features while removing
+noise. Notice however, that in practice the \gls{GT} is rarely
+available.
+
+\section{\glsentryfull{MSE} and \glsentryfull{RMSE}}
+%{{{
+
+The \acrshort{MSE} is a distortion metric that quantifies the mean square
+difference between the values of corresponding samples in two digital
+signals, usually with the same shape. The \gls{MSE} is simple and fast to
+compute, but is very sensitive to shifts or misalignments. We define
+\begin{equation}
+  \text{MSE}(\mathbf{s},\tilde{\mathbf{s}}) = \frac{1}{N}\sum_i(\mathbf{s}_i - \tilde{\mathbf{s}}_i)^2.
+  \label{eq:MSE}
+\end{equation}
+Notice that the \gls{MSE} is always positive, and the lower
+\gls{MSE} values, the bettet.
+
+In the case of the \acrshort{RMSE}, we have that
+\begin{equation}
+  \text{RMSE}(\mathbf{s},\tilde{\mathbf{s}}) = \sqrt{\text{MSE}(\mathbf{s},\tilde{\mathbf{s}})}.
+  \label{eq:RMSE}
+\end{equation}
+Notice that the \gls{RMSE} expresses the distortion in the same units as the
+input samples.
+
+%}}}
+
+\section{\glsentryfull{SNR}}
+%{{{
+
+The \acrshort{SNR} compares the energy of a desired signal (\gls{GT})
+$\mathbf{s}$ to the energy of \emph{background} noise
+$\mathbf{s}-\tilde{\mathbf{s}}$. It is defined as the ratio of average signal
+power
+(\href{https://en.wikipedia.org/wiki/Expected_value}{expectation} of
+the signal) to average noise power (expectation of the
+noise). Therefore,
+
+\begin{equation}
+  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\mathbb{E}(\mathbf{x})}{\mathbb{E}(\mathbf{x} - \mathbf{y})}.
+  \label{eq:formal_SNR}
+\end{equation}
+%where, in general, 
+%\begin{equation}
+%  \mathbb{E}(\mathbf{x}) = \sum_{i}\mathbf{x}_iP(\mathbf{x}_i).
+%  \label{eq:expectation}
+%\end{equation}
+Notice that if the noise has zero mean, the expectation
+of the noise is also the variance of the noise.
+
+This is the formal definition. However, because commonly in
+practice the probabilities of the samples are unknown, we estimate the
+expectation as a simple mean over the available data. In this case,
+we estimate
+\begin{equation}
+  \text{SNR}(\mathbf{x},\mathbf{y}) = \frac{\sum_{i=1}^J\mathbf{x}_i^2}{\sum_{i=1}^J(\mathbf{x}_i - \mathbf{y}_i)^2}.
+  \label{eq:estimated_SNR}
+\end{equation}
+
+Finally, it is common to express the power (energy) in decibels (dB).
+\begin{equation}
+  \text{SNR}_{\text{dB}}(\mathbf{x},\mathbf{y}) = 10\log_{10}\text{SNR}.
+  \label{eq:estimated_SNR_in_dBs}
+\end{equation}
+
+A ratio higher than 1:1 (greater than 0 dB) indicates more signal than
+noise. Therefore, a high SNR implies better quality (less noise).
+
+%}}}
+
+\section{\glsentryfull{PSNR}}
+%{{{
+
+The \acrshort{PSNR} measures the ratio between the maximum possible signal power
+value ($\text{Peak}$) and the noise power, and it is defined as
+\begin{equation}
+  \text{PSNR} = \frac{\text{Peak}^2}{\text{MSE}}
+  \label{eq:PSNR}
+\end{equation}
+For example, for 8 bits/pixel images, $\text{Peak}=2^8-1=255$.
+
+%}}}
+
+\section{\glsentryfull{SSIM} and \glsentryfull{MS-SSIM}}
+%{{{
+
+The \acrshort{SSIM} \cite{wang2004image} try to model the human
+perception of the differences between two images (or volumes)
+$\mathbf{x}$ and $\mathbf{y}$. The metric returns a real number
+between $[-1, 1]$, $-1$ representing the perfect dis-similarity case,
+$0$ no similarity, and $1$ perfect similarity. The \gls{SSIM} index is
+determined (splitting the input images into $M$ non-overlapping
+blocks) with
+\begin{equation}
+  \text{SSIM}(\mathbf{x}, \mathbf{y}) = \frac{1}{J} \sum_{j=1}^J \frac{(2\overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)},
+\end{equation}
+where $\overline{\mathbf x}_j$ is the mean of the $j$-th block of
+$\mathbf{x}$, $\sigma^2_{\mathbf{x}_j}$ is its variance (equivalently
+for $\mathbf{y}$), $\sigma_{\mathbf{x}_j\mathbf{y}_j}$ is the
+covariance (see Section \ref{sec:covariance}) of both blocks,
+$c_1=(k_1L)^2$, $c_2=(k_2L)^2$ are two variables used to stabilize the
+division with weak denominator, $L$ is the dynamic range of the
+samples, $k_1=0.01$, and $k_2=0.03$, and where the default
+size\footnote{See
+  \href{https://scikit-image.org/docs/stable/api/skimage.metrics.html\#skimage.metrics.structural_similarity}{\texttt{skimage.metrics.structural\_similarity}}.}
+of the local blocks is $7^D$, where $D$ is the number of signal
+dimensions. When evaulating, \gls{SSIM} values below $0$ do not make
+sense.
+
+\acrshort{MS-SSIM} \cite{wang2003multiscale} is an extension of SSIM computed at
+multiple image scales. It is more suitable to capture structural
+similarities across different levels of detail, which can be useful in
+microscopy where both fine and coarse features matter. It is defned as
+\begin{equation}
+  \text{MS-SSIM}(\mathbf{x}, \hat{\mathbf{y}}) = \prod_{j=1}^{J} \left[ \frac{(2 \overline{\mathbf{x}}_j \overline{\mathbf{y}}_j + c_1)(2\sigma_{\mathbf{x}_j \mathbf{y}_j} + c_2)}{(\overline{\mathbf{x}_j^2} + \overline{\mathbf{y}_j^2} + c_1)(\sigma^2_{\mathbf{x}_j} + \sigma^2_{\mathbf{y}_j} + c_2)} \right]^{\alpha_j} \left[ \frac{\sigma_j(\mathbf{x}, \hat{\mathbf{y}})}{\sigma_j(\mathbf{x}) + \sigma_j(\hat{\mathbf{y}}) + c_3} \right]^{\beta_j}
+\end{equation}
+where $\mathbf{x}$, $\mathbf{y}$ are the original and approximated
+images/volumes, respectively, $\overline{\mathbf{x}}_j$,
+$\overline{\mathbf{y}}_j$ are the local means of the $j\text{-th}$
+block of $\mathbf{x}$, and $\hat{\mathbf{y}}$, respectively,
+$\sigma_{\mathbf{x}_j \mathbf{y}_j}$ is the covariance between the
+blocks of $\mathbf{x}_j$ and $\hat{\mathbf{y}}_j$,
+$\sigma_{\mathbf{x}_j}, \sigma_{\mathbf{y}_j}$ are the standard
+deviations of the blocks of $\mathbf{x}_j$ and $\mathbf{y}_j$,
+respectively, and $\alpha_j, \beta_j$ are the weights that control the
+importance of each term at the $j\text{-th}$ scale/block.
+
+%}}}
+
+\section{\glsentryfull{PCC}}
+%{{{
+
+The \acrshort{PCC} is
+\href{https://en.wikipedia.org/wiki/Pearson_correlation_coefficient}{given
+  by}
+\begin{equation}
+  \text{PPC}(\mathbf{x}, \mathbf{y}) = \frac{\sum_j(\mathbf{x}_j - \overline{\mathbf{x}})(\mathbf{y}_j - \overline{\mathbf{y}})}{\sqrt{\sum_j (\mathbf{x}_j - \overline{\mathbf{x}})^2 \sum_j (\mathbf{y}_j - \overline{\mathbf{y}})^2}},
+  \label{eq:PCC}
+\end{equation}
+and measures the linear correlation between two signals $\mathbf{x}$
+and $\mathbf{y}$.  As happen with the SSIM, the output is in
+$[-1, -1]$, meaning $-1$ a perfect negative linear relationship
+between the input tensors, $0$ no linear relation, and $1$ a perfect
+coincidence.
+
+Notice that the \gls{PCC} is the same that the cross-correlation
+only for the 0-displacement when the signals are normalized. Therefore,
+although the computation of the \gls{CC} has a computational complexity of
+$O(N^2)$, we can determine the \gls{PCC} in $O(N)$.
+
+%}}}
+
+\section{\glsentryfull{LPIPS}}
+%{{{
+
+\acrshort{LPIPS} \cite{zhang2018unreasonable} is a deep learning-based
+metric that uses a pretrained neural network (e.g., AlexNet and VGG)
+to assess perceptual similarity, providing a better correlation with
+the human perfection of the distortion. The idea is to use the feature
+maps (intermediate activations) from various layers of a pre-trained
+\gls{CNN} to extract features from the input images. These feature maps
+capture important perceptual information, such as textures, edges, and
+high-level structures. Then, the similarity is computed in terms of
+feature differences between corresponding patches of the
+images. Concretelly,
+\begin{equation}
+  \text{LPIPS}(\mathbf{x}, \mathbf{y}) = \sum_i=1^Lw_i||f_i(\mathbf{x}) - f_i(\mathbf{y})||_2
+\end{equation}
+where $w_i$ is the weight (contribution) of the layer $i$ to the
+metric, $L$ is the number of layers used in the comparison,
+$f_i(\mathbf{x})$ are the weights of the feature map at layer $i$, and
+$||f_i(\mathbf{x}) - f_i(\mathbf{y})||_2$ measures the distance (see
+Appendix \ref{sec:L2_norm}) between the features at that layer.
+
+\gls{LPIPS} is trained using a large dataset of human judgments for image
+similarity, where human observers are asked to rate the perceptual
+similarity between pairs of images. The network is trained to find the
+$w_i$ which minimize the difference between predicted perceptual
+similarity and human ratings.
+
+%}}}
+
+\section{\glsentryfull{NIQE}}
+
+To do.
+
+% A. Mittal, R. Soundararajan, and A. C. Bovik, “Making a “completely
+% blind” image quality analyzer,” IEEE Signal Processing Letters, vol. 20,
+% no. 3, pp. 209–212, 2013.
+
+\section{\glsentryfull{CS}}
+The \acrshort{CS} is a metric used to measure the similarity between
+two non-zero vectors in a multi-dimensional space. It quantifies how
+similar two vectors are in their direction or orientation, rather than
+their magnitude or length.
+
+\begin{equation}
+  \cos(\mathbf{A}, \mathbf{B}) = \frac{\mathbf{A}\cdot\mathbf{B}}{||\mathbf{A}||~||\mathbf{B}||},
+\end{equation}
+where $\mathbf{A}\cdot\mathbf{B}$ is the dot product of vectors
+$\mathbf{A}$ and $\mathbf{B}$, and $||A||$ is the magnitude (Euclidean
+norm) of vector $\mathbf{A}$.

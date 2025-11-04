@@ -1,0 +1,184 @@
+\chapter{Structure-Preserving Gaussian Denoising (SPGD)}
+%{{{
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{yes_OF_images}
+  \caption{SPGD along the $\mathrm{Z}$-dimension. Five consecutive
+    slices (or $\mathrm{XY}$-planes) are involved in the filtering of
+    the slice $\hat{\mathbf{X}}_z$. Four displacements fields
+    (represented by arrows) determined by the OF estimator are used
+    for the alignment of the structures found in the slices
+    $\hat{\mathbf{X}}_{z-2}, \hat{\mathbf{X}}_{z-1},
+    \hat{\mathbf{X}}_{z+1},$ and $\hat{\mathbf{X}}_{z+2}$ with respect
+    to those present in $\hat{\mathbf{X}}_{z-2}$, hence producing
+    OF-compensated slices. The Gaussian filtering along the
+    $\text{Z}$-dimension (dotted line) is then applied to the
+    OF-compensated slices.\label{fig:SPGD}}
+\end{figure}
+
+In its 3D version, SPGD is based in 3D Gaussian filtering (see
+Eq.~\ref{eq:3D_GF}), but the noised volume $\hat{\mathbf{X}}$ is
+slice-wise 2D-warped (see Fig. \ref{fig:SPGD}) in the 3 space
+dimensions (see Fig. \ref{fig:3D_GF}), resulting (compared to GF) in a
+reduction of the bluring of the structures detected by a 2D OF
+(Optical Flow) estimator \cite{gonzalez2023structure}. This idea can
+be expressed as
+\begin{equation}
+  \tilde{\mathbf{X}}  = R_\text{X}\Big(R_\text{Y}\big(R_\text{Z}(\hat{\mathbf{X}})*^{(\text{Z})}{\mathbf h}\big)*^{(\text{Y})}{\mathbf h}\Big)*^{(\text{X})}{\mathbf h},
+    \label{eq:SDPG}
+\end{equation}
+where
+\begin{equation*}
+  \begin{array}{rclll}
+    R_\text{Z}(\mathbf{X}) & = & \big\{ \{ \overset{z'\rightarrow z}p(\mathbf{X}_{z',:,:})~:~\overset{z'\rightarrow z}p(\mathbf{X}_{z',:,:})\approx\mathbf{X}_{z,:,:} & \\ & & \text{for}~z'=z-\lceil\mathbf{h}.\mathsf{size}/2\rceil,\cdots,z+\lceil\mathbf{h}.\mathsf{size}/2\rceil\} & \\ & & \text{for}~z=0,1,\cdots,\mathbf{X}.\mathsf{shape}_0-1\big\}, \\
+    R_\text{Y}(\mathbf{X}) & = & \big\{ \{ \overset{y'\rightarrow y}p(\mathbf{X}_{:,y',:})~:~\overset{y'\rightarrow y}p(\mathbf{X}_{:,y',:}\approx\mathbf{X}_{[:,y,:]} & \\ & & \text{for}~y'=y-\lceil\mathbf{h}.\mathsf{size}/2\rceil,\cdots,y+\lceil\mathbf{h}.\mathsf{size}/2\rceil\} & \\ & & \text{for}~y=0,1,\cdots,\mathbf{X}.\mathsf{shape}_1-1\big\},~\text{and} \\
+    R_\text{X}(\mathbf{X}) & = & \big\{ \{ \overset{x'\rightarrow x}p(\mathbf{X}_{:,:,x'})~:~\overset{x'\rightarrow x}p(\mathbf{X}_{:,:,x'}\approx\mathbf{X}_{:,:,x} & \\ & & \text{for}~x'=x-\lceil\mathbf{h}.\mathsf{size}/2\rceil,\cdots,x+\lceil\mathbf{h}.\mathsf{size}/2\rceil\} & \\ & & \text{for}~x=0,1,\cdots,\mathbf{X}.\mathsf{shape}_2-1\big\}
+    \end{array}
+\end{equation*}
+are the slice-wise warped volumes. For example,
+$\overset{x'\rightarrow x}p(\mathbf{X}_{:,:,x'})$ represents the
+projection of the slice at slice-index $x'$ fulfilling that
+$\overset{x'\rightarrow
+  x}p({\mathbf{X}})\approx{\mathbf{X}}_{:,:,x}$. Notice that, for
+each possible offset in $\text{Z}$, $\text{Y}$, and $\text{X}$, a
+different set of warped 2D slices must be computed.
+
+\begin{comment}
+%{{{
+
+\begin{figure}
+\noindent $\mathsf{3DSPGF}(\hat{\mathbf{X}}, \mathbf{h}, w)$: $\rightarrow\tilde{\mathbf{X}}$
+\vspace{-1ex}
+\begin{enumerate}
+  \setlength{\itemsep}{0pt}
+\item [1.] $\tilde{\mathbf{X}}\leftarrow\mathsf{zeros\_like}(\hat{\mathbf{X}})$
+\item [2.] $\mathsf{for}~z~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}_0),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Z~direction~*/}$
+  \begin{enumerate}
+  \item [1.] $\mathsf{for}~h~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
+    \begin{enumerate}
+    \item [1.] $R_\text{Z}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{z+h,:,:}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{z+h,:,:}, \hat{\mathbf{X}}_{z,:,:}))$  
+    \item [2.] $\tilde{\mathbf{X}}_{z,:,:}\leftarrow\tilde{\mathbf{X}}_{z,:,:}+R_\text{Z}\mathbf{h}_{h}$
+    \end{enumerate}
+  \end{enumerate}
+\item [3.] $\mathsf{for}~y~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}_1),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~Y~direction~*/}$
+  \begin{enumerate}
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
+    \begin{enumerate}
+    \item [1.] $R_\text{Y}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{:,y+h,:}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{:,y+h,:}, \hat{\mathbf{X}}_{:,y,:}))$
+    \item [2.] $\tilde{\mathbf{X}}_{:y,:}\leftarrow\tilde{\mathbf{X}}_{:,y,:}+R_\text{Y}\mathbf{h}_{h}$
+    \end{enumerate}
+  \end{enumerate}
+\item [4.] $\mathsf{for}~x~\mathsf{in}~\mathsf{range}(\hat{\textbf{X}}.\mathsf{shape}_2),~\mathsf{run}$:  \hfill $\mathtt{/*~Filtering~in~the~X~direction~*/}$
+  \begin{enumerate}
+  \item [1.] $\mathsf{for}~k~\mathsf{in~range}(\mathbf{h}.\mathsf{size}),~\mathsf{run}$:
+    \begin{enumerate}
+    \item [1.] $R_\text{X}\leftarrow\href{https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#gab75ef31ce5cdfb5c44b6da5f3b908ea4}{\mathsf{warp}}(\hat{\mathbf{X}}_{:,:,x+h}, \href{https://docs.opencv.org/3.4/dc/d6b/group__video__track.html#ga5d10ebbd59fe09c5f650289ec0ece5af}{\mathsf{flow}}(\hat{\mathbf{X}}_{:,:,x+h}, \hat{\mathbf{X}}_{:,:,x}))$
+    \item [2.] $\tilde{\mathbf{X}}_{:,:,x}\leftarrow\tilde{\mathbf{X}}_{:,:,x}+R_\text{X}\mathbf{h}_{h}$
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+%\end{myquote}
+\caption{Python pseudo-code of 3DSPGF using periodic signal extension.}
+\label{fig:3DSPGF_imple}
+\end{figure}
+
+The 2D case of SPGD operates only over the Y and X axis, and works by
+aligning 1D lines instead of 2D frames before using GF. In the current
+implementation we are using the same 2D OF estimator than for the 3D
+case, splitting the image into overlaping 2D slices of several
+consecutive rows of columns (depending on if are filtering in the Y or
+the X direction) and computing the OF between these slices. Then, for
+each slice, we use only the line of the center to generate the
+OF-warped line.
+
+%}}}
+\end{comment}
+
+Compared with GF, the OF estimator requires some new parameters
+\cite{farneback2003two} that can affect to the denoised volumes:
+\begin{enumerate}
+\item The \textbf{Averaging Window Size (AWS)} that controls the
+  blurring of the generated motion field, and therefore, the blurring
+  of the denoised volume. The larger the size, the greater the
+  smoothing. In the context of SPGD, we will denote this parameter by
+  $w$. This parameter can be considered independent from the rest of
+  parameters.
+\item The \textbf{Number of Pyramid Layers (NPL)} ($l$) which,
+  depending on the slices content, can increase the length of the
+  motion vectors. When the slices are very close in distance, $l=1$
+  should work fine. However, if the slices are far, $l$ should be
+  larger. Therefore, there is a dependency between $l$ and $\tau$
+  (which controls the length of the Gaussian kernel).
+\item The \textbf{Standard Deviation of the Gaussian that is used to
+    smooth the cube of voxels used in the Polynomial Expansion
+    coefficients (SDGPE)} ($s$) that determines the maximum spatial
+  frequency that will be captured by the polynomial expansion and
+  therefore, the minimum size of the recognized structures by the OF
+  estimator. This parameter should not affect to the selection of the
+  rest of them.
+\end{enumerate}
+These parameters will be determined using a similar procedure to the
+used to find Eq.~\ref{eq:tau_VS_eta_empirical_EOS}. We will analyze how the corresponding SPGD parameter affects to $\hat{\eta}$.
+
+The operation of the OF estimator also depends on other parameters
+that can have fixed values and that, apart from their impact on the
+computational requirements, are not susceptible to optimization (the
+larger they are, the better the results should be, but the longer the
+computation time is required):
+\begin{enumerate}
+\item The \textbf{Pyramid Scale (PS)} that determines the relative
+  shape size between pyramid levels. Assuming square layers, when
+  $\mathbf{PS}=0.5$, the side of the $i$-th layer is equal to half the
+  side of the $i-1$-th layer.
+\item The \textbf{Number Of Iterations (NOI)} that affects to the
+  accuracy of the found OF fields. The higher this parameter is, the
+  better the precision obtained, but the longer the computation time
+  (which depends on $l$). By default, we use $\mathbf{NOI}=3$.
+\item The \textbf{Size of the pixel Neighborhood used to find
+    Polynomial Expansion (SNPE)} that affects on the impact of $s$ in
+  the same way that $k$ influences on the frequency response of the
+  Gaussian filter. SNPE should be large enought to provide a good
+  stop-band attenuation, but keep in mind that SNPE can also affect to
+  the cut-off frequency. We set a fixed $\mathbf{SNPE}=4$.
+\end{enumerate}
+
+{\color{red} \hrule Voy por aquí \hrule}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{cc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/gaussian_denoising.ipynb\#GF_0MMPG_barb}{\includegraphics{GF_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#SPGD_0MMPG_barb}{\includegraphics{SPGD_0MMPG_barb}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#SPGD_SFRC_0MMPG_barb}{\includegraphics{SPGD_SFRC_0MMPG_barb}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/figs/OF_gaussian_denoising.ipynb\#SPGD_PCC_0MMPG_barb}{\includegraphics{SPGD_PCC_0MMPG_barb}}
+    \end{tabular}
+  }
+  \caption{Effect of zero-mean MPG noise in an image and how SPGD)
+    can be used to reduce it. On the top-left, the best
+    denoised version generated by GD. On the top-right, the best denoised version using
+    SPGD. On the bottom-left it is shown the performance
+    of SPGD for different levels of noise. On the bottom-right, the SFRC curves
+    of the denoised image for different filter lengths. As can be seen
+    in the bottom-left subfigure, for the noise level $(\sigma=30,
+    \gamma=0.15)$, the optimal $\tau^*=7.0$. In the bottom-right
+    subfigure it can be seen that for this noise level, the optimal
+    Gaussian kernel-lenght is $\tau^*/2=3.5$.
+    \label{fig:SPGD_0MMPG}}
+\end{figure}
+
+A set of experiments have been conducted to figure out:
+\begin{enumerate}
+\item The relationship between $\tau$, $l$, and $w$.
+\item Whether the self correlation in the Fourier domain of the
+  denoised image can estimate optimal values for these parameters.
+\end{enumerate}
+
+Fig.~\ref{fig:SPGD_0MMPG} shows the performance of SPGD in a artificially
+noised image, for different levels of noise. As can be seen, the
+optimal value for the single parameter that SPGD requires (the length of
+the Gaussian kernels in each dimension) depends on the noise level, an
+information that is generally unknown in microscopy imaging.
+
+%}}}

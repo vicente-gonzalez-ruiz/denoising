@@ -1,0 +1,1333 @@
+\chapter{Noise}
+
+\emph{Noise} in digital signals refers to any unwanted or unintended
+alteration of the original signal, which can corrupt the information
+being transmitted or processed. In other words, noise is any
+interference that distorts a \emph{clean} signal, generating a
+\emph{noisy} signal.
+
+An important idea to keep in mind is that, in general, only one noisy
+version of the clean signal is available (neither the clean signal nor
+the noise are known). However, because we are interested in denoising
+a several denoising techniques are based on the concept of
+\emph{signal averaging}, we will treat a digital signal as an single
+sample (instance) of a random variable. Thus, for example, if
+$\mathbf{s}$ is the clean signal, under certain conditions, the
+expected image of a sequence of noisy (images) instances, where each
+instance is denoted by $\hat{\mathbf{s}}$, could be
+$\mathbb{E}(\hat{\mathbf{s}})=\mathbf{s}$ (the clean
+image). Alternatively, we could also suppose that a digital signal is
+a sequence of samples of a random variable. In this case, all we can
+say is that $\mathbb{E}(\hat{\mathbf{s}})=\mathbb{E}(\mathbf{s})$ that
+is a single value, $\mu$, for example. To distinguish between both
+expectations we will use the notation $\overline{\mathbb{E}}$ for the
+scalar case, when there exist some doubt.
+
+\section{Stochastic VS structured noise}
+Noise can be stochastic (i.d.d., independent and identically
+distributed), such as Poisson or Gaussian, or structured.  Structured
+corruptions exhibit correlations along dominant orientations and
+patterns that are coherent spatially, temporally, or
+otherwise. % https://arxiv.org/pdf/2510.01666
+
+% \section{Noise models}
+%{{{
+
+% \label{sec:noise_models}
+
+% Let $\mathbf{X}$ be a \emph{clean signal} (without noise, ground truth
+% usually unknown) tensor, and $\hat{\mathbf X}^{(i)}$ the $i$-th
+% noisy-version tensor random instance of $\mathbf{X}$ generated, in
+% general, through
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = f(\mathbf{X}, \mathbf{N}^{(i)}),
+%   \label{eq:general_model}
+% \end{equation}
+% where ${\mathbf N}^{(i)}$ an $i$-th (unknown) noise tensor instance
+% with the same shape as $\mathbf{X}$.
+
+% We assume that ${\mathbf X}$ and $\mathbf{N}$ are statistically
+% independent, and therefore, nothing can be said about
+% ${\mathbf N}^{(i)}$ if we know $\hat{\mathbf X}^{(i)}$, and
+% viceversa, and therefore, it is impossible to obtain ${\mathbf X}$
+% from a single $\hat{\mathbf X}^{(i)}$.
+
+% \subsection{Signal-independent noise model}
+% In SIN (signal-independent noise) models, the noise is statistically i.i.d. (independent and
+% identically distributed), i.e., the random values of ${\mathbf N}^{(i)}$ satisfy that
+% \begin{equation}
+%   {\mathbb E}[\{{\mathbf N}^{(i)}_j\}_{j=1}^J]=\frac{1}{J} \sum_{i=1}^J {\mathbf N}_j^{(i)}=\overline{\mathbf N}^{(i)},
+%   \label{eq:noise_expectation_1}
+% \end{equation}
+% where ${\mathbf N}^{(i)}_j$ is the $j$-th (scalar) value
+% of ${\mathbf N}^{(i)}$, and
+% \begin{equation}
+%   J=\prod_{k=1}^D \mathbf{X}.\text{shape}[k],
+% \end{equation}
+% being $D$ the number of dimensions of the signal (in microscopy, usually 2 or 3).
+
+% SIN models are also called additive noise models defined by
+% \begin{equation}
+%   \hat{\mathbf X}^{(i)} = {\mathbf X} + {\mathbf N}^{(i)}.
+%   \label{eq:additive_noisy_model}
+% \end{equation}
+
+% \subsection{Signal-dependent noise (SDN) models}
+% In SDN models, the amplitude of the random noise samples depends on
+% the clean signal (see Eq.~\ref{eq:general_model}).
+
+% %\begin{equation}
+% %  \hat{\mathbf X}^{(i)} = \mathbf{X} + {\mathbf N}^{(i)}(\mathbf{X}),
+% %  \label{eq:SDN_model}
+% %\end{equation}
+
+%}}}
+
+%\section{A statistical model for the Signal-to-Noise Ratio (SNR)}
+%{{{%-COM-
+%-COM-
+%-COM-The \gls{SNR} is defined as the ratio between the power (see
+%-COM-Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
+%-COM-clean signal and the power of the noise:
+%-COM-\begin{equation}
+%-COM-  \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})} = \frac{\mathbb{E}(\mathbf{s}^2)}{\mathbb{E}(\mathbf{n}^2)} = \frac{\mathbb{E}(\mathbf{s})^2+\mathbb{V}(\mathbf{s})}{\mathbb{E}(\mathbf{n})^2+\mathbb{V}(\mathbf{n})},
+%-COM-  \label{eq:SNR}
+%-COM-\end{equation}
+%-COM-where $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
+%-COM-noisy version, and
+%-COM-\begin{equation}
+%-COM-  \mathbf{n} = \hat{\mathbf{s}} - \mathbf{s}.
+%-COM-\end{equation}
+%-COM-
+%-COM-\begin{comment}
+%-COM-Supposing that
+%-COM-\begin{equation}
+%-COM-  \mathbb{V}(\mathbf{s}) = 0,
+%-COM-\end{equation}
+%-COM-because we are interested in measuring the power of the clean signal,
+%-COM-and considering only its mean can be a good approximation to this, and
+%-COM-that
+%-COM-\begin{equation}
+%-COM-  \mathbb{E}(\mathbf{n}) = 0,
+%-COM-\end{equation}
+%-COM-because this the most common in real imaging systems, Eq.~\ref{eq:SNR}
+%-COM-becomes
+%-COM-\begin{equation}
+%-COM-  \text{SNR} \approx \frac{\mathbb{E}(\mathbf{s})^2}{\mathbb{V}(\mathbf{n})}.
+%-COM-\end{equation}
+%-COM-
+%-COM-Unfortunately, in general we don't know either $\mathbf{s}$ or
+%-COM-$\mathbf{n}$. However, using that
+%-COM-\begin{equation}
+%-COM-  \mathbb{E}(\mathbf{s}^2) = \mathbb{E}(\hat{\mathbf{s}}^2),
+%-COM-\end{equation}
+%-COM-(see Appendix~\ref{sec:power_signal},
+%-COM- that 
+%-COM-\begin{equation}
+%-COM-  \mathbb{E}(\mathbf{s}^2)^2 = \mathbb{E}(\hat{\mathbf{s}}^2)^2,
+%-COM-\end{equation}
+%-COM-(see Appendix~\ref{sec:power_noise}) and that
+%-COM-\begin{equation}
+%-COM-  \mathbb{V}(\mathbf{n}) = \mathbb{V}(\hat{\mathbf{s}}-\mathbf{s}) = \mathbb{V}(\hat{\mathbf{s}}) + \mathbb{V}(\mathbf{s}) = \mathbb{V}(\hat{\mathbf{s}}),
+%-COM-\end{equation}
+%-COM-because $\mathbb{V}(\mathbf{s})=0$, we finally get that
+%-COM-\begin{equation}
+%-COM-  \text{SNR} \approx \frac{\mathbb{E}(\hat{\mathbf{s}})^2}{\mathbb{V}(\hat{\mathbf{s}})}.
+%-COM-  \label{eq:SNR-distribution}
+%-COM-\end{equation}
+%-COM-(again, we are interested in the power of the signal, not in its
+%-COM-\end{comment}
+%-COM-
+%-COM-In decibels,
+%-COM-\begin{equation}
+%-COM-  \text{SNR}_{\text{dB}} = 10\log_{10}\text{SNR}.
+%-COM-  \label{eq:SNR_dB}
+%-COM-\end{equation}
+%-COM-
+%}}}
+
+\section{\glsentryfull{AWG} noise}
+\label{sec:AWG}
+%{{{
+
+Zero-mean \footnote{In most of references, this particularity is
+  ignored because if the mean is not zero, we can subtract to the
+  noisy signal the expectation of the noisy signal.} \acrshort{AWG} noise
+is a type of random\footnote{There exist a different type of noise,
+  not random, sometimes called (depending on the context)
+  \emph{coherent noise}, \emph{procedural noise}, and \emph{gradient
+    noise}, etc., that we will not study.} noise characterized by:
+\begin{enumerate}
+
+\item \textbf{Additive}: The noise is added to the signal:
+  \begin{equation}
+    \hat{\mathbf{s}}_i = {\mathbf{s}}_i + {\mathbf{n}}_i,
+    \label{eq:AWG_i}
+  \end{equation}
+  where $\mathbf{s}$ is the clean signal (without noise, ground truth
+  usually unknown), $\hat{\mathbf{s}}$ is the noisy signal, and
+  ${\mathbf{n}}$ is a sequence of random real values (noise samples)
+  that follow a Gaussian (normal) distribution (see
+  Section~\ref{sec:gaussian_distribution}), centered at zero:
+  \begin{equation} 
+    \mathbb{E}(\mathbf{n}_i) = 0,\quad {\mathbf n}_i\sim{\mathcal N}(\mu=0,\sigma^2).
+  \end{equation}
+  %and therefore
+  %\begin{equation}
+  %  \mathbb{E}(\mathbf{n}) = \mathbf{0}.
+  %\end{equation}
+
+\item \textbf{Uncorrelated with the clean signal}: %The noise is independent of the clean image:
+\begin{comment}
+\end{comment}
+  In other words, nothing can said about the noise, except that
+  \begin{equation}
+    \Pr(\mathbf{n}{=}\mathbf{n}_i|\mathbf{s}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
+  \end{equation}
+\begin{comment}
+  Moreover, because $\mathbf{s}$ is unknown, 
+  \begin{equation}
+    \Pr(\mathbf{n}{=}\mathbf{n}_i|\hat{\mathbf{s}}_i) = \Pr(\mathbf{n}{=}\mathbf{n}_i).
+  \end{equation}
+\end{comment}
+
+\item \textbf{Uncorrelated noise samples}:
+  \begin{equation}
+    \mathbb{C}(\mathbf{n}_i,\mathbf{n}_j) = 0 \quad \text{for} \quad i\neq j.
+  \end{equation}
+  
+\item \textbf{White spectrum}: $\mathbf{n}$ has a constant \gls{PSD} over all frequencies (in
+  other words, $|\mathbf{N}|$ is flat).
+  
+\end{enumerate}
+
+For these reasons, this type of noise is commonly refered as \gls{AWG} noise.
+
+\subsection{Expectation of the noisy signal}
+Considering expectations in Eq.~\ref{eq:AWG_i}, we get that
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbb{E}(\mathbf{s}_i + \mathbf{n}_i) = \mathbb{E}(\mathbf{s}_i) + \mathbb{E}(\mathbf{n}_i) = \mathbb{E}(\mathbf{s}_i) + 0 = \mathbf{s}_i.
+  \label{eq:E_AWG_i}
+\end{equation}
+This basically implies that if, for example, we take an infinite
+number of noisy instances of the same biological specimen, and these
+instances are affected only by AWG noise, then the expected value for each
+noisy $i$-th pixel is the clean $i$-th pixel. In other words,
+$\hat{\mathbf{s}}$ is an unbiased estimator or $\mathbf{s}$.
+
+Obviously, if Eq.~\ref{eq:E_AWG} holds, then
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s}.
+  \label{eq:E_AWG}
+\end{equation}
+
+\begin{comment}
+Considering that $\mathbf{s}$ is a constant (the
+clean image is fixed for each adquisition of the image $\hat{\mathbf{s}}$),
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{s} + \mathbf{n}) = \mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{n}) = \mathbf{s} + \mathbf{0} = \mathbf{s}.
+  \label{eq:E_AWG}
+\end{equation}
+\end{comment}
+
+\subsection{Variance of the noisy signal}
+The variance of the signal described in Eq.~\ref{eq:AWG_i} is
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}_i) = \mathbb{V}(\mathbf{s}_i + \mathbf{n}_i) = \mathbb{V}(\mathbf{s}_i) + \mathbb{V}(\mathbf{n}_i) = \mathbb{V}(\mathbf{s}_i) + \sigma^2,
+  \label{eq:V_AWG_i}
+\end{equation}
+i.e.,
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \mathbb{V}(\mathbf{s}) + \sigma^2.
+  \label{eq:V_AWG}
+\end{equation}
+Notice that the variance of the noisy signal depend on the variance of
+the clean signal and the variance of the noise, and there is not a
+dependency betweeen both variances. This is a
+charactaristic of signal-independent noisy models.
+
+\begin{comment}
+If $\mathbf{s}=\mathbf{0}$ (a constant signal
+with zeros), Equations \ref{eq:E_AWG} and \ref{eq:V_AWG}
+reduce to
+\begin{equation}
+  \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2,
+\end{equation}
+respectively, and if $\mathbf{s}=\mathbf{1}$ (a constant signal with
+ones)
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{1}) = 1,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = \sigma^2.
+\end{equation}
+\end{comment}
+
+\subsection{\acrshort{SNR} of the \acrshort{AWG} noise model}
+
+The \gls{SNR} is commonly defined as the ratio between the power (see
+Eq.~\ref{eq:power_as_expectation} and Eq.~\ref{eq:variance}) of the
+clean signal and the power of the noise:
+\begin{equation}
+  \text{SNR} = \frac{P(\mathbf{s})}{P(\mathbf{n})} = \frac{\overline{\mathbb{E}}(\mathbf{s}^2)}{\overline{\mathbb{E}}(\mathbf{n}^2)} = \frac{\overline{\mathbb{E}}(\mathbf{s})^2+\overline{\mathbb{V}}(\mathbf{s})}{\overline{\mathbb{E}}(\mathbf{n})^2+\overline{\mathbb{V}}(\mathbf{n})},
+  \label{eq:SNR}
+\end{equation}
+where $\mathbf{s}$ is the clean signal and $\hat{\mathbf{s}}$ is its
+noisy version, and
+\begin{equation}
+  \mathbf{n} = \hat{\mathbf{s}} - \mathbf{s}.
+\end{equation}
+
+Considering that $\overline{\mathbb{E}}(\mathbf{n}) = 0$,
+\begin{equation}
+  \text{SNR} = \frac{\overline{\mathbb{E}}(\mathbf{s})^2 + \overline{\mathbb{V}}(\mathbf{s})}{\sigma^2},
+\end{equation}
+
+\begin{comment}
+that
+\begin{equation}
+  \mathbb{E}(\mathbf{s}) = \mathbf{s},
+  \label{eq:E_constant}
+\end{equation}
+that $\hat{\mathbf{s}}$ is an unbiased estimator of $\mathbf{s}$, i.e.,
+\begin{equation}
+  \lim_{N\rightarrow\infty}\frac{1}{N}\sum_{n=0}^{N-1}\hat{\mathbf{s}}^{(n)} = \mathbf{s},
+\end{equation}
+where $\hat{\mathbf{s}}^{(n)}$ is the $n$-th noisy instance of
+$\mathbf{s}$, and using Eq.~\ref{eq:SNR_distribution}, we come to
+\begin{equation}
+  \text{SNR} = \frac{\textbf{s}}{\sigma} = \frac{\hat{\textbf{s}}}{\sigma},
+  \label{eq:SNR_AWG}
+\end{equation}
+and therefore to
+\begin{equation}
+  \text{SNR}_i = \frac{\hat{\textbf{s}}_i}{\sigma}.
+  \label{eq:SNR_AWG_i}
+\end{equation}
+\end{comment}
+
+\subsection*{Examples}
+
+See Figure~\ref{fig:AWG_examples}.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{notebooks/2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/AWG_2d_gaussian.ipynb}{\includegraphics{AWG_2d_gaussian_20.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/AWG_2d_gaussian.ipynb}{\includegraphics{AWG_2d_gaussian_100.pdf}}
+    \end{tabular}
+  }
+  \caption{Examples of noisy images corrupted by \gls{AWG} noise. On
+    the left, the clean images. On the center and right, the noisy
+    ones (with the corresponding \gls{SNR} in
+    decibels). \label{fig:AWG_examples}}
+\end{figure}
+
+%}}}
+
+\section{Poisson noise}
+%{{{
+
+Poisson noise (see Section~\ref{sec:poisson_distribution}) is a type
+of signal-dependent noise that arises in systems where the measured
+data represent counts of discrete events (photons or electrons,
+depending on the microscope). Poisson noise becomes particularly
+relevant in low-radiation microscopy imaging.
+
+Pixel-wise signal-dependent Poisson noise can be modeled as
+\begin{equation}
+  \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\lambda=\gamma\mathbf{s}_i),
+  \label{eq:PN_i}
+\end{equation}
+where $\gamma$ controls the variance (the higher $\gamma$, the smaller
+the deviation from the $\mathbf{s}_i$ values). As can be seen, this is
+a signal-dependent model because the brighter parts of
+$\hat{\mathbf s}$ will have a higher mean and variance, and therefore
+a higher noise power \cite{meiniel2018denoising} (and viceversa). This also implies
+that the standard deviation of the noise depends on the expectation of
+the noisy signal, which depends on the expectation of the clean signal
+\cite{foi2008practical}. Finally, notice that $|\mathbf{N}|$ and
+$|\mathbf{S}|$ should look alike.
+
+\subsection{Expectation of the noisy signal}
+%From Eq.~\ref{eq:PN} we have that
+%\begin{equation}
+%  \hat{\mathbf{s}}_i = \frac{\mathbf{n}_i}{\gamma},~\mathbf{n}_i\sim\mathcal{P}(\gamma\mathbf{s}_i).
+%  \label{eq:PNi}
+%\end{equation}
+Considering expectations in Eq.~\ref{eq:PN_i}, we get that
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}_i) = \mathbb{E}\left(\frac{\mathbf{n}_i}{\gamma}\right) = \frac{1}{\gamma}\mathbb{E}(\mathbf{n}_i) = \frac{1}{\gamma}\gamma\mathbf{s}_i = \mathbf{s}_i.
+  \label{eq:EPNi}
+\end{equation}
+Therefore,
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbf{s},
+  \label{eq:E_Poisson}
+\end{equation}
+and therefore, $\hat{\mathbf{s}}$ is an unbiased estimator of
+$\mathbf{s}$ (the expected value for each noisy $i$-th pixel is the
+clean $i$-th pixel).
+
+\subsection{Variance of the noisy signal}
+Using again Eq.~\ref{eq:PN_i}
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}_i) = \mathbb{V}\left(\frac{\mathbf{n}_i}{\gamma}\right) = \frac{1}{\gamma^2}\mathbb{V}(\mathbf{n}_i) = \frac{1}{\gamma^2}\gamma\mathbf{s}_i = \mathbf{s}_i/\gamma,
+  \label{eq:V_Poisson}
+\end{equation}
+which indicates that the variance of pixel of noisy image depends
+linearly on the expectation of the corresponding pixel of the clean
+image \cite{foi2008practical}. Obviously, this is a signal-dependent
+noisy model.
+
+\begin{comment}
+In the exteme case where $\mathbf{s}=\mathbf{0}$, we get that
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = 0,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = 0.
+\end{equation}
+If $\mathbf{s}=\mathbf{1}$, then
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = 1,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = 1/\gamma.
+\end{equation}
+\end{comment}
+
+\subsection{\acrshort{SNR} of the Poisson noise model}
+
+If we suppose that the mean of signal represents the power of the signal and its standard
+deviation represents the noise component, we can define
+\begin{equation}
+  \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)}{\sqrt{\mathbb{V}(\hat{\mathbf{s}}_i)}}.
+  \label{eq:SNR_mean_deviation}
+\end{equation}
+
+Using Eq.~\ref{eq:E_Poisson} and Eq.~\ref{eq:V_Poisson}, we get that
+\begin{equation}
+  \text{SNR}_i = \frac{\mathbf{s}_i}{\sqrt{\mathbf{s}_i/\gamma}} = \sqrt{\gamma\mathbf{s}_i}.
+  \label{eq:SNR_Poisson}
+\end{equation}
+
+Notice that the SNR is signal dependent and grows with $\mathbf{s}_i$ and with
+$\gamma$. Therefore, considering the Eq.~\ref{eq:SNR_Poisson}, we should increase
+$\gamma$ to reduce the noise.
+
+\subsection{Simulation using Gaussian noise generators}
+Considering Eq.~\ref{eq:E_Poisson} and Eq.~\ref{eq:V_Poisson}, it should be clear that we can simulate the generation of a Poisson sequence using
+\begin{equation}
+  \hat{\mathbf{s}}_i \approx \mathbf{s}_i + \mathbf{n}_i^{\mathcal{N}(\mu=\mathbf{s}_i, \sigma=\mathbf{s}_i/\gamma)}.
+  \label{eq:Poisson_simulation}
+\end{equation}
+
+\subsection*{Examples}
+
+See Figure~\ref{fig:Poisson_examples}.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/2d_gaussian.ipynb}{\includegraphics{2d_gaussian.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{Poisson_2d_gaussian_0.1.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Poisson_2d_gaussian.ipynb}{\includegraphics{notebooks/Poisson_2d_gaussian.pdf}}
+    \end{tabular}
+  }
+  \caption{Examples of noisy images corrupted by Poisson noise. On the
+    left, the clean images. On the center and right, the noisy ones (with the
+    corresponding \gls{SNR} in
+    decibels). \label{fig:Poisson_examples}}
+\end{figure}
+
+%}}}
+
+\section{\glsentryfull{MPG} noise}
+\label{sec:MPG}
+% {{{
+
+A more realistic noise model in microscopy consists in a combination
+of both Poisson and \gls{AWG} noise, which is commonly known as
+\acrshort{MPG} noise \cite{meiniel2018denoising}. The generation of
+\gls{MPG} noise can be modeled as
+\begin{equation}
+  \hat{\mathbf{s}}_i = (1-\alpha)(\mathbf{s}_i + \mathbf{n}^{\mathcal{N}(\sigma)}_i) + \alpha\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i/\gamma),
+  %\hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf n}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
+  \label{eq:MPG_noise_model} 
+\end{equation}
+where the real number $\alpha\in[0,~1]$ controls the ratio between
+both types of noise (Poissonian and Gaussian). Therefore, for
+$\alpha > 0$,\footnote{Notice that if $\sigma=0$ and $\alpha=0$, both
+  types of noise vanish and $\hat{\mathbf{s}}=\mathbf{s}$. By default,
+  in our experiments, $\alpha=0.5$, i.e. both types of noise are
+  present in the same proportion.} the noise is signal-dependent and
+it's spectrum resembles in some degree the spectrum of
+$\mathbf{s}$. Notice that, as reported in \cite{foi2008practical},
+this mixing ratio should be described in the datasheet of the imaging
+hardware, or if this information is not known, could be estimated from
+the noisy images.
+
+\subsection{Expectation of the noisy signal}
+Considering that $\mathbb{E}(\mathbf{n}^{\mathcal{N}(\sigma^2)}_i)=0$
+and that
+$\mathbf{E}(\mathbf{n}^{\mathcal{P}(\gamma\mathbf{s})}_i)=\gamma\mathbf{s}_i$, and Eq.~\ref{eq:MPG_noise_model} boilds down to
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}_i) = (1-\alpha)(\mathbb{E}(\mathbf{s}_i)) + \alpha\gamma\mathbf{s}_i/\gamma = (1-\alpha)\mathbf{s}_i + \alpha\mathbf{s}_i = \mathbf{s}_i.
+  \label{eq:E_MPG}
+\end{equation}
+Therefore, the \gls{MPG} noise model is unbiased.
+
+\subsection{Variance of the noisy signal}
+Taking variances in Eq.~\ref{eq:MPG_noise_model} we obtain
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}_i) = (1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma
+  \label{eq:V_MPG}
+\end{equation}
+
+\subsection{\acrshort{SNR} of the \acrshort{MPG} noise model}
+Considering that (see Eq.~\ref{eq:SNR_mean_deviation})
+\begin{equation}
+  \text{SNR}_i = \frac{\mathbb{E}(\hat{\mathbf{s}}_i)^2}{\mathbb{V}(\hat{\mathbf{s}}_i)},
+\end{equation}
+and using Eq.~\ref{eq:E_MPG} and Eq.~\ref{eq:V_MPG}, we obtain that
+\begin{equation}
+  \text{SNR}_i = \frac{\mathbf{s}_i^2}{(1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma}.
+  \label{eq:SNR_MPG}
+\end{equation}
+
+Notice that, if $\alpha=0$ (only Gaussian noise), then
+\begin{equation}
+  \text{SNR} = \mathbf{0},
+\end{equation}
+that implies just Gaussian noise, no signal. On the contrary, if
+$\alpha=1$, then
+\begin{equation}
+  \text{SNR} = \sqrt{\gamma\mathbf{s}},
+\end{equation}
+which matches Eq.~\ref{eq:SNR_Poisson}.
+
+\begin{comment}
+In particular, for $\mathbf{s}=\mathbf{0}$ (a constant signal
+with zeros), Equations \ref{eq:E_MPG} and \ref{eq:V_MPG}
+become
+\begin{equation}
+  \mathbb{E}(\mathbf{\hat{\mathbf{s}}}) = 0,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2,
+\end{equation}
+and for $\mathbf{s}=\mathbf{1}$ (a constant signal with ones)
+\begin{equation}
+  \mathbb{E}(\hat{\mathbf{s}}) = \mathbb{E}(\mathbf{1}) = 1,
+\end{equation}
+and
+\begin{equation}
+  \mathbb{V}(\hat{\mathbf{s}}) = (1-\alpha)\sigma^2 + \alpha/\gamma.
+\end{equation}
+\end{comment}
+
+    
+%In this case, we have that
+%\begin{equation}
+%  \Pr({\mathbf n}{=}k) = \frac{e^{-\lambda}}{\sqrt{2\pi}\sigma}\sum_{p=0}^{\infty}\frac{\lambda^p}{p!} e^{-\frac{\gamma p - k}{2\sigma^2}},
+%  \label{eq:MPGN}
+%\end{equation}
+%and that
+%\begin{equation}
+%  \hat{\mathbf s} = (1-\alpha)(\mathbf{s} + {\mathbf s}_{\mathcal{N}(\sigma)}) + \alpha{\mathbf n}_{\mathcal{P}(\lambda=\gamma\mathbf{s})}/\gamma,
+%  \label{eq:MPG_noise_model} 
+%\end{equation}
+%where $\alpha\in[0,~1]$ controls the ratio of both types of
+%noise. Therefore, for $\alpha > 0$,\footnote{If $\sigma=0$ and
+%$\alpha=0$, both types of noise vanish and
+%$\hat{\mathbf{s}}=\mathbf{s}$.} the noise is signal-dependent and it's
+%spectrum resembles the spectrum of $\mathbf{x}$. By default, in our
+%experiments, $\alpha=0.5$.
+
+% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
+% Practical Poissonian-Gaussian noise modeling and fitting for
+% single-image raw-data. IEEE Transactions on Image Pro-
+% cessing, 17(10):1737–1754, 2008.
+
+%}}}
+
+%\section{Speckle noise}
+%{{{
+
+% Speckle noise is generated in optical devices that use coherent light sources (lasers), such as in fluorescence microscopy \cite{kumar2021speckle}. Speckle noise is signal-dependent, so its variance changes with the intensity of the true image. It has been modeled as zero-mean multiplicative Gaussian noise \cite{} and as Rice noise \cite{}.
+
+% Multiplicative zero-mean Gaussian noise, modeled as
+%   \begin{equation}
+%     \hat{\mathbf X}^{(i)} = {\mathbf X} (1 + {\mathbf N}^{(i)}),
+%     \label{eq:MGN}
+%   \end{equation}
+%   where ${\mathbf N}\sim{\mathcal N}(\mu,\sigma)$. This is a signal-dependent noise present
+%   in synthetic aperture radar (SAR) and ultrasound images is usually
+%   considered speckle noise.
+  
+%   Another distribution used for modeling speckle noise is the Rice
+%   distribution ($\mathbf{N}\sim\mathrm{Rice}(\nu,\sigma)$), with PDF
+%   \begin{equation}
+%     f(x; \nu,\sigma) = \Pr({\mathbf N}^{(i)}_j{=}x) = \frac{x}{\sigma^2}e^{\frac{-(x^2+\nu^2)}{2\sigma^2}}I_0\left(\frac{x\nu}{\sigma^2}\right),
+%   \end{equation}
+%   where $x$ is continuous, and $I_o$ is the modified Bessel function
+%   of the first kind with order zero. Rician noisy tensor instances can
+%   be generated with
+%   \begin{equation}
+%     \hat{\mathbf X}^{(i)} = \sqrt{ ({\mathbf X} + {\mathbf N}_{\text{real}}^{(i)})^2 + ({\mathbf N}_{\text{imag}}^{(i)})^2}.
+%   \end{equation}
+%   %Notice that the Rayleigh distribution ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$),
+%   %which is defined by the PDF
+%   %\begin{equation}
+%   %  {\mathbf N}^{(i)} \sim f(x; \sigma) = \frac{x}{\sigma^2} e^{-x^2/(2\sigma^2)}, \quad x \geq 0,
+%   %\end{equation}
+%   %continuous both, $x$ and $\sigma$ (the scale parameter) is a
+%   %particular case of Rice distribution when $\nu=0$.
+%   Notice that, even being $\nu=0$ (in whose case we are working with
+%   the Rayleigh distribution
+%   ($\mathbf{N}\sim\mathrm{Rayleigh}(\sigma)$)), the mean of the noise
+%   is not zero. The noise that corrupts magnetic resonance images is
+%   usually modeled as Rician/Rayleigh noise.
+
+%}}}
+
+%\section{The Anscombe transform and generalized Anscombe transformation (GAT)}
+%{{{
+
+% Using a nonlinear variance-stabilizing transformation (VST) to convert the
+% Poisson-Gaussian denoising problem into a Gaussian noise
+% removal problem. The VST is able to remove the signal-dependency of
+% the Poisson component, whose noise variance varies with
+% the expected pixel value, and results in a modified image
+% with signal-independent Gaussian noise only and a constant
+% (unitary) noise variance. Next, a Gaussian denoising algo-
+% rithm is applied to the transformed image. And finally, the
+% Gaussian-denoised data is transformed back via an inverse
+% VST algorithm, such as the exact unbiased inverse transfor-
+% mation [19], and the estimation of the noise-free image is
+% obtained.
+
+% https://arxiv.org/abs/2209.09825?utm_source=chatgpt.com
+% . Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+
+% [19] M. Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+
+% En "A Poisson-Gaussian Denoising Dataset with Real Fluorescence Microscopy
+% Images" hay una definición de la transformada (Eq. 4).
+
+%Variance-Stabilizing Transform (VST)
+
+%    Problem: The signal-dependent variance of Poisson noise makes it hard to apply standard Gaussian-based denoisers.
+
+%    Solution: Use a variance-stabilizing transformation, such as the Anscombe transform, to approximate the Poisson noise as Gaussian with constant variance:
+%    A(y)=2\sqrt(y+3/8)
+% After this, the transformed image has approximately unit Gaussian noise.
+
+%}}}
+
+%\section{Noise estimation}
+%{{{
+
+% Makitalo and A. Foi. Optimal inversion of the generalized
+% Anscombe transformation for Poisson-Gaussian noise. IEEE
+% Transactions on Image Processing, 22(1):91–103, 2013.
+% https://link.springer.com/chapter/10.1007/978-3-030-87231-1_33
+
+% A. Foi, M. Trimeche, V. Katkovnik, and K. Egiazarian.
+% Practical Poissonian-Gaussian noise modeling and fitting for
+% single-image raw-data. IEEE Transactions on Image Pro-
+% cessing, 17(10):1737–1754, 2008.
+
+%}}}
+
+\subsection{Noise simulation}
+\gls{MPG} noise can be generated with
+\begin{equation}
+  \hat{\mathbf{s}}_i \approx \mathbf{s}_i + \mathbf{n}_i^{\mathcal{N}(\mu=\mathbf{s}_i, \sigma= (1-\alpha)^2\sigma^2 + \alpha^2\mathbf{s}_i/\gamma)}.
+  \label{eq:Poisson_simulation}
+\end{equation}
+
+\section{Noise characterization}
+%{{{
+
+Noise estimation algorithms are necessary in most denoising algorithms
+to adapt to the type and amount of noise, instead of using fixed
+thresholds \cite{immerkaer1996fast}. For example, in denoising methods
+based on filtering in a transform domain, if we know the standard
+deviation of the noise we can filter out all those coefficients that
+are smaller than a given threshold which usually depends on the
+standard deviation of the noise. In Gaussian filtering, the length of
+the kernel should be selected depending on the standard deviation of
+the noise.
+
+Noise in $\hat{\mathbf{s}}$ (remember that both $\mathbf{s}$ and
+$\mathbf{n}$ are unknown) can be characterized attending to different
+aspects (some of them overlaped):
+\begin{enumerate}
+\item \textbf{The \gls{PDF} (tyoe) and parameters (level) of the
+    noise}. The most frequent (probably in this order) noise
+  distributions are Gaussian, Poisson, Rayleigh, Gamma, and
+  Exponential. Obviously, the \gls{PDF} defines the distribution
+  parameters (mean, variance, etc.).
+\item \textbf{Signal-dependency}. We can distinguish between additive
+  noise models and multiplicative noise models. In the first case, the
+  noise does not depends on the clean signal. In the second one, the
+  noise and the clean signal are correlated.
+\item \textbf{Frequency components}: The (\gls{PSD} of the) noise can
+  be white (flat spectrum) or colored (otherwise). Examples of colored
+  noise are: ``pink'' when its power decays as $1/f$, ``brown'' if its
+  power decreases as $i/f^2$, ``blue'' when its power increases with
+  the frequency.
+\item \textbf{Correlated or uncorrelated}: If there is a dependency
+  between noise samples, then the noise is correlated (also called Markovian or
+  auto-regressive), and viceversa (in which case it is said that that
+  the noise is memoryless or i.i.d.).
+\item \textbf{Stationarity}: Whether the noise’s statistical
+  properties change. Stationary noise has constant statistics, and
+  non-stationary noise varies in different regions.
+\end{enumerate}
+
+Unfortunately, in most of the practical applications noise never comes
+alone, and this difficults its characterization (and removal).
+
+\begin{comment}
+Noise can be additive or multiplicative. In the first case, noise is
+signal independent between samples of the same signal instance, and
+between samples of different instances, even if we consider the same
+sample index. In the second case, the power of the noise depends on
+the power of the signal, and therefore, if we can estimate the signal,
+we can estimate, for example, the local variance of the noise after
+supposing some statistical model. Notice, however, that in any case,
+we must known, at least two (inevitable noisy) instances of the clean
+signal.
+\end{comment}
+
+\begin{comment}
+This requirement often presents a significant
+challenge, particularly in contexts where samples are susceptible to
+the degradation caused by the microscope radiation, thereby limiting
+the feasibility of acquiring multiple such instances.
+
+When this is not possible, one way to simulate having two or more
+noisy instances of the same clean signal is to distribute the
+pixels/voxels across two or more images/volumes (see Appendices
+\ref{sec:EOS}, \ref{sec:CBS}, \ref{sec:ICBS}, \ref{sec:SCBS}, and
+\ref{sec:SPRS}). Unfortunately, the splitting reduces the spatial
+resolution at which the signal/noise parameters can be successfully
+estudied.
+\end{comment}
+
+%}}}
+
+\section{Estimation of noise statistics}
+
+A significative number of denoising techniques (see for example the
+Chapter~\ref{cha:WF}) require to know the variance of the noise to
+select their working parameters.
+
+One of the first attempt of estimating the noise statistical
+parameters of (in this case \gls{AWG} noise) was performed by Gonzalez
+and Woods \cite{gonzalez1992digital} that proposed to analyze
+different smooth parts of an image, where, in theory, the variance of
+the signal is much smaller than the variance of the noise, allowing
+thus to directly measure $\mathbb{V}(\mathbf{n})$.
+
+A evolution of the previous technique was proposed in
+\cite{immerkaer1996fast} in which using a $3\times 3$ convolution mask
+presented a method for estimating the variance of \gls{AWG} noise in
+$\hat{\mathbf{s}}$. In \cite{rank1999estimation}, $\hat{\mathbf{s}}$
+is low-pass filtered to ``to suppress the influence of the (unknown)
+original image'' and then the type and parameters of the noise in the
+filtered image are estimated.
+
+Noise statistics can be also estimated in a transform domain, such as
+the Wavelet domain. For example, in \cite{donoho1995adapting} and the
+\gls{MAD} of the wavelet coefficients at the highest subbands is used
+to estimate the standard deviation of the noise.\footnote{If one is
+  willing to make the assumption of spatially white noise, then
+  knowledge of the noise variance at the smallest scale allows the one
+  to infer the noise variance at all other scales
+  \cite{de2004training}.}
+
+\section{Correlation in the Fourier domain to estimate filtering parameters}
+\label{sec:fourier_correlation}
+%{{{
+
+If we have at least two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$ of the same clean signal, we can characterize
+the noise from a frequency perspective. Concretely, we can determine
+maximum resolution $d$ (frequency) of $\mathbf{s}$, considering, for
+example, the maximum spatial resolution that a microscope can
+achieve.\footnote{In microscopy, we use the \emph{resolving power} of
+  the microscope, which is the smallest distance $d$ between two
+  points that can still be distinguished (from a biological
+  perspective) as separate entities
+  \cite{nieuwenhuizen2013measuring}.} The idea is that, any frequency
+above $1/d$ will be dominated by noise (or at least, information that
+is not relevant\footnote{Notice that $d/2$ could be the sampling step
+  size used to digitalize the signal without lossing information.}),
+and therefore, a low-pass filter with a cut-off frequency of $1/d$
+should only remove noise.
+
+This information can be obtained using the \gls{FSC} curve that
+measures the similarity between two 3D volumes represented in the
+Fourier domain \cite{harauz1986exact,verbeke2024self} (for the 2D
+case, the equivalent metric is \gls{FRC}
+\cite{van1982arthropod}). Each point of the curve prepresents the
+normalized cross-correlation (see Section \ref{sec:cross-correlation})
+between two ``shells'' (``rings'' in 2D) of Fourier coefficients of
+both volumes (images). Correlation in the Fourier domain has become
+the universal resolution metric and is used to assess the quality of
+3D reconstructions \cite{rosenthal2003optimal,scheres2012prevention}.
+
+\begin{comment}
+An advantage of correlation in the Fourier domain (FC\footnote{When
+  the number of dimensions is not relevant, we will refer to this
+  metric simply by FC (Fourier Correlation).}) over other similarity
+metrics such as RMSE, SSIM or PPC is that FC values depend on the
+frequency, and this can be interesting in some scenarios, such as
+microscopy, where the resolution of the microscope is finite and known
+a priori \cite{nieuwenhuizen2013measuring}. Notice that, with this
+information, we can know whether the denoising is removing the
+high-frequency components of the clean signal, or on the contrary,
+basically noise.\footnote{When the SNR is very low, the Fourier
+  coefficients of the same ring/shell of two different noisy versions
+  of the same signal are uncorrelated and therefore, the corresponding
+  curves values should be close to zero.}  For this reason, in some
+fields such as single particle electron cryo-microscopy (cryo-EM),
+\end{comment}
+
+A point of the FSC curve is determined\footnote{An similar
+  definition there exists for the FRC.} by~\cite{verbeke2024self}
+\begin{equation}
+  \text{FSC}(\hat{\mathbf{s}}^{(1)}, \hat{\mathbf{s}}^{(2)}; r) =
+  \frac{\sum_{i \in S_r} \hat{\mathbf{S}}^{(1)}_i \hat{\mathbf{S}}^{(2)*}_i}
+  {\sqrt{\sum_{i \in S_r} |{\hat{\mathbf{S}}^{(1)}}_i|^2 \sum_{i \in S_r} |{\hat{\mathbf{S}}^{(2)}_i}|^2}}
+  \label{eq:FSC}
+\end{equation}
+where $i=(x, y, z)$ is a point (a coordinate of a Fourier coefficient)
+of the surface of the sphere $S_r$ defined by $x^2+y^2+z^2=r^2$, and
+$\hat{\mathbf{S}}$ is the Fourier transform of $\hat{\mathbf{s}}$. We
+will use the term \gls{FC} to refeer to these metrics when the number
+of dimensions is not relevant.
+
+%}}}
+
+\section{\glsentryfull{SFC} curve}
+%{{{
+
+Unfortunately, the two noisy instances $\hat{\mathbf{s}}^{(1)}$ and
+$\hat{\mathbf{s}}^{(2)}$ do not always exist (see
+Section~\ref{sec:why_denoising}).  In this case, a workaround is to
+simulate its existence, by distributing the information of the only
+image we have $\hat{\mathbf{s}}$ between two noisy
+(sub-)instances $\hat{\mathbf{s}}^{(a)}$ and
+$\hat{\mathbf{s}}^{(b)}$. For example, in \cite{verbeke2024self} a
+even/odd signal splitting (see Appendix~\ref{sec:EOS}) in 2D slices is
+proposed to compute the so called \gls{SFC}. In \cite{koho2019fourier}
+a subsampled-chessboard splitting pattern (see
+Appendix~\ref{sec:SCBS}) is used. Other ``splitting'' techniques are
+described in Appendices \ref{sec:ICBS}, \ref{sec:SCBS}, and
+\ref{sec:SPRS}. Unfortunately, the splitting reduces the spatial
+resolution at which the \gls{SNR} can be successfully
+estudied (for example, in \cite{verbeke2024self} the \gls{SFC} that
+resembles the true \gls{FC} only in some specific cases\footnote{Gaussian
+  noise distribution must be white, and the power spectrum of the
+  signal decays.} and in \cite{koho2019fourier}, the \gls{SFC} curves
+must be calibrated depending on the correlation). Therefore, in
+general, we should always consider \gls{SFC} curves as estimations of
+the true \gls{FC} curves.
+
+Finally, notice that, although both the \gls{FC} and the \gls{SFC} curves
+can be traced using only two signals, more accurate estimations can be
+obtained if more noisy instances are available, plotting the arithmetic mean
+of all the curves. For example, in the case of \gls{SCBS} we average two
+curves, while in the case of \gls{SPRS} the number of averaged curves can be
+choosen by the user.
+
+\begin{comment}
+Finally, notice that it is possible to compute the so called Self FC
+(SFC in general, specifically SFSC for the 3D case and SFRC for the 2D
+one), using some technique to simulate the existence of (at
+least\footnote{When it is possible to use more instances, the
+  resulting curve is the mean of all the curves.}) two
+``noisy''\footnote{In real scenarios, where it is possible to take two
+  (or more) captures of the same view, the only that should
+  distinguish the instances is the noise. Notice that, if the views
+  were different, the uncorrelated noise is also present.} instances,
+$\hat{\mathbf{X}}^{(1)}$ and $\hat{\mathbf{X}}^{(2)}$. For example, in
+\cite{verbeke2024self} a even/odd signal splitting (see
+Appendix~\ref{sec:EOS}) in 2D slices is proposed to compute the SFC
+that resembles the true FC in some specific cases. In
+\cite{koho2019fourier} a subsampled-chessboard splitting pattern (see
+Appendix~\ref{sec:SCBS}) is used to compute SFC curves. Notice that,
+to resemble the true FC curves, they must be calibrated for some
+correlation threshold.
+\end{comment}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_clean.ipynb}{\includegraphics{Confocal_FISH_clean.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_clean.ipynb}{\includegraphics{TwoPhoton_MICE_clean.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_clean_SFRC.ipynb}{\includegraphics{Confocal_MICE_clean.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_clean_SFRC.ipynb}{\includegraphics{Confocal_FISH_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_clean_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_clean_SFRC.ipynb}{\includegraphics{Confocal_MICE_clean_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{SFRC (Self Fourier Ring Correlation) of clean images
+    (generated by averaging (arithmetic mean) 50 noisy
+    instances~\cite{zhang2019poisson}) using different
+    data-splitting/shuffling algoritms: \acrshort{EOS}, \acrshort{CBS}, \acrshort{ICBS}, \acrshort{SCBS}, and \acrshort{SPRS}. SPRS curves have been computed using faded
+    margins. \label{fig:SFC_vs_splitting_clean}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_R_clean_SFRC.ipynb}{\includegraphics{Confocal_BPAE_R_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_G_clean_SFRC.ipynb}{\includegraphics{Confocal_BPAE_G_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_B_clean_SFRC.ipynb}{\includegraphics{Confocal_BPAE_B_clean_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_R_clean_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_R_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_G_clean_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_G_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_B_clean_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_B_clean_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_R_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_R_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_G_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_G_clean_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_B_clean_SFRC.ipynb}{\includegraphics{WideField_BPAE_B_clean_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{More SFRC curves of clean images. SPRS curves have been
+    computed using faded margins.\label{fig:more_clean_SRFC}}
+\end{figure}
+
+Fig.~\ref{fig:SFC_vs_splitting_clean} shows a comparison between
+several \gls{SFRC} curves obtained using different techniques for generating
+the instances from a single clean\footnote{Generated by
+  computing the arithmetic mean of the pixels of several noisy
+  instances \cite{zhang2019poisson}.} input image. Ideally, the dynamic
+range of the \gls{FC} curves should be [0, 1].
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy.ipynb}{\includegraphics{Confocal_MICE_noisy.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy_SFRC.ipynb}{\includegraphics{Confocal_FISH_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy_SFRC.ipynb}{\includegraphics{Confocal_MICE_noisy_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{SFRC (Self Fourier Ring Correlation) of three noisy
+    images (see Appendix~\ref{sec:images}) using different
+    data-splitting/shuffling algoritms (see
+    Fig.~\ref{fig:SFC_vs_splitting_noisy}). For the purpose of
+    comparison, it has also been show the FRC using another noisy
+    instance of $\mathbf{s}$.\label{fig:SFC_vs_splitting_noisy}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_R_noisy_SFRC.ipynb}{\includegraphics{Confocal_BPAE_R_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_G_noisy_SFRC.ipynb}{\includegraphics{Confocal_BPAE_G_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_B_noisy_SFRC.ipynb}{\includegraphics{Confocal_BPAE_B_noisy_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_R_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_R_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_G_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_G_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_B_noisy_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_B_noisy_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_R_noisy_SFRC.ipynb}{\includegraphics{WideField_BPAE_R_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_G_noisy_SFRC.ipynb}{\includegraphics{WideField_BPAE_G_noisy_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_B_noisy_SFRC.ipynb}{\includegraphics{WideField_BPAE_B_noisy_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{More SFRC curves of noisy images.\label{fig:more_noisy_SRFC}}
+\end{figure}
+
+Fig.~\ref{fig:SFC_vs_splitting_noisy} shows a comparison between \gls{FRC}
+and \gls{SFRC} curves obtained using different techniques for generating the
+instances from a single input noisy image.
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_artificial_SFRC.ipynb}{\includegraphics{Confocal_FISH_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_MICE_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_artificial_SFRC.ipynb}{\includegraphics{Confocal_MICE_artificial_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{SFRC (Self Fourier Ring Correlation) of three MPG
+    \emph{artificially-noisy} images using different
+    data-splitting/shuffling algoritms (see
+    Fig.~\ref{fig:SFC_vs_splitting_noisy}). The parameters for SPRS
+    are the same than the obtained the (true-) noisy
+    images.\label{fig:SFC_vs_splitting_artificial}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \resizebox{1.0\textwidth}{!}{
+    \renewcommand{\arraystretch}{0.0} % Adjust row spacing in the table
+    \setlength{\tabcolsep}{0ex}      % Adjust column spacing in the table    
+    \begin{tabular}{ccc}
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{Confocal_BPAE_B_artificial_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{TwoPhoton_BPAE_B_artificial_SFRC.pdf}} \\
+      \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_R_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_R_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_G_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_G_artificial_SFRC.pdf}} & \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE_B_artificial_SFRC.ipynb}{\includegraphics{WideField_BPAE_B_artificial_SFRC.pdf}}
+    \end{tabular}
+  }
+  \caption{More SFRC curves of \emph{artificially-noisy} images. The
+    parameters for SPRS are the same than the obtained by the (true-)
+    noisy images.\label{fig:more_artificial_SRFC}}
+\end{figure}
+
+Fig.~\ref{fig:SFC_vs_splitting_artificial} shows a comparison
+between \gls{FRC} and \gls{SFRC} curves obtained using different techniques for
+generating the instances of a single input \emph{artificially-noisy}
+image.
+
+\begin{comment}
+%{{{
+
+Each point of a SFSC curve represents the correlation between the
+Fourier coefficients extracted from the same subband (shell) from two
+subsampled versions of the same signal, at the cost of reducing the
+spatial resolution to the half of the original frequency (in each
+signal dimension). This fact should be taked into account when we
+consider the spatial resolution in any analysis that use the SFSC
+curve instead of the FSC curve. For example, if we are using a
+separable $N$-taps low-pass filter in the original resolution volume,
+the equivalent ``SFSC-length'' filter would have had $N/2$ taps.
+
+%}}}
+\end{comment}
+
+\begin{comment}
+\section{Self Fourier correlation of random data}
+\label{sec:SFC_random_data}
+%{{{
+
+In order to know the dynamic range of frequencies that we can use to
+determine the cut-off frequency of a low-pass filter-based denoising
+technique, in the Fig.~\ref{fig:SFC_random_data} has been shown for
+both, the even/odd-splitting (EO) algorithm and the SPRS algorithm,
+the SFC curve of an image with random information.
+
+The coefficients of a
+digital Gaussian filter can be generated with
+\begin{equation}
+  h[n] = \text{GF}_{\tau}(\delta[n]),
+\end{equation}
+where the function $\text{GF}(\cdot)$ represents a 1D GF, which in our
+case is implemented using the method
+\href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter1d.html}{scipy.ndimage.gaussian\_filter1d()}. This method returns kernels with
+\begin{equation}
+  \mathbf{h}.\mathsf{size} = 2\lceil k\tau\rceil + 1,
+\end{equation}
+where $k=4$ provides enough accuracy in the
+convolutions.\footnote{Notice that if $k$ grows then the cut-off
+  frequency of the filter decreases, regardless of $\tau$.} Notice
+that the filter is truncated at $\pm 4\tau$.
+
+%}}}
+\end{comment}
+
+
+%}}}
+
+\begin{comment}
+\section{Spectral SNR (SSNR)}
+\label{sec:SSNR}
+%{{{
+
+The \gls{SNR} in the frequency domain can be defined in terms of the
+\gls{AC} (see Section~\ref{sec:autocorrelation}) of the signal
+$\mathbf{s}$ and the \gls{CC} (see
+Section~\ref{sec:cross-correlation}) between the signal and the noise
+$\mathbf{n}$,
+\begin{equation}
+  % \text{SNR}(f) = \frac{R_{\mathbf{ss}}}{R_{\mathbf{sn}}}.
+  \text{SNR}(f) = \frac{\text{CC}(\mathbf{s},\mathbf{s})}{\text{CC}(\mathbf{s},\mathbf{n})},
+\end{equation}
+where $f$ denotes frequency.
+
+The SSNR can be estimated using the correlation in the Fourier domain
+between two (or more, in this case, using the mean SSNR) instances
+$\hat{\mathbf{X}}^{(1)}$ and $\hat{\mathbf{X}}^{(2)}$. For example, in
+the 3D case (and we only have two instances)
+\cite{unser1987new,verbeke2024self}, we have that
+\begin{equation}
+\text{SSNR}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f) = \frac{\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f)}{1-\text{FSC}(\hat{\mathbf{X}}^{(1)}, \hat{\mathbf{X}}^{(2)}; f)}.
+\end{equation}
+
+%}}}
+\end{comment}
+
+\section{Estimation of the variance of the noise using the \gls{SFC} curve}
+\label{sec:variance_SFC}
+
+\begin{subappendices}
+
+\section{\glsentryfull{EOS}}
+\label{sec:EOS}
+%{{{
+
+In the 2D case, \acrshort{EOS} generates
+\begin{equation}
+  \mathrm{EOS}(\mathbf{X})=\{\mathbf{X}^{(\text{VE})}, \mathbf{X}^{(\text{VO})}, \mathbf{X}^{(\text{HE})}, \mathbf{X}^{(\text{HO})}\},
+\end{equation}
+where $\mathbf{X}$ is the input image, and $\{\mathbf{X}^{(i)}\}_{i=\{\text{VE}, \text{VO}, \text{HE}, \text{HO}\}}$
+  are the output images, where $\text{VE}=\text{vertical-even}$,
+  $\text{VO}=\text{vertical-odd}$, $\text{HE}=\text{horizontal-even}$,
+  and $\text{HO}=\text{horizontal-odd}$. Concretely,
+  \begin{align}
+    \mathbf{X}^{(\text{VE})}_{y,x} & = \mathbf{X}_{2y,x}, \\
+    \mathbf{X}^{(\text{VO})}_{y,x} & = \mathbf{X}_{2y+1,x}, \\
+    \mathbf{X}^{(\text{HE})}_{y,x} & = \mathbf{X}_{y,2x},\\
+    \mathbf{X}^{(\text{VO})}_{y,x} & = \mathbf{X}_{y,2x+1}.
+  \end{align}
+  
+%}}}
+
+\section{\glsentryfull{CBS}}
+\label{sec:CBS}
+%{{{
+
+In the 2D case, \gls{CBS} generates two distinct
+instances
+\begin{equation}
+  \mathrm{CBS}(\mathbf{X})=\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\},
+\end{equation}
+where $\mathbf{X}$ is the input image, and
+$\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}$ are the output
+images. Defining a chessboard\footnote{It is also common to found in
+  the literature the term checkerboard.} mask function
+\begin{equation}
+  M(y,x)=(y+x)~\text{mod}~2,
+\end{equation}
+the CBS algorithm consists of:
+\begin{enumerate}
+\item \textbf{Populate} $\mathbf{X}^{(\text{B})}$ \textbf{with
+    ``black'' chessboard pixels from $\mathbf{X}$:} In an initially
+  zero-image $\mathbf{X}^{(\text{B})}$, copy the ``black'' pixels from
+  $\mathbf{X}$ to $\mathbf{X}^{(\text{B})}$:
+  \begin{equation}
+    \mathbf{X}^{(\text{B})}_{\{b\}} = \mathbf{X}_{\{b\}},
+    \label{eq:copy_blacks}
+  \end{equation}
+  where ``B'' indicates ``black'', and
+  \begin{equation}
+    \{b\} = \{(y, x) \mid M(y, x)=0\}
+    \label{eq:black_pixels}
+  \end{equation}
+  are the ``black'' pixel coordinates.
+  
+\item \textbf{Populate} $\mathbf{X}^{(\text{W})}$ \textbf{with
+    ``white'' chessboard pixels from $\mathbf{X}$:} In an initially
+  zero-image $\mathbf{X}^{(\text{W})}$, copy the corresponding pixels
+  from $\mathbf{X}$ to $\mathbf{X}^{(\text{W})}$:
+  \begin{equation}
+    \mathbf{X}^{(\text{W})}_{\{w\}} = \mathbf{X}_{\{w\}},
+    \label{eq:copy_whites}
+  \end{equation}
+  where ``W'' indicates ``white'', and
+  \begin{equation}
+    \{w\} = \{(y, x) \mid M(y, x)=1\}
+    \label{eq:white_pixels}
+  \end{equation}
+  are the ``white'' pixel coordinates.
+  
+\end{enumerate}
+
+%}}}
+
+\section{\glsentryfull{ICBS}}
+\label{sec:ICBS}
+%{{{
+
+\acrshort{ICBS} is an extension of \gls{CBS} (which must be run first, see
+Appendix~\ref{sec:CBS}) where the $\{w\}$ (``white'') pixels involved
+in Eq.~\ref{eq:copy_blacks} are interpolated using the $\{b\}$
+(``black'') pixels (see Eq.~\ref{eq:black_pixels}), and
+viceversa. Therefore,
+\begin{equation}
+  %\mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(b)},\mathbf{X}^{(w)}\},
+  \mathrm{ICBS}(\mathbf{X})=\{\mathbf{X}^{(\text{B})},\mathbf{X}^{(\text{W})}\}=\{\text{CBS}(\mathbf{X})_0 + \mathbf{X}^{(b')},\text{CBS}(\mathbf{X})_1 + \mathbf{X}^{(w')}\},
+\end{equation}
+where $\mathbf{X}$ is the input image, and the new output pixels of
+$\mathbf{X}^{(\text{B})}$ and $\mathbf{X}^{(\text{W})}$ are
+\begin{equation}
+  \mathbf{X}^{(\text{B}')}_{(y,x)\in\{w\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}),
+\end{equation}
+and
+\begin{equation}
+  \mathbf{X}^{(\text{W}')}_{(y,x)\in\{b\}} = \frac{1}{4}(\mathbf{X}_{(y-1,x)}+\mathbf{X}_{(y+1,x)}+\mathbf{X}_{(y,x-1)}+\mathbf{X}_{(y,x+1)}).
+\end{equation}
+
+%}}}
+
+\section{\glsentryfull{SCBS}}
+\label{sec:SCBS}
+%{{{
+
+\acrshort{SCBS} \cite{koho2019fourier} decomposes an input image $\mathbf{X}$
+into four distinct sub-images
+\begin{equation}
+  \mathrm{SCS}(\mathbf{X}) = \{\mathbf{X}^{(\text{OO})}, \mathbf{X}^{(\text{EE})}, \mathbf{X}^{(\text{OE})}, \mathbf{X}^{(\text{EO})} \},
+\end{equation}
+where
+\begin{align}
+  \mathbf{X}^{(\text{OO})} & = (\mathbf{X}_{\{o\},:})_{:,\{o\}}, \text{(pixels with odd row and odd column indices)} \\
+  \mathbf{X}^{(\text{EE})} & = (\mathbf{X}_{\{e\},:})_{:,\{e\}}, \text{(pixels with even row and even column indices)}\\
+  \mathbf{X}^{(\text{OE})} & = (\mathbf{X}_{\{o\},:})_{:,\{e\}}, \text{(pixels with odd row and even column indices)}\\
+  \mathbf{X}^{(\text{EO})} & = (\mathbf{X}_{\{e\},:})_{:,\{o\}}, \text{(pixels with even row and odd column indices)}
+\end{align}
+where
+\begin{align}
+  \{o\} = \{i\mid M(i)=1\}, \\
+  \{e\} = \{i\mid M(i)=0\},
+\end{align}
+where
+\begin{equation}
+  M(i) = i~\text{mod}~2,
+\end{equation}
+and $\mathbf{X}_{i,:}$ denotes the $i$-th row of $\mathbf{X}$, and
+$\mathbf{X}_{:,i}$ the $i$-th column of $\mathbf{X}$.
+
+%}}}
+
+\section{\glsentryfull{TRPR}}
+\label{sec:TRPR}
+%{{{
+
+\acrshort{TRPR} divides one noisy image into overlaping $2\times 2$ patches
+and randomly samples two pixels from each patch, to obtain a pair of
+noisy images \cite{ma2025spatiotemporal}. The number $S$ of
+\gls{TRPR}-images with shape $(H-1)\times (W-1)$ is bounded by
+\begin{equation}
+  S \leq 4^{(H-1)(W-1)},
+\end{equation}
+where $W$ and $H$ are the number of horizontal and vertical pixels,
+respectively.
+
+In the case of volume imaging, the shape of the patches is
+$2\times 2\times 2$ and we sample two voxels from each patch. Now
+\begin{equation}
+  S \leq 8^{(H-1)(W-1)(D-1)},
+\end{equation}
+and the shape of the \gls{TRPR}-volumes is $(H-1)(W-1)(D-1)$.
+
+%}}}
+
+\section{\glsentryfull{SPRS}}
+\label{sec:SPRS}
+%{{{
+
+\acrshort{SPRS} can be used to generate similar instances of an image or volume
+$\mathbf{s}$. We deonote this as
+\begin{equation}
+  \mathrm{SPRS}(\mathbf{s}; n, \sigma) = \{\mathbf{s}, \mathbf{s}^{(i)}\}_{i=1}^n,
+\end{equation}
+where $n\ge 1$ controls the number of generated instances, and
+$\sigma$ is the standard deviation of the normal distribution that a
+random numbers generator follows to produce, in each run, a different
+instance. Notice that, for convenience, the input signal $\mathbf{s}$
+is also in the output set.
+
+Concretelly, each \gls{SPRS} instance is generated (for the 2D case) using
+the following algorithm:
+\begin{enumerate}
+\item \textbf{Separable 2D random shuffling of the samples of
+    $\mathbf{X}$}: Let be two different pixels $\mathbf{X}_1$ and
+  $\mathbf{X}_2$ with coordinates $(x_1, y_1)$ and $(x_2, y_2)$. This
+  step performs the operation
+  \begin{equation}
+    \text{swap}_{xy}(\mathbf{X}_1,\mathbf{X}_2) = \{\text{swap}_x(\mathbf{X}_1,\mathbf{X}_2), \text{swap}_y(\mathbf{X}_1,\mathbf{X}_2)\},
+  \end{equation}
+  where
+  \begin{equation}
+    \text{swap}_x(\mathbf{X}_1,\mathbf{X}_2) = \text{swap}(x_1, x_2)\quad\text{if}~|x_1-x_2|<X,~X\sim\mathcal{N}(\sigma^2)
+  \end{equation}
+  and
+  \begin{equation}
+    \text{swap}_y(\mathbf{X}_1,\mathbf{X}_2) = \text{swap}(y_1, y_2)\quad\text{if}~|y_1-y_2|<X,~X\sim\mathcal{N}(\sigma^2),
+  \end{equation}
+  where $\text{swap}(a,b)$ performs
+  \begin{equation}
+    (a,b) \leftarrow (b,a).
+  \end{equation}
+  When these swappings are performed for all the pixels of
+  $\mathbf{X}$, this step generates a randomly locally-shuffled image
+  $\hat{\mathbf{X}}$. Notice that no pixels are lost, only displaced.
+
+\item \textbf{Projection of $\mathbf{X}$ on $\hat{\mathbf{X}}$}:
+  \begin{enumerate}
+  \item \textbf{Computation of a \gls{DOF} field
+      $\overrightarrow{\mathbf{V}}$}: We use the \gls{DOF} Farneb\"ack
+    algorithm \cite{farneback2003two} to find a correspondence between
+    the pixels of $\mathbf{X}$ and $\hat{\mathbf{X}}$ in terms of a
+    spatial displacement (a vector) for each pixel of
+    $\mathbf{X}$. Specifically, $\overrightarrow{\mathbf{V}}$ maps each
+    pixel of $\mathbf{X}$ into a coordinate of $\hat{\mathbf{X}}$,
+    where the coordinate components can be floating point numbers.
+  \item \textbf{Project $\mathbf{X}$ using
+      $\overrightarrow{\mathbf{V}}$}: Each pixel $\mathbf{X}_i$
+    with coordinates $(i_x, i_y)$ is replaced by the bilinear
+    interpolation of the four pixels of $\hat{\mathbf{X}}$ closer to
+    the coordinate $(i_x+V_i.x,i_y+V_i.y)$, resulting
+    $\tilde{\mathbf{X}}$.
+  \end{enumerate}
+\end{enumerate}
+
+In conclusion, by applying Gaussian-distributed local perturbations to
+pixel indices and a \gls{DOF} projection, \gls{SPRS} generates a local
+randomization (from a visual point of view) of the structures of the
+input image.
+
+%}}}
+
+\begin{comment}
+\section{If $\mathbb{E}(\mathbf{n})=0$, then $\mathbb{E}(\mathbf{s}^2)=\mathbb{E}(\hat{\mathbf{s}}^2)$}
+\label{sec:power_signal}
+If $\mathbb{E}(\mathbf{n})=0$, the power of the clean signal is the
+same than the power of the noisy signal:
+
+\begin{alignat*}{2}
+  P(\mathbf{s}) & = \mathbb{E}(\mathbf{s}^2) \\
+                & = \mathbb{E}\left((\mathbf{n}+\hat{\mathbf{s}})^2\right) \\
+                & = \mathbb{E}(\mathbf{n}^2+2\mathbf{n}\mathbf{s}+\hat{\mathbf{s}}^2) \\
+                & = \mathbb{E}(\mathbf{n}^2) + 2\mathbb{E}(\mathbf{n})\mathbb{E}(\hat{\mathbf{s}}) + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+                & = \mathbb{E}(\hat{\mathbf{s}}^2) = P(\hat{\mathbf{s}}).
+\end{alignat*}
+
+\section{If $\mathbb{E}(\mathbf{n})=0$, then $\mathbb{E}(\hat{\mathbf{s}}^2)=\mathbb{E}(\mathbf{s}^2)$}
+\label{sec:power_noise}
+If $\mathbb{E}(\hat{\mathbf{s}})=\mathbb{E}(\mathbf{s})$, i.e.,
+the noise is the random fluctuation arround that mean, then:
+
+\begin{align*}
+  P(\mathbf{n})
+  & = \mathbb{E}(\mathbf{n}^2) \\
+  & = \mathbb{E}\left((\hat{\mathbf{s}}-\mathbf{s})^2\right)\\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2 - 2\hat{\mathbf{s}}\mathbf{s} + \mathbf{s}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})\mathbb{E}(\mathbf{s}) + \mathbb{E}(\mathbf{s}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})\mathbb{E}(\hat{\mathbf{s}}) + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2) -2\mathbb{E}(\hat{\mathbf{s}})^2 + \mathbb{E}(\hat{\mathbf{s}}^2) \\
+  & = \mathbb{E}(\hat{\mathbf{s}}^2)-\mathbb{E}(\hat{\mathbf{s}})^2 \\
+  & = \mathbb{V}(\hat{\mathbf{s}}).
+\end{align*}
+\end{comment}
+
+\end{subappendices}
+
+% Enhancing Image Denoising Performance through Cosine Similarity-Based Block Matching and Adaptive Thresholding-CA-EBM3D
+
+% Prior-Guided Image Denoising via Generative Adversarial Networks with Single Noisy Images
