@@ -1,0 +1,7 @@
+numpy
+opencv-python
+matplotlib
+# https://github.com/pypa/setuptools/issues/2568
+motion_estimation @ git+https://github.com/vicente-gonzalez-ruiz/motion_estimation@main#egg=motion_estimation
+color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms@main#egg=color_transforms
+information_theory @ git+https://github.com/vicente-gonzalez-ruiz/information_theory@main#egg=information_theory

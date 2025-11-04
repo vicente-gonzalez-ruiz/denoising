@@ -1,0 +1,309 @@
+%\documentclass{article}
+%\documentclass[draft]{report}%{article}
+\documentclass{report}%{article}
+\usepackage{graphicx}
+%\usepackage[demo]{graphicx} %\usepackage[draft]{graphicx}
+\graphicspath{{figs}{notebooks}{.}}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{comment}
+\usepackage{color}
+\usepackage[acronym]{glossaries}
+%\usepackage{alphalph} % For extended alphabetical numbering
+\usepackage{appendix}
+\usepackage{import}
+
+% \usepackage[%
+%filename ,%
+%content={no image available}
+%]{draftfigure}
+
+\makeglossaries
+% \newacronym{label}{acronym}{definition}
+\input{glossary}
+
+\title{Denoising in Microscopy Imaging}
+
+\author{Vicente González-Ruiz and José Jesús Fernández Rodríguez}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section*{Definitions and notation}
+\input{nomenclature}
+
+\input{intro}
+\input{discrete_signals}
+\input{quantization}
+\input{statistics}
+\input{noise}
+\input{distortion_metrics}
+\input{MNI}
+\input{GF}
+
+% \chapter{Beltrami flow}
+% Parece que se usa en AND, pero no se bien cómo.
+
+%\chapter{Median filter}
+
+%\chapter{Bilateral filter}
+
+\input{WF}
+
+% \chapter{Anisotropic Non-linear Diffusion (AND)}
+
+% \chapter{PURE-LET}
+%{{{
+
+% . Luisier, T. Blu, and M. Unser. Image denoising in mixed
+% PoissonGaussian noise. IEEE Transactions on Image Pro-
+% cessing, 20(3):696–708, 2011.
+
+%}}}
+
+%  \chapter{Non Local Means (NLM)}
+%{{{
+
+% https://biomedical-engineering-online.biomedcentral.com/articles/10.1186/1475-925X-14-2
+% A. Buades, B. Coll, and J.-M. Morel. A non-local algorithm
+% for image denoising. In CVPR, 2005.
+
+%}}}
+
+% \chapter{BM3D/BM4D}
+%{{{
+
+% K. Dabov, A. Foi, V. Katkovnik, and K. Egiazarian. Image
+% denoising by sparse 3-D transform-domain collaborative
+% filtering. IEEE Transactions on Image Processing, 16(8):2080–2095, 2007.
+%https://pypi.org/project/bm4d/#files
+
+%}}}
+
+% \chapter{K-SVD}
+%{{{
+
+% M. Aharon, M. Elad, and A. Bruckstein. K-SVD: An algorithm for
+% designing overcomplete dictionaries for sparse
+% representation. IEEE Transactions on Signal Processing,
+% 54(11):4311–4322, 2006.
+
+%}}}
+
+% \chapter{EPLL}
+%{{{
+
+% D. Zoran and Y. Weiss. From learning models of natural
+% image patches to whole image restoration. In ICCV, 2011.
+
+%}}}
+
+% \chapter{WNNM}
+%{{{
+
+% S. Gu, L. Zhang, W. Zuo, and X. Feng. Weighted nuclear
+% norm minimization with application to image denoising. In
+% CVPR, 2014.
+
+%}}}
+
+% \chapter{The U-Net}
+% \chapter{N2V}
+%{{{
+
+% A. Krull, T.-O. Buchholz, and F. Jug, “Noise2void-learning denoising
+% from single noisy images,” in Proceedings of the IEEE/CVF conference
+% on computer vision and pattern recognition, 2019, pp. 2129–2137.
+
+%}}}
+
+%\chapter{Pixel2Pixel}
+%https://ieeexplore.ieee.org/abstract/document/10908805 
+
+%\chapter{DnCNN}
+% K. Zhang, W. Zuo, Y. Chen, D. Meng, and L. Zhang. Be-
+% yond a Gaussian denoiser: Residual learning of deep CNN
+% for image denoising. IEEE Transactions on Image Process-
+% ing, 26(7):3142–3155, 2017.
+
+% \chapter{FFDNet}
+% K. Zhang, W. Zuo, and L. Zhang. Ffdnet: Toward a fast
+% and flexible solution for CNN based image denoising. IEEE
+% Transactions on Image Processing, 2018.
+
+% \chapter{CBDNet}
+% S. Guo, Z. Yan, K. Zhang, W. Zuo, and L. Zhang. Toward
+% convolutional blind denoising of real photographs. In CVPR,
+% 2019.
+
+% \chapter{UDNet}
+% S. Lefkimmiatis. Universal denoising networks: A novel
+% cnn-based network architecture for image denoising. In
+% CVPR, 2018.
+
+% T. Pl¨otz and S. Roth. Neural nearest neighbors networks. In
+% NIPS, 2018.
+
+%\chapter{Noise2Noise}
+% . Lehtinen, J. Munkberg, J. Hasselgren, S. Laine, T. Kar-
+% ras, M. Aittala, and T. Aila. Noise2noise: Learning image
+% restoration without clean data. In ICML, 2018.
+
+%\chapter{Adapted RCAN (as denoiser)}
+
+% Used in TriS-D, were the last upscaling module is removed to keep
+% the spatial resolution \cite{ma2025spatiotemporal}.
+
+% Y. Zhang, K. Li, K. Li, L. Wang, B. Zhong, and Y. Fu, “Image super-
+% resolution using very deep residual channel attention networks,” in
+% European Conference on Computer Vision (ECCV), 2018.
+
+\input{SPGD}
+\input{machine_learning}
+\input{DAE}
+
+%\chapter{2D Random Shuffing Volume Denoising (2D-RSVD)}
+
+%\chapter{3D Random Shuffling Volume Denoising (3D-RSVD)}
+
+
+\input{comparative}
+
+\appendix
+
+% Redefine the appendix numbering to use alphalph's extended alphabet
+%\makeatletter
+%\renewcommand*{\thesection}{%
+%  \AlphAlph{\value{section}}%
+%}
+%\makeatother
+
+%{{{
+
+
+
+
+%}}}
+
+\begin{appendix}
+
+\chapter{Images with \gls{GT}}
+\label{sec:images}  
+  
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH.ipynb}{\includegraphics{Confocal_FISH.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_FISH_noisy.ipynb}{\includegraphics{Confocal_FISH_noisy.pdf}}
+  \caption{Confocal FISH \cite{zhang2019poisson}.\label{fig:Confocal_FISH}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE.ipynb}{\includegraphics{TwoPhoton_MICE.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_MICE_noisy.ipynb}{\includegraphics{TwoPhoton_MICE_noisy.pdf}}
+  \caption{Two-photons MICE \cite{zhang2019poisson}.\label{fig:TwoPhoton_MICE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE.ipynb}{\includegraphics{Confocal_MICE.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_MICE_noisy.ipynb}{\includegraphics{Confocal_MICE_noisy.pdf}}
+  \caption{Confocal MICE \cite{zhang2019poisson}.\label{fig:Confocal_MICE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_noisy.pdf}}
+  \caption{Confocal BPAE \cite{zhang2019poisson}.\label{fig:Confocal_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_R.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_noisy_R.pdf}}
+  \caption{Confocal BPAE (red channel) \cite{zhang2019poisson}.\label{fig:Confocal_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_G.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_noisy_G.pdf}}
+  \caption{Confocal BPAE (green channel) \cite{zhang2019poisson}.\label{fig:Confocal_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_B.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/Confocal_BPAE.ipynb}{\includegraphics{Confocal_BPAE_noisy_B.pdf}}
+  \caption{Confocal BPAE (blue channel) \cite{zhang2019poisson}.\label{fig:Confocal_BPAE_B}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_noisy.pdf}}
+  \caption{TwoPhoton BPAE \cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_R.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_noisy_R.pdf}}
+  \caption{TwoPhoton BPAE (red channel) \cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_G.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_noisy_G.pdf}}
+  \caption{TwoPhoton BPAE (green channel) \cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_B.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/TwoPhoton_BPAE.ipynb}{\includegraphics{TwoPhoton_BPAE_noisy_B.pdf}}
+  \caption{TwoPhoton BPAE (blue channel) \cite{zhang2019poisson}.\label{fig:TwoPhoton_BPAE_B}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_noisy.pdf}}
+  \caption{WideField BPAE \cite{zhang2019poisson}.\label{fig:WideField_BPAE}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_R.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_noisy_R.pdf}}
+  \caption{WideField BPAE (red channel) \cite{zhang2019poisson}.\label{fig:WideField_BPAE_R}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_G.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_noisy_G.pdf}}
+  \caption{WideField BPAE (green channel) \cite{zhang2019poisson}.\label{fig:WideField_BPAE_G}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_B.pdf}}
+  \href{https://nbviewer.org/github/vicente-gonzalez-ruiz/denoising/blob/main/notebooks/WideField_BPAE.ipynb}{\includegraphics{WideField_BPAE_noisy_B.pdf}}
+  \caption{WideField BPAE (blue channel) \cite{zhang2019poisson}.\label{fig:WideField_BPAE_B}}
+\end{figure}
+
+\end{appendix}
+
+\printglossary[type=\acronymtype]
+
+\bibliographystyle{plain}
+\bibliography{signal_processing,image_processing,microscopy,denoising,motion_estimation,image_compression,statistics}
+
+\end{document}

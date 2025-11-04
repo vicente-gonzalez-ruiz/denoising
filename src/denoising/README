@@ -1,1 +1,6 @@
+# Random Shuffling Means
+
+Compute the pixel/voxel-wise mean of a set of images/volumes whose pixel/voxels have been randomly suffled in the corresponding image/volume.
+
+## Links
 See https://github.com/AHupuJR/NTIRE2025_Dn50_challenge/blob/main/utils/utils_image.py

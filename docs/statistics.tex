@@ -1,0 +1,418 @@
+\chapter{Statistics for digital data}
+
+\section{Random variable}
+A random variable is a function
+\begin{equation}
+  X:\Omega\rightarrow \mathcal{X}
+\end{equation}
+that maps outcomes $\omega\in\Omega$ (the sample space) to numerical values in some set $\mathcal{X}$ (usually $\mathbb{R}$, or a countable/continuos subset). For example, if we toss a coin, $X$ is a random variable that numerically represents the coin flip, $\omega=\{\text{Heads},\text{Tails}\}$, by definition $X(\omega)=1$ if $\omega=\text{Heads}$, and $X(\omega)=0$ if $\omega=\text{Tails}$.
+
+Notice that a randon variable is not random itself (it's a deterministic function of the underlying outcome). The ``randomness'' comes from the fact that the outcome $\omega$ is random (governed by $P$).
+
+\section{Probability mass function}
+The \gls{PMF} of a random variable $X$, defined as
+\begin{equation}
+  p(x) = \Pr(X=x), \quad x\in\mathcal{x},
+\end{equation}
+describes the probability with which a random variable $X$ takes values in a countable set $\mathcal{X}$, where
+\begin{equation*}
+  p(x)\ge 0,\quad\sum_{x\in\mathcal{X}}p(x)=1.
+\end{equation*}
+
+% We will assume that discrete signals are stationary (discrete) random processes
+
+Discrete data only can take countable values (like 0, 1, 2, ...).
+
+Random variables
+
+A digital signal is the result of discretizing in amplitude a discrete
+signal. Therefore, a sample of a digital signal can be represented
+using a finite number of bits.
+
+By physical requirements, digital signals are finite in length, and therefore
+$\text{Sup}(\mathbf{x})$ is a finite set.
+
+\section{Discrete signals and discrete random variables}
+\label{sec:DSRV}
+%{{{
+
+Mathematically, we can model discrete signals as \glspl{SRV}. A
+\gls{SRV} can be described as the output of a stochastic process whose
+statistical properties do not change with time or space. This means,
+basically, that the probability distribution of a signal at any given
+set of time/space points is the same as the distribution at those same
+samples shifted by any constant amount in time or space.
+
+A digital signal is the results of discretizing a discrete signal in
+amplitude. By physical reasons, a digital signal is finite in length
+(the number of signal samples is a known number) and in amplitude
+(each sample requires a finite number of bits to be
+represented). Therefore, digital signals are discrete and finite.
+
+A random variable is a mathematical formalization of a quantity or
+object which depends on random events. A \gls{DRV} is a random
+variable that only can take a finite number of different values. When
+more than one value (a vector) is generated in one of these events, we
+can establish a similar connection between multicomponent signals and
+random vectors. Statistically, random variables can be described
+throught the corresponding probability
+distribution. In the case of (discrete) random vectors, a mean for each
+component, a covariance matrix, and a multivariate distribution are
+required.
+
+In this document, monocomponent (digital) signals (and therefore
+\glspl{DRV}) will be denoted with lower-case bold-faced symbols,
+such as $\mathbf{x}$. Multicomponent (digital) signals (random
+vectors) will be denoted as $\overrightarrow{\mathbf{x}}$.
+
+%}}}
+
+\section{Expectation of \glspl{DRV}}
+The expected value (or expectation, mathematical expectation,
+expectancy) of a \gls{DRV} $\mathbf{x}$, denoted as
+$\mathbb{E}(\mathbf{x})$, is a theoretical concept representing the
+long-run average value of the variable if the experiment were to be
+repeated an infinite number of times. It is defined as the weighted
+average of all possible values the random variable can take, where the
+weights are the probabilities of those values occurring.
+
+For a digital signal $\mathbf{x}$, it is defined as
+\begin{equation}
+  \mathbb{E}_{\mathbf{x}}(\mathbf{x})=\mathbb{E}(\mathbf{x})=\sum_i\mathbf{x}_i\Pr(\mathbf{x}=\mathbf{x}_i).
+  \label{eq:expectation}
+\end{equation}
+
+The subscripts in expectations (like $\mathbb{E}(X,Y)_{(X,Y)}$) are
+there to indicate with respect to which probability distribution the
+expectation is being taken.
+
+The expectation is a linear operator and satisfies
+\begin{equation}
+  \mathbb{E}(\mathbf{x}+\mathbf{y}) = \mathbb{E}(\mathbf{x}) + \mathbb{E}(\mathbf{y}),
+\end{equation}
+and
+\begin{equation}
+  \mathbb{E}(c\mathbf{x}) = c\mathbb{E}(\mathbf{x}),
+\end{equation}
+where $c$ is a scalar constant.
+
+Notice that using the expectation operator, the power of a digital
+signal (see Eq.~\ref{eq:power_discrete_signal}) can be found as
+\begin{equation}
+  P(\mathbf{x}) = \mathbb{E}(|\mathbf{x}|^2).
+  \label{eq:power_as_expectation}
+\end{equation}
+
+\section{Expectation of the function of a discrete random variable}
+\begin{equation}
+  \mathbb{E}[f(\mathbf{x})]=\sum_if(\mathbf{x}_i)\Pr(\mathbf{x}=\mathbf{x}_i).
+  \label{eq:expectation_of_function}
+\end{equation}
+
+\section*{Example:}
+Suppose we want to compute the expected winnings of a simple betting game tossing a coin, where if Heads, you win \$2, but if Tails, you lose \$1. We define the payoff as a function of $X$:
+
+\begin{equation*}
+  f(X)=2X-1
+\end{equation*}
+
+Therefore, if $X=1$ (Heads): $f(1)=2(1)-1=1$ (dollar net gain), but if $X=0$ (Tails): $f(0)=2(0)-1=-1$ (dollar loss). The expectation of the payoff is
+
+\begin{equation*}
+\mathbb{E}[f(X)]=f(1)\Pr(X=1)+f(0)\Pr(X=0) = (1)(12)+(-1)(12)=0.
+\end{equation*}
+
+So your expected profit in this game is zero.
+
+\section{Marginal of a random variable}
+The marginal of a variable is its probability distribution, ignoring
+the other variables. For example, imagine we survey a neighborhood and
+record the type of pet (cat or dog) and its color (brown or
+black). The marginal of pet type considers just the number of cat and
+dogs, not their color.
+
+\section{Conditional distribution}
+
+The conditional probability mass function is
+$$ p(y \mid x) = \frac{p(x,y)}{p(x)} \quad \text{if } p(x) > 0, $$
+where $p(x) = \sum_{y} p(x,y)$ is the marginal of $X$.
+
+The conditional expectation of $h(x,Y)$ given $X=x$ is then
+$$ E_{Y \mid X=x}[h(x,Y)] = \sum_{y} h(x,y) p(y \mid x). $$
+
+\section{Low of total expectation}
+The expectation with respect to the joint distribution is
+\begin{equation}
+  \mathbb{E}_{(X,Y)}[h(X,Y)]=\mathbb{E}_{X}[\mathbb{E}_{Y\mid X}[h(X,Y)]].
+\end{equation}
+
+\section*{Example: Coin + Die}
+
+Toss a fair coin and roll a fair die simultaneously.
+
+\subsection*{Random Variables}
+\[
+C = 
+\begin{cases}
+1 & \text{if Heads} \\
+0 & \text{if Tails}
+\end{cases}, 
+\qquad
+D \in \{1,2,3,4,5,6\}.
+\]
+
+The coin and die are independent, so the joint distribution is
+\[
+p(c,d) = p(c)\,p(d) = \frac{1}{2} \cdot \frac{1}{6} = \frac{1}{12}.
+\]
+
+\subsection*{Function of Interest}
+Suppose the payoff is
+\[
+h(C,D) = C \cdot D,
+\]
+i.e., you get the die roll if the coin shows Heads, and 0 if Tails.
+
+\subsection*{Expectation w.r.t. the joint distribution}
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] 
+= \sum_{c=0}^{1} \sum_{d=1}^{6} h(c,d) \, p(c,d).
+\]
+
+Plugging in:
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] 
+= \sum_{d=1}^{6} (1 \cdot d) \cdot \frac{1}{12} + \sum_{d=1}^{6} (0 \cdot d) \cdot \frac{1}{12}
+= \frac{1}{12} (1+2+3+4+5+6) = \frac{21}{12} = 1.75.
+\]
+
+\subsection*{Law of Total Expectation}
+We can also write
+\[
+\mathbb{E}_{(C,D)}[h(C,D)] = \mathbb{E}_C \Big[ \mathbb{E}_{D|C}[h(C,D)] \Big].
+\]
+
+Compute the inner conditional expectation:
+\[
+\mathbb{E}_{D|C=1}[h(1,D)] = \mathbb{E}_D[D] = 3.5, \quad 
+\mathbb{E}_{D|C=0}[h(0,D)] = \mathbb{E}_D[0] = 0.
+\]
+
+Then average over $C$:
+\[
+\mathbb{E}_C \Big[ \mathbb{E}_{D|C}[h(C,D)] \Big] 
+= 0.5 \cdot 3.5 + 0.5 \cdot 0 = 1.75.
+\]
+
+\subsection*{Conclusion}
+The subscripts in $\mathbb{E}_{(\cdot)}$ clarify which distribution is used for averaging:
+\begin{itemize}
+    \item $\mathbb{E}_{(C,D)}$: joint distribution,
+    \item $\mathbb{E}_{D|C}$: conditional distribution of $D$ given $C$,
+    \item $\mathbb{E}_C$: marginal distribution of $C$.
+\end{itemize}
+
+\section{$n$-th moment of a discrete random variable}
+\begin{equation}
+  \mathbb{E}(\mathbf{x}^n) = \sum_i\mathbf{x}_i^n\Pr(\mathbf{x}=\mathbf{x}_i).
+\end{equation}
+  
+\section{Mean}
+\label{sec:mean}
+The mean of a discrete random variable is the first moment of the  
+
+\section{Average}
+\label{sec:average}
+In statistics, when referring to a random variable, the mean (also
+called ``sample mean'' or ``empirical mean'') usually refers to the
+expectation. However, when we deal with a digital signal (sample data)
+$\mathbf{x}$, we define
+\begin{equation}
+  \overline{\mathbf{x}} = \frac{1}{N}\sum_{i=0}^{N-1}\mathbf{x}_i,
+  \label{eq:mean}
+\end{equation}
+where $N$ is the number of samples in $\mathbf{x}$. We will also use
+$\mu$ to denote the mean value.
+
+Notice that Eq.~\ref{eq:mean} is equivalent to
+Ed.~\ref{eq:expectation} when all the samples have the same
+probability.
+
+
+\section{Variance}
+\label{sec:variance}
+%{{{
+
+The variance of a random variable $\mathbf{x}$, denoted by
+$\mathbb{V}(\mathbf{x})$ (or simply by $\sigma^2$) is a measurement of
+its dispersion. It is defined as the expected value of the squared
+deviation from the mean,
+%\begin{equation}
+%  \operatorname{Var}(\mathbf{x}) = \mathbb{E}\left[(X - \mathbb{E}[X])^2 \right].
+%\end{equation}
+%\begin{equation}
+%  \operatorname{Var}(\mathbf{x}) = \operatorname{Exp}\left[(X - \operatorname{Exp}[X])^2 \right].
+%\end{equation}
+\begin{equation}
+  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right) = \mathbb{E}(\mathbf{x}^2)-\mathbb{E}(\mathbf{x})^2.
+  \label{eq:variance}
+\end{equation}
+
+%}}}
+
+\section{Power of a signal as a function of its mean and variance}
+The average power of a random variable is equal to its variance plus its mean
+(expectation) squared
+\begin{equation}
+  P(\mathbf{x}) =  \mathbb{V}(\mathbf{x}) + \mathbb{E}(\mathbf{x})^2.
+  \label{eq:power_mean_variance}
+\end{equation}
+This is because
+\begin{align*}
+  \mathbb{E}(\mathbf{x}^2)
+  & = \mathbb{E}(\mathbf{x}^2 - \mathbb{E}(\mathbf{x}) + \mathbb{E}(\mathbf{x})) \\
+  & = \mathbb{E}((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 + 2\mathbb{E}(\mathbf{x})(\mathbf{x}-\mathbb{E}(\mathbf{x})) + \mathbb{E}(\mathbf{x})^2) \\
+  & = \mathbb{E}((\mathbf{x}-\mathbb{E}(\mathbf{x}))^2) + 2\mathbb{E}(\mathbf{x})(\mathbb{E}(\mathbf{x})-\mathbb{E}(\mathbf{x})) + \mathbb{E}(\mathbf{x})^2) \\
+  & = \mathbb{V}(\mathbf{x}) + 0 + \mathbb{E}(\mathbf{x})^2.
+\end{align*}
+
+\section{Covariance}
+\label{sec:covariance}
+%{{{
+
+The covariance $\mathbb{C}(\mathbf{x}, \mathbf{y})$ is a measure of
+how two random variables $\mathbf{x}$ and $\mathbf{y}$ change
+together. In simpler terms, it tells us the direction of the linear
+relationship between two variables. The covariance between two
+discrete signals $\mathbf{x}$ and $\mathbf{y}$ is calculated as
+%\begin{equation}
+%  \text{Cov}(\textbf{x}, \textbf{y}) = \mathbb{E}[(\mathbf{x}-\overline{\mathbf{x}})(\mathbf{y}-\overline{\mathbf{y}})].
+%\end{equation}
+%\begin{equation}
+%  \mathbb{V}(\mathbf{x}) = \mathbb{E}\left((\mathbf{x} - \mathbb{E}(\mathbf{x}))^2 \right).
+%\end{equation}
+\begin{equation}
+  \mathbb{C}(\textbf{x}, \textbf{y}) = \mathbb{E}\big((\mathbf{x}-\mathbb{E}(\mathbf{x}))(\mathbf{y}-\mathbb{E}(\mathbf{y}))\big).
+\end{equation}
+
+Notice that (see Eq.~\ref{eq:variance})
+\begin{equation}
+  \mathbb{C}(\mathbf{x}, \mathbf{x}) = \mathbb{V}(\mathbf{x}).
+\end{equation}
+
+%}}}
+
+\section{Covariance matrix}
+\label{sec:covariance_matrix}
+%{{{
+
+The covariance matrix $\Sigma_{\overrightarrow{\mathbf{x}}}$ of a random vector $\overrightarrow{\mathbf{x}}=[\mathbf{x}_1,\cdots,\mathbf{x}_N]^T$, defined as,
+\begin{equation}
+  (\Sigma_{\overrightarrow{\mathbf{x}}})_{i,j}=\mathbb{C}(\mathbf{x}_i,\mathbf{x}_j),
+\end{equation}
+is a $N\times N$ matrix
+\begin{equation}
+\Sigma_{\overrightarrow{\mathbf{x}}} = 
+\begin{pmatrix}
+\mathbb{V}(\mathbf{x}_1) & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_1, \mathbf{x}_p) \\
+\mathbb{C}(\mathbf{x}_2, \mathbf{x}_1) & \mathbb{V}(\mathbf{x}_2) & \cdots & \mathbb{C}(\mathbf{x}_2, \mathbf{x}_p) \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbb{C}(\mathbf{x}_p, \mathbf{x}_1) & \mathbb{C}(\mathbf{x}_p, \mathbf{x}_2) & \cdots & \mathbb{V}(\mathbf{x}_p)
+\end{pmatrix}
+\end{equation}
+that express the covariance between the random variables of a random vector.
+
+%}}}
+
+\section{$L_2$ norm}
+\label{sec:L2_norm}
+%{{{
+
+$L_2$ norm (also called \emph{magnitude} and \emph{Euclidean norm}) of
+a discrete signal $\mathbf{x}$ is defined by
+\begin{equation}
+  ||\mathbf{x}||_2 = \sqrt{\sum_i\mathbf{x}_i^2}.
+\end{equation}
+Notice that the L2 norm and the Mean Square Error (MSE) are closely
+related concepts, because
+\begin{equation}
+  ||\mathbf{x} - \mathbf{y}||_2^2 = N\cdot\text{MSE}(\mathbf{x} - \mathbf{y}),
+\end{equation}
+where $N$ is the length of $\mathbf{x}$.
+
+%}}}
+
+\section{Uniform distribution}
+
+The uniform distribution, usually denoted by $\mathcal{U}(c)$, is a
+continous probability distribution in which all outcomes are equally
+likely, and can br described by \gls{PDF}
+\begin{equation}
+  \Pr(X{=}x)) =
+  \begin{cases}
+    \frac{1}{b-a} & \text{for}\quad a \le x \le b, \\
+    0 & \text{otherwise},
+  \end{cases}
+\end{equation}
+where $X$ represents a continuous random variable, and $[a, b]$ is the
+range of amplitudes of the random samples.
+
+As can be seen, the mean
+\begin{equation}
+  \mu = \frac{a+b}{2},
+\end{equation}
+and the variance
+\begin{equation}
+  \sigma^2 = \frac{(b-a)^{2}}{12}.
+\end{equation}
+
+\section{Gaussian distribution}
+\label{sec:gaussian_distribution}
+%{{{
+
+A continuous random variable $X$ that is generated following a Gaussian
+distribution (also known as the normal distribution and usually denoted
+by $\mathcal{N}(\mu, \sigma^2)$) is described by a \gls{PDF}
+\begin{equation}
+  \Pr(X{=}x) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2} },
+  \label{eq:normal_PDF}
+\end{equation}
+where $x$ is a random sample of $X$, $\Pr(X{=}x)$ represents the
+probability of finding $x$ in $X$, $\mu$ is the mean of $X$, and
+$\sigma$ is the standard deviation of $X$.
+
+When we work with a digital signal (quantized discrete random
+variable) $\mathbf{x}$, the \gls{PDF} becomes a
+\gls{PMF}\footnote{Also called discrete \gls{PDF}.}
+\begin{equation}
+  \Pr(\mathbf{x}{=}\mathbf{x}_i) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(\mathbf{x}_i-\mu)^2}{2\sigma^2} },
+  \label{eq:normal_PMD}
+\end{equation}
+where $\mathbf{x}_i$ is the $i$-th sample of $\mathbf{x}$.
+
+%}}}
+
+\section{Poisson distribution}
+\label{sec:poisson_distribution}
+%{{{
+
+The Poisson distribution, denoted by $\mathcal{P}(\lambda)$ is a
+discrete probability distribution that models the number of times an
+event occurs in a fixed interval of time or space, under the following
+assumptions:
+\begin{enumerate}
+\item Events occur independently.
+\item The average rate (events per interval) is constant.
+\item Two events cannot occur at the exact same instant.
+\end{enumerate}
+Its \gls{PMF} is:
+\begin{equation}
+  \Pr(\mathbf{x}{=}\mathbf{x}_i) = \frac{e^{-\mathbf{\lambda}}\lambda^{\mathbf{x}_i}}{\mathbf{x}_i!},
+  \label{eq:PN}
+\end{equation}
+where $\lambda$ is the mean and the variance.
+
+%}}}
+
+
+

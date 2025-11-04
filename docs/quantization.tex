@@ -1,0 +1,35 @@
+\chapter{Quantization}
+
+Quantization is a fundamental concept in digital signal processing
+that involves mapping a continuous or high-resolution discrete signal
+to a finite set of levels. It is a key step in converting analog
+signals to digital form. Quantization is a non-linear operation that
+introduces quantization error.
+
+Notice that this concept implies as input a discretized signal in the
+signal domain (in general, \emph{analog} signal samples) and the
+output is a digital signal (where the signal samples are discretized
+in amplitude). However, quantization can be also used to re-encode
+already quantized signals (re-quantization), a process that is
+involved in lossy data compression. A similar idea is used when we
+quantize the parameters of machine learning model.
+
+\section{Definition}
+In general, quantization is a mathematical injective projection
+between the elements of two sets $A$ and $B$, where $|A|>|B|$, and
+obviously, this is an irreversible action.
+
+In the context of discrete signals, quantization of signals the process
+of approximating a continuous range of values (or a large discrete
+set) with a limited number of levels.
+
+\section{The quantization error}
+
+The quantization error is the difference between the
+discrete-but-still-analog input signal and the digital output signal
+\begin{equation}
+  e_n = s_n - \hat{s}_n
+\end{equation}
+
+Under a high enough number of quantization levels, quantization error
+is typically modeled as a uniform random variable.

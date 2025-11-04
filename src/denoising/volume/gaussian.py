@@ -1,11 +1,36 @@
 '''Gaussian volume denoising.'''
 
+import threading
+import time
 import numpy as np
 
 class Monochrome_Denoising:
 
-    def __init__(self, logger):
+    def __init__(
+            self,
+            logger,
+            quality_estimator=None
+    ):
         self.logger = logger
+        self.logger = logger
+        self.Q_estimator = quality_estimator
+        self.show_event = threading.Event()
+        self.logger_daemon = threading.Thread(target=self.show_log)
+        self.logger_daemon.daemon = True
+        self.time_0 = time.perf_counter()
+        self.logger_daemon.start()
+
+    def show_log(self):
+        while self.show_event.wait():
+            time_1 = time.perf_counter()
+            running_time = time_1 - self.time_0
+            print(f"{self.iter:>5d}/{self.dim}", end='')
+            print(f"{running_time:>16.3f}", end='')
+            if self.Q_estimator != None:
+                print(f"{self.quality_index:>16.4f}", end='')
+            print()
+            self.show_event.clear()
+            self.time_0 = time.perf_counter()
 
     def warp_slice(self, slice, flow):
         return slice
@@ -20,7 +45,10 @@ class Monochrome_Denoising:
         padded_vol = np.full(shape=(shape_of_vol[0] + kernel.size, shape_of_vol[1], shape_of_vol[2]), fill_value=mean)
         padded_vol[kernel.size//2:shape_of_vol[0] + kernel.size//2, :, :] = vol
         Z_dim = vol.shape[0]
+        self.dim = Z_dim
         for z in range(Z_dim):
+            self.iter = z
+            self.show_event.set()
             tmp_slice = np.zeros_like(vol[z]).astype(np.float32)
             prev_flow = np.zeros(shape=(shape_of_vol[1], shape_of_vol[2], 2), dtype=np.float32)
             for i in range((kernel.size//2) - 1, -1, -1):
@@ -47,7 +75,10 @@ class Monochrome_Denoising:
         padded_vol = np.full(shape=(shape_of_vol[0], shape_of_vol[1] + kernel.size, shape_of_vol[2]), fill_value=mean)
         padded_vol[:, kernel.size//2:shape_of_vol[1] + kernel.size//2, :] = vol
         Y_dim = vol.shape[1]
+        self.dim = Y_dim
         for y in range(Y_dim):
+            self.iter = y
+            self.show_event.set()
             tmp_slice = np.zeros_like(vol[:, y, :]).astype(np.float32)
             prev_flow = np.zeros(shape=(shape_of_vol[0], shape_of_vol[2], 2), dtype=np.float32)
             for i in range((kernel.size//2) - 1, -1, -1):
@@ -74,7 +105,10 @@ class Monochrome_Denoising:
         padded_vol = np.full(shape=(shape_of_vol[0], shape_of_vol[1], shape_of_vol[2] + kernel.size), fill_value=mean)
         padded_vol[:, :, kernel.size//2:shape_of_vol[2] + kernel.size//2] = vol
         X_dim = vol.shape[2]
+        self.dim = X_dim
         for x in range(X_dim):
+            self.iter = x
+            self.show_event.set()
             tmp_slice = np.zeros_like(vol[:, :, x]).astype(np.float32)
             prev_flow = np.zeros(shape=(shape_of_vol[0], shape_of_vol[1], 2), dtype=np.float32)
             for i in range((kernel.size//2) - 1, -1, -1):
