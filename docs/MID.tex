@@ -1,0 +1,28 @@
+\chapter{MID (Multimodal Iterative Denoising)}
+
+% MID: A Self-supervised Multimodal Iterative Denoising Framework C Nie, T Deng, Z Liu, H Wang - arXiv preprint arXiv:2511.00997, 2025
+
+Learns noise characteristics directly from noisy inputs, applying a
+Taylor expansion to handle non-linear contamination.
+
+Operates in a self-supervised manner, learning to denoise using only
+noisy data as input. This is achieved by further corrupting
+already noisy data and learning to reverse these incremental
+additions, which eliminates the need for pristine ground-
+truth samples. The framework employs an iterative process
+to subtract estimated noise, gradually recovering the clean
+signal while preserving fine details.
+
+The application of a
+Taylor expansion allows it to approximate complex non-linear
+noise contamination as a sequence of linear perturbations,
+enabling effective iterative removal.
+
+
+MID trains a system to recognize and remove noise by
+learning from data, denoted by s, that is progressively cor-
+rupted. The framework, depicted in Fig. 2, involves two
+main phases: a training phase where noise characteristics are
+learned, and a denoising phase where the trained networks are
+used to remove noise from new, unseen data
+
