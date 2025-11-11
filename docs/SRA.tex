@@ -1,16 +1,16 @@
 \chapter{SRA (Shuffle, Register and Average)}
 
 \begin{verbatim}
-  filter_volume(noisy, N_iters):
-    acc = copy(noisy)
-    for iter in range(N_iters):
-      denoised = acc/(iter+1)
-      shuffled = shuffle(noisy)
-      acc += project(denoised, shuffled)
-    denoised = acc/(N_iters + 1)
-    return denoised
+SRA(noisy_vol, N_iters):
+  acc = copy(noisy_vol)
+  for i in range(N_iters):
+    denoised_vol = acc/(i + 1)
+    shuffled_vol = shuffle(noisy_vol)
+    acc += project(denoised_vol, shuffled_vol)
+  denoised_vol = acc/(N_iters + 1)
+  return denoised
 
-  project_volume(reference, target):
+project(reference, target):
     flow = estimate_3D_dense_optical_flow(reference, target)
     projection = remap(reference, flow)
     return projection

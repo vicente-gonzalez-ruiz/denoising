@@ -310,29 +310,28 @@ having more noisy instances, after averaing all the denoised volumes.
 
 \begin{verbatim}
 def cryoCARE-EO(noisy_vol):
-  even_vol = noisy_vol[0::2,:,:]
-  odd_vol = noisy_vol[1::2,:,:]
+  even_vol = noisy_vol[0::2,:,:] # Even Z-slices
+  odd_vol = noisy_vol[1::2,:,:]  # Odd  Z-slices
   model = train(even_vol, odd_vol)
-  denoised_vol = denoise(model, noisy_vol, noisy_vol)
+  denoised_vol = predict(model, noisy_vol, noisy_vol)
   return denoised_vol
 
-def train(vol_1, vol_2):
-  model = cryoCARE.train(even=vol_1, odd=vol_2)
+train(even_vols, odd_vols):
+  model = cryoCARE.train(even=even_vols, odd=odd_vols)
   return model
 
-def denoise(model, noisy_vol_1, noisy_vol_2):
-  denoised_vol = cryoCARE.predict(model, even=noisy_vol_1, odd=noisy_vol_2)
+predict(model, even_vols, odd_vols):
+  denoised_vol = cryoCARE.predict(model, even=even_vols, odd=odd_vols)
   return denoised_vol
-\end{verbatim}
 
-\begin{verbatim}
 cryoCARE-REO(noisy_vol):
   even_vol = noisy_vol[0::2,:,:]
   odd_vol = noisy_vol[1::2,:,:]
-  registered_even_vol = register_vol(even_vol, odd_vol)
-  registered_odd_vol = register_vol(odd_vol, even_vol)
-  model = train(even_vols=[even_vol, registered_even_vol], odd_vols=[odd_vol, registered_odd_vol])
-  denoised_vol = denoise(model, noisy_vol, noisy_vol)
+  even_vol_registered = register_vol(even_vol, odd_vol)
+  odd_vol_registered = register_vol(odd_vol, even_vol)
+  model = train(even_vols=[even_vol_registered, even_vol], # The order in lists matters
+                 odd_vols=[ odd_vol,            odd_vol_registered])
+  denoised_vol = predict(model, noisy_vol, noisy_vol)
   return denoised_vol
 
 register_vol(vol_to_warph, reference_vol):
@@ -344,21 +343,9 @@ register_slice(slice_to_warph, reference_slice):
   optical_flow = OF_estimator.estimate_2D_dense(to_warph=slice_to_warph, target=reference_slice)
   warphed_vol = Warpher.project_2D(slice=slice_to_warph, flow=optical_flow) 
   return warphed_vol
-
-train(vols_1, vols_2):
-  model = cryoCARE.train(even=vols_1, odd=vols_2)
-  return model
-
-denoise(model, noisy_vol_1, noisy_vol_2):
-  denoised_vol = cryoCARE.predict(model, even=noisy_vol_1, odd=noisy_vol_2)
-  return denoised_vol
 \end{verbatim}
 
 \section{Results}
-
-\begin{verbatim}
-
-\end{verbatim}
 
 \begin{figure}
   \centering
@@ -386,4 +373,18 @@ denoise(model, noisy_vol_1, noisy_vol_2):
   \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/DAE/cryoCARE/empiar11415/denoise_odd_and_even_registered.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/empiar11415__denoised__cryoCARE_odd_even_registered.pdf}}
   \caption{Denoising of EMPIAR-11415 using  (see Fig.~\ref{fig:empiar11415})
     cryoCARE-REO.\label{fig:cryoCARE_empiar11415_denoise_even_odd_registered}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/DAE/cryoCARE/corbel_big/denoise_even_odd.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/corbel_big__denoised__cryoCARE_even_odd.pdf}}
+  \caption{Denoising of EMPIAR-11415 (see Fig.~\ref{fig:corbel_big}) using
+    cryoCARE-EO.\label{fig:cryoCARE_corbel_big_denoise_even_odd}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/DAE/cryoCARE/corbel_big/denoise_odd_and_even_registered.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/corbel_big__denoised__cryoCARE_odd_even_registered.pdf}}
+  \caption{Denoising of EMPIAR-11415 using  (see Fig.~\ref{fig:corbel_big})
+    cryoCARE-REO.\label{fig:cryoCARE_corbel_big_denoise_even_odd_registered}}
 \end{figure}
