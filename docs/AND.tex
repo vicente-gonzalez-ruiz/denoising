@@ -1,0 +1,45 @@
+\chapter{Anisotropic Non-linear Diffusion (AND)}
+
+\begin{verbatim}
+from medpy.filter.smoothing import anisotropic_diffusion
+
+denoised = anisotropic_diffusion(
+    vol,          # [0.0, 1.0]!
+    niter=12,     # number of iterations (10-30) (More iterations = stronger smoothing)
+    kappa=15,     # conduction coefficient (Edge detection sensitivity) (20-40) (Larger -> smoother but weaker edges)
+    gamma=0.07,   # Step size (stability) (0.05-0.15) (Must be <=0.25)
+    option=1,     # PM1 model (Conduction model) (1 or 2) (1 = sharper edges preserved)
+    voxelspacing=None,  # use if voxel spacing differs per axis (Voxel geometry) (None or (sx,sy,sz)) (Use if voxels are anisotropic)
+)
+\end{verbatim}
+
+\section{Results}
+
+\begin{figure}[h]
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/AND/empiar10311/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/empiar10311__AND.pdf}}
+  \caption{Denoising of EMPIAR-10311 (see Fig.~\ref{fig:empiar10311}) using
+    \gls{AND}.\label{fig:AND_empiar10311}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/AND/empiar11415/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/empiar11415__AND.pdf}}
+  \caption{Denoising of EMPIAR-11415 (see Fig.~\ref{fig:empiar11415}) using
+    \gls{AND}.\label{fig:AND_empiar11415}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/AND/corbel_small/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/corbel_small__AND.pdf}}
+  \caption{Denoising of Corbel Small (see Fig.~\ref{fig:corbel_big}) using
+    \gls{AND}.\label{fig:AND_corbel_big}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/AND/epfl1/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/epfl1__AND.pdf}}
+  \caption{Denoising of EPFL 1 Subset 1 (see
+    Fig.~\ref{fig:epfs1_subset1_float}) using
+    AND.\label{fig:SPGD_epfl1_subset1_float}}
+\end{figure}
