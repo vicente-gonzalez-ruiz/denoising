@@ -11,42 +11,42 @@ SRA(noisy_vol, N_iters):
   return denoised
 
 project(reference, target):
-    flow = estimate_3D_dense_optical_flow(reference, target)
-    projection = remap(reference, flow)
-    return projection
+  flow = estimate_3D_dense_optical_flow(reference, target)
+  projection = remap(reference, flow)
+  return projection
 
-  shuffle_volume(v):
-    tmp = empty_like(v)
-    /* Shuffling in Z */
-    values = arange(x.shape[0])
-    for y in range(v.shape[1]):
-      for x in range(v.shape[2]):
-        pairs = shuffle_vector(values)
-        pairs = pairs[pairs[:, 0].argshort()]
-        tmp[values, y, x] = v[pairs[:, 1], y, x]
-    v = tmp
-    /* Shuffling in Y */
-    values = arange(x.shape[1])
-    for y in range(v.shape[0]):
-      for x in range(v.shape[2]):
-        pairs = shuffle_vector(values)
-        pairs = pairs[pairs[:, 0].argshort()]
-        tmp[z, values, x] = v[z, pairs[:, 1], x]
-    v = tmp
-    /* Shuffling in X */
-    values = arange(x.shape[2])
-    for y in range(v.shape[0]):
-      for x in range(v.shape[1]):
-        pairs = shuffle_vector(values)
-        pairs = pairs[pairs[:, 0].argshort()]
-        tmp[z, y, values] = v[z, y, pairs[:, 1]]
-    return tmp
+shuffle_volume(v):
+  tmp = empty_like(v)
+  /* Shuffling in Z */
+  values = arange(x.shape[0])
+  for y in range(v.shape[1]):
+    for x in range(v.shape[2]):
+      pairs = shuffle_vector(values)
+      pairs = pairs[pairs[:, 0].argshort()]
+      tmp[values, y, x] = v[pairs[:, 1], y, x]
+  v = tmp
+  /* Shuffling in Y */
+  values = arange(x.shape[1])
+  for y in range(v.shape[0]):
+    for x in range(v.shape[2]):
+      pairs = shuffle_vector(values)
+      pairs = pairs[pairs[:, 0].argshort()]
+      tmp[z, values, x] = v[z, pairs[:, 1], x]
+  v = tmp
+  /* Shuffling in X */
+  values = arange(x.shape[2])
+  for y in range(v.shape[0]):
+    for x in range(v.shape[1]):
+      pairs = shuffle_vector(values)
+      pairs = pairs[pairs[:, 0].argshort()]
+      tmp[z, y, values] = v[z, y, pairs[:, 1]]
+  return tmp
     
-    shuffle_vector(v):
-      values = arange(len(v))
-      displacements = normal()
-      shuffled = stack((values + displacements, v), axis=1)
-      return shuffled
+shuffle_vector(v):
+  values = arange(len(v))
+  displacements = normal()
+  shuffled = stack((values + displacements, v), axis=1)
+  return shuffled
 \end{verbatim}
 
 \section{Results}
@@ -63,4 +63,19 @@ project(reference, target):
   \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/SRA/empiar11415/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/empiar11415__SRA.pdf}}
   \caption{Denoising of EMPIAR-11415 (see Fig.~\ref{fig:empiar11415}) using
     \gls{SRA}.\label{fig:SRA_empiar11415}}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/SRA/corbel_small/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/corbel_small__SRA.pdf}}
+  \caption{Denoising of Corbel Small (see Fig.~\ref{fig:corbel_small}) using
+    \gls{SRA}.\label{fig:SRA_corbel_small}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \href{https://github.com/vicente-gonzalez-ruiz/denoising/blob/main/docs/SRA/epfl1/denoise.ipynb}{\includegraphics[width=1.0\textwidth]{~/gdrive_tomomgram_denoising/tmp/epfl1__SRA.pdf}}
+  \caption{Denoising of EPFL 1 Subset 1 (see
+    Fig.~\ref{fig:epfl1_subset1_float}) using
+    \gls{SRA}.\label{fig:SRA_epfl1}}
 \end{figure}
