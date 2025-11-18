@@ -9,3 +9,4 @@ color_transforms @ git+https://github.com/vicente-gonzalez-ruiz/color_transforms
 information_theory @ git+https://github.com/vicente-gonzalez-ruiz/information_theory@main#egg=information_theory
 shuffling @ git+https://github.com/vicente-gonzalez-ruiz/shuffling
 self_fourier_shell_correlation @ git+https://github.com/vicente-gonzalez-ruiz/self_fourier_shell_correlation
+my_google_auth @ git+https://github.com/vicente-gonzalez-ruiz/my_google_auth
