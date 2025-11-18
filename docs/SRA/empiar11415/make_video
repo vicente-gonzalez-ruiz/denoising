@@ -1,0 +1,1 @@
+ffmpeg -framerate 1 -i %03d.png -c:v rawvideo -pix_fmt yuv420p empiar11415__SRA.avi
