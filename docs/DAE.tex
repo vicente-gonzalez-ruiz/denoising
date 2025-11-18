@@ -331,12 +331,12 @@ cryoCARE-REO(noisy_vol):
   even_vol = noisy_vol[0::2,:,:]
   odd_vol = noisy_vol[1::2,:,:]
   even_vol_registered = register_vol(even_vol, odd_vol)
+    # even_vol_registered is an adaption of "even_vol" similar to "odd_vol".
   odd_vol_registered = register_vol(odd_vol, even_vol)
+    # odd_vol_registered is an adaption of "odd_vol" similar to "even_vol".
   model = train(even_vols=[even_vol_registered, even_vol],
                  odd_vols=[odd_vol, odd_vol_registered])
-    # The order of the volumes in the lists matters:
-    # 1. even_vol_registered is a projection of even_vol to match odd_vol.
-    # 2. odd_vol_registered is a projection of odd_vol to match even_vol.
+    # The even-odd pairs in the lists must correspond to the same vol.
   denoised_vol = predict(model, noisy_vol, noisy_vol)
   return denoised_vol
 
