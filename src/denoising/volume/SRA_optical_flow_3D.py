@@ -134,6 +134,43 @@ class Shuffle_Register_and_Average:
                 
         return shuffled_volume
 
+    def shuffle_volume(self, vol, mean=0.0, std_dev=1.0):
+        depth, height, width = vol.shape[:3]
+        x_coords, y_coords, z_coords = np.meshgrid(range(width), range(height), range(depth))
+        flattened_x_coords = x_coords.flatten()
+        flattened_y_coords = y_coords.flatten()
+        flattened_z_coords = z_coords.flatten()
+        #print(np.max(flattened_z_coords), np.max(flattened_y_coords), np.max(flattened_x_coords))
+        #print(flattened_x_coords.dtype)
+        displacements_x = np.random.normal(mean, std_dev, flattened_x_coords.shape).astype(np.int32)
+        displacements_y = np.random.normal(mean, std_dev, flattened_y_coords.shape).astype(np.int32)
+        displacements_z = np.random.normal(mean, std_dev, flattened_z_coords.shape).astype(np.int32)
+        self.displacements = np.concatenate([displacements_x, displacements_y, displacements_z])
+        #_d = 5
+        #displacements_x = np.random.uniform(low=-_d, high=_d, size=flattened_x_coords.shape).astype(np.int32)
+        #displacements_y = np.random.uniform(low=-_d, high=_d, size=flattened_y_coords.shape).astype(np.int32)
+        #displacements_z = np.random.uniform(low=-_d, high=_d, size=flattened_z_coords.shape).astype(np.int32)
+        print("min displacements", np.min(displacements_z), np.min(displacements_y), np.min(displacements_x))
+        print("average abs(displacements)", np.average(np.abs(displacements_z)), np.average(np.abs(displacements_y)), np.average(np.abs(displacements_x)))
+        print("max displacements", np.max(displacements_z), np.max(displacements_y), np.max(displacements_x))
+        randomized_x_coords = flattened_x_coords + displacements_x
+        randomized_y_coords = flattened_y_coords + displacements_y
+        randomized_z_coords = flattened_z_coords + displacements_z
+        #print("max displacements", np.max(randomized_z_coords), np.max(randomized_y_coords), np.max(randomized_x_coords))
+        #randomized_x_coords = np.mod(randomized_x_coords, width)
+        #randomized_y_coords = np.mod(randomized_y_coords, height)
+        #randomized_z_coords = np.mod(randomized_z_coords, depth)
+        randomized_x_coords = np.clip(randomized_x_coords, 0, width - 1) # Clip the randomized coordinates to stay within image bounds
+        randomized_y_coords = np.clip(randomized_y_coords, 0, height - 1)
+        randomized_z_coords = np.clip(randomized_z_coords, 0, depth - 1)
+        #print(np.max(randomized_z_coords), np.max(randomized_y_coords), np.max(randomized_x_coords))
+        #randomized_vol = np.ones_like(vol)*np.average(vol) #np.zeros_like(vol)
+        randomized_vol = np.zeros_like(vol)
+        #randomized_vol[...] = vol
+        #randomized_vol[...] = 128
+        randomized_vol[randomized_z_coords, randomized_y_coords, randomized_x_coords] = vol[flattened_z_coords, flattened_y_coords, flattened_x_coords]
+        return randomized_vol
+
     def project_volume_reference_to_target(
         self,
         reference,
@@ -211,6 +248,66 @@ class Shuffle_Register_and_Average:
                 filter_type=filter_type,
                 filter_size=filter_size,
                 presmoothing=presmoothing)
+            acc_volume += shuffled_and_compensated_noisy_volume
+
+            if self.Q_estimator != None:
+                denoised = acc_volume/(i + 2)
+                self.quality_index = self.Q_estimator(noisy_volume, denoised)
+                title = f"iter={i+1} DQI={self.quality_index:6.5f} min={np.min(denoised):5.2f} max={np.max(denoised):5.2f} avg={np.average(denoised):5.2f}"
+            else:
+                title = ''
+
+            if self.show_image:
+                self.show_image(denoised_volume)
+
+            self.show_event.set()
+        denoised_volume = acc_volume/(N_iters + 1)
+
+        return denoised_volume
+
+    def filter_experimental(
+        self,
+        noisy_volume,
+        N_iters=25,
+        mean=0.0,
+        std_dev=1.0,
+        pyramid_levels=PYRAMID_LEVELS,
+        gauss_size=GAUSS_SIZE,
+        iterations=ITERATIONS,
+        sigma_k=SIGMA_K,
+        filter_type=FILTER_TYPE,
+        filter_size=FILTER_SIZE,
+        presmoothing=None
+    ):
+        if self.logger.level <= logging.INFO:
+            print(f"\nFunction: {inspect.currentframe().f_code.co_name}")
+        if self.logger.level < logging.INFO:
+            args, _, _, values = inspect.getargvalues(inspect.currentframe())
+            for arg in args:
+                if isinstance(values[arg], np.ndarray):
+                    print(f"{arg}.shape: {values[arg].shape}", end=' ')
+                    print(f"{np.min(values[arg])} {np.average(values[arg])} {np.max(values[arg])}")
+                else:
+                    print(f"{arg}: {values[arg]}")
+
+        acc_volume = np.zeros_like(noisy_volume, dtype=np.float32)
+        acc_volume[...] = noisy_volume
+        for i in range(N_iters):
+            self.iter = i
+            denoised_volume = acc_volume/(i+1)
+            shuffled_noisy_volume = self.shuffle_volume(noisy_volume, mean=mean, std_dev=std_dev)
+            self.flow = self.estimator.pyramid_get_flow(
+                target=denoised_volume,
+                reference=shuffled_noisy_volume,
+                pyramid_levels=pyramid_levels,
+                gauss_size=gauss_size,
+                iterations=iterations,
+                sigma_k=sigma_k,
+                filter_type=filter_type,
+                filter_size=filter_size,
+                presmoothing=presmoothing)
+            shuffled_and_compensated_noisy_volume = self.projector.remap(vol=shuffled_noisy_volume, flow=self.flow)
+
             acc_volume += shuffled_and_compensated_noisy_volume
 
             if self.Q_estimator != None:
@@ -366,6 +463,7 @@ class Registered_Shuffling_Means(OF_Estimation, Project):
                 shuffled_volume[z, y, values] = volume[z, y, pairs[:, 1]]
                 
         return shuffled_volume
+
 
     def project_volume_reference_to_target(self, reference, target, pyramid_levels, gauss_size, iterations, sigma_k, filter_type, filter_size, presmoothing):
 
